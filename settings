@@ -1,0 +1,18 @@
+# CC - compiler
+# CFLAGS - flags for CC
+# debug - true debug is on, everything else is false
+# linkLibs - libraries to link
+# linkFlags - flags for linker
+# endlIgnore - when englIgnore \n in a row program won't look for includes
+# addLinkFiles - add files to link
+# addLinkDirectory - add directory to link
+# addLinkDirectoryRecursive
+# includePath
+
+
+@endlIgnore 3
+
+@includePath include/
+@CC clang++
+@debug true
+@CFLAGS -std=c++11
