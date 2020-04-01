@@ -6,6 +6,29 @@
 
 namespace core {
 
+VkResult createDebugUtilsMessengerEXT(VkInstance instance,
+		const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+		VkDebugUtilsMessengerEXT* pDebugMessenger) {
+	
+	auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+
+	if (func != nullptr) {
+		return func(instance, pCreateInfo, nullptr, pDebugMessenger);
+	} else {
+		return VK_ERROR_EXTENSION_NOT_PRESENT;
+	}
+}
+
+void destroyDebugUtilsMessengerEXT(VkInstance instance,
+        VkDebugUtilsMessengerEXT debugMessenger) {
+
+	auto func = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+
+	if (func != nullptr) {
+		func(instance, debugMessenger, nullptr);
+	}
+}
+
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 	VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -59,5 +82,15 @@ void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& create
 
 	createInfo.pUserData = nullptr;
 }
+
+void setupDebugMessenger(VkInstance instance, VkDebugUtilsMessengerEXT *debugMessenger) {
+	VkDebugUtilsMessengerCreateInfoEXT createInfo;
+	populateDebugMessengerCreateInfo(createInfo);
+
+	if (createDebugUtilsMessengerEXT(instance, &createInfo, debugMessenger) != VK_SUCCESS) {
+		throw std::runtime_error("failed to set up debug messenger");
+	}
+}
+
     
 } // namespace core

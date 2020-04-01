@@ -41,6 +41,15 @@ void AppProperties::createInstance(const char *appName, uint32_t appVersion) {
 	if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create instance");
 	}
+
+	setupDebugMessenger(instance, &debugMessenger);
+}
+
+void AppProperties::destroy() {
+	if (debugEnable) {
+		destroyDebugUtilsMessengerEXT(instance, debugMessenger);
+	}
+	vkDestroyInstance(instance, nullptr);
 }
 
 } // namespace core

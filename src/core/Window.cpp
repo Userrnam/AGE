@@ -3,7 +3,7 @@
 #include <vulkan/vulkan.h>
 
 #include "core/Window.hpp"
-#include "AppProperties.hpp"
+#include "core/AppProperties.hpp"
 
 namespace core {
 
@@ -21,4 +21,4 @@ Window::~Window() {
     glfwTerminate();
 }
 
-}
+} // namespace core
