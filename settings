@@ -16,3 +16,4 @@
 @CC clang++
 @debug true
 @CFLAGS -std=c++11
+@linkFlags -lvulkan.1 -lvulkan.1.2.131 -lglfw
