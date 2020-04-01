@@ -4,16 +4,14 @@
 
 namespace core {
 
-struct AppProperties {
-    bool debugEnable;
-    VkDebugUtilsMessengerEXT debugMessenger;
-
-    VkInstance instance;
-
+class AppProperties {
+    bool m_debugEnable;
+    VkDebugUtilsMessengerEXT m_debugMessenger;
+    VkInstance m_instance;
+public:
+    void debugEnable(bool);
     void createInstance(const char *appName, uint32_t appVersion);
     void destroy();
 };
 
 } // namespace core
-
-extern core::AppProperties appProperties;
