@@ -4,8 +4,11 @@
 
 #include <GLFW/glfw3.h>
 
-#include "core/VulkanCore.hpp"
+#include "core/coreAPI.hpp"
 #include "core/VulkanDebug.hpp"
+#include "core/Core.hpp"
+
+Core apiCore;
 
 const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation"
@@ -26,27 +29,15 @@ void getRequeredExtensions(std::vector<const char*>& extensions, bool enableVali
 	}
 }
 
-struct VulkanCore {
-	bool debugEnable;
-	VkInstance instance;
-	VkDebugUtilsMessengerEXT debugMessenger;
-};
-
-VulkanCore vulkanCore;
-
 namespace core {
 
-VkInstance getInstance() {
-	return vulkanCore.instance;
-}
-
 void debugEnable(bool b) {
-	vulkanCore.debugEnable = b;
+	apiCore.debug.enable = b;
 }
 
 // rename
 void createInstance(const char *appName, uint32_t appVersion) {
-	if (vulkanCore.debugEnable && !checkValidationLayerSupport(validationLayers)) {
+	if (apiCore.debug.enable && !checkValidationLayerSupport(validationLayers)) {
 		throw std::runtime_error("requested unavailable validation layers");
 	}
 
@@ -63,11 +54,11 @@ void createInstance(const char *appName, uint32_t appVersion) {
 	createInfo.pApplicationInfo = &appInfo;
 
 	std::vector<const char*> extensions;
-	getRequeredExtensions(extensions, vulkanCore.debugEnable);
+	getRequeredExtensions(extensions, apiCore.debug.enable);
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
-	if (vulkanCore.debugEnable) {
+	if (apiCore.debug.enable) {
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
@@ -78,20 +69,21 @@ void createInstance(const char *appName, uint32_t appVersion) {
 		createInfo.enabledLayerCount = 0;
 	}
 
-	if (vkCreateInstance(&createInfo, nullptr, &vulkanCore.instance) != VK_SUCCESS) {
+	if (vkCreateInstance(&createInfo, nullptr, &apiCore.instance) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create instance");
 	}
 
-	setupDebugMessenger(vulkanCore.instance, &vulkanCore.debugMessenger);
+	setupDebugMessenger(apiCore.instance, &apiCore.debug.messenger);
 	glfwInit();
 }
 
 void destroy() {
-	if (vulkanCore.debugEnable) {
-		destroyDebugUtilsMessengerEXT(vulkanCore.instance, vulkanCore.debugMessenger);
+	if (apiCore.debug.enable) {
+		destroyDebugUtilsMessengerEXT(apiCore.instance, apiCore.debug.messenger);
 	}
-	vkDestroyInstance(vulkanCore.instance, nullptr);
+	vkDestroyInstance(apiCore.instance, nullptr);
 
+	glfwDestroyWindow(apiCore.window.handle);
 	glfwTerminate();
 }
 

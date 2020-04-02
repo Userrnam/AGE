@@ -1,31 +1,32 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#include <stdexcept>
 
 #include "core/Window.hpp"
-#include "core/VulkanCore.hpp"
+#include "core/Core.hpp"
+
+extern Core apiCore;
 
 namespace core {
+namespace window {
 
-void Window::init(int width, int height, const char *title) {
+void create(int width, int height, const char *title) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    m_windowHandle = glfwCreateWindow(width, height, title, nullptr, nullptr);
-    
-    // get surface
-    glfwCreateWindowSurface(core::getInstance(), (GLFWwindow*)m_windowHandle, nullptr, (VkSurfaceKHR*)&m_surfaceHandle);
+    apiCore.window.handle = glfwCreateWindow(width, height, title, nullptr, nullptr);
+
+    if (glfwCreateWindowSurface(apiCore.instance, apiCore.window.handle, nullptr, &apiCore.window.surface) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create surface");
+    }
 }
 
-Window::~Window() {
-    glfwDestroyWindow((GLFWwindow*)m_windowHandle);
-}
-
-void Window::pollEvents() {
+void pollEvents() {
     glfwPollEvents();
 }
 
-bool Window::closed() {
-    return glfwWindowShouldClose((GLFWwindow*)m_windowHandle);
+bool closed() {
+    return glfwWindowShouldClose(apiCore.window.handle);
 }
 
+} // namespace window
 } // namespace core

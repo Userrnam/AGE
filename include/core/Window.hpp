@@ -1,17 +1,11 @@
 #pragma once
 
 namespace core {
+namespace window {
 
-class Window {
-private:
-    void *m_windowHandle;
-    void *m_surfaceHandle;
-public:
-    void init(int width, int height, const char *title);
-    ~Window();
+void create(int width, int height, const char *title);
+void pollEvents();
+bool closed();
 
-    void pollEvents();
-    bool closed();
-};
-
+} // namespace window
 } // namespace core
