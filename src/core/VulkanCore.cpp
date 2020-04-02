@@ -1,9 +1,10 @@
 #include <vector>
 #include <string.h>
+#include <iostream>
 
 #include <GLFW/glfw3.h>
 
-#include "core/AppProperties.hpp"
+#include "core/VulkanCore.hpp"
 #include "core/VulkanDebug.hpp"
 
 const std::vector<const char*> validationLayers = {
@@ -25,14 +26,27 @@ void getRequeredExtensions(std::vector<const char*>& extensions, bool enableVali
 	}
 }
 
+struct VulkanCore {
+	bool debugEnable;
+	VkInstance instance;
+	VkDebugUtilsMessengerEXT debugMessenger;
+};
+
+VulkanCore vulkanCore;
+
 namespace core {
 
-void AppProperties::debugEnable(bool b) {
-	m_debugEnable = b;
+VkInstance getInstance() {
+	return vulkanCore.instance;
 }
 
-void AppProperties::createInstance(const char *appName, uint32_t appVersion) {
-	if (m_debugEnable && !checkValidationLayerSupport(validationLayers)) {
+void debugEnable(bool b) {
+	vulkanCore.debugEnable = b;
+}
+
+// rename
+void createInstance(const char *appName, uint32_t appVersion) {
+	if (vulkanCore.debugEnable && !checkValidationLayerSupport(validationLayers)) {
 		throw std::runtime_error("requested unavailable validation layers");
 	}
 
@@ -49,11 +63,11 @@ void AppProperties::createInstance(const char *appName, uint32_t appVersion) {
 	createInfo.pApplicationInfo = &appInfo;
 
 	std::vector<const char*> extensions;
-	getRequeredExtensions(extensions, m_debugEnable);
+	getRequeredExtensions(extensions, vulkanCore.debugEnable);
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
-	if (m_debugEnable) {
+	if (vulkanCore.debugEnable) {
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
@@ -64,18 +78,21 @@ void AppProperties::createInstance(const char *appName, uint32_t appVersion) {
 		createInfo.enabledLayerCount = 0;
 	}
 
-	if (vkCreateInstance(&createInfo, nullptr, &m_instance) != VK_SUCCESS) {
+	if (vkCreateInstance(&createInfo, nullptr, &vulkanCore.instance) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create instance");
 	}
 
-	setupDebugMessenger(m_instance, &m_debugMessenger);
+	setupDebugMessenger(vulkanCore.instance, &vulkanCore.debugMessenger);
+	glfwInit();
 }
 
-void AppProperties::destroy() {
-	if (m_debugEnable) {
-		destroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger);
+void destroy() {
+	if (vulkanCore.debugEnable) {
+		destroyDebugUtilsMessengerEXT(vulkanCore.instance, vulkanCore.debugMessenger);
 	}
-	vkDestroyInstance(m_instance, nullptr);
+	vkDestroyInstance(vulkanCore.instance, nullptr);
+
+	glfwTerminate();
 }
 
 } // namespace core
