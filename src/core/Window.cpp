@@ -11,6 +11,10 @@ namespace core {
 namespace window {
 
 void create(int width, int height, const char *title) {
+    if (apiCore.window.handle) {
+        throw std::runtime_error("ASA supports only one window");
+    }
+
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
     apiCore.window.handle = glfwCreateWindow(width, height, title, nullptr, nullptr);

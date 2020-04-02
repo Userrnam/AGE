@@ -6,9 +6,13 @@
 
 int main(int argc, char* argv[]) {
 	core::debugEnable(true);
-	core::createInstance(nullptr, 0);
+	core::init("hello", 0);
 
 	core::window::create(100, 100, "hello");
+
+	while (!core::window::closed()) {
+		core::window::pollEvents();
+	}
 
 	core::destroy();
 

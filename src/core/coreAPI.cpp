@@ -19,7 +19,6 @@ void getRequeredExtensions(std::vector<const char*>& extensions, bool enableVali
 	const char** glfwExtensions;
 
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	extensions.resize(glfwExtensionCount+1);
 	for (int i = 0; i < glfwExtensionCount; ++i) {
 		extensions.push_back(glfwExtensions[i]);
 	}
@@ -36,7 +35,9 @@ void debugEnable(bool b) {
 }
 
 // rename
-void createInstance(const char *appName, uint32_t appVersion) {
+void init(const char *appName, uint32_t appVersion) {
+	glfwInit();
+
 	if (apiCore.debug.enable && !checkValidationLayerSupport(validationLayers)) {
 		throw std::runtime_error("requested unavailable validation layers");
 	}
@@ -74,13 +75,14 @@ void createInstance(const char *appName, uint32_t appVersion) {
 	}
 
 	setupDebugMessenger(apiCore.instance, &apiCore.debug.messenger);
-	glfwInit();
 }
 
 void destroy() {
 	if (apiCore.debug.enable) {
 		destroyDebugUtilsMessengerEXT(apiCore.instance, apiCore.debug.messenger);
 	}
+
+	vkDestroySurfaceKHR(apiCore.instance, apiCore.window.surface, nullptr);
 	vkDestroyInstance(apiCore.instance, nullptr);
 
 	glfwDestroyWindow(apiCore.window.handle);
