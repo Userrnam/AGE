@@ -7,6 +7,9 @@
 #include "core/coreAPI.hpp"
 #include "core/VulkanDebug.hpp"
 #include "core/Core.hpp"
+#include "core/utils.hpp"
+#include "core/QueueFamilyIndicies.hpp"
+
 
 Core apiCore;
 
@@ -14,27 +17,12 @@ const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation"
 };
 
-void getRequeredExtensions(std::vector<const char*>& extensions, bool enableValidationLayers) {
-	uint32_t glfwExtensionCount = 0;
-	const char** glfwExtensions;
-
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	for (int i = 0; i < glfwExtensionCount; ++i) {
-		extensions.push_back(glfwExtensions[i]);
-	}
-
-	if (enableValidationLayers) {
-		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-	}
-}
-
 namespace core {
 
 void debugEnable(bool b) {
 	apiCore.debug.enable = b;
 }
 
-// rename
 void init(const char *appName, uint32_t appVersion) {
 	glfwInit();
 
@@ -75,6 +63,29 @@ void init(const char *appName, uint32_t appVersion) {
 	}
 
 	setupDebugMessenger(apiCore.instance, &apiCore.debug.messenger);
+}
+
+void pickPhysicalDevice(DeviceRequirements& requirements) {
+	uint32_t deviceCount = 0;
+	vkEnumeratePhysicalDevices(apiCore.instance, &deviceCount, nullptr);
+	if (deviceCount == 0) {
+		throw std::runtime_error("failed to find GPU with Vulkan support");
+	}
+
+	std::vector<VkPhysicalDevice> devices(deviceCount);
+	vkEnumeratePhysicalDevices(apiCore.instance, &deviceCount, devices.data());
+
+	for (const auto& device : devices) {
+		if (isDeviceSuitable(device, requirements)) {
+			apiCore.physicalDevice = device;
+			// msaaSamples = getMaxSampleCount();
+			break;
+		}
+	}
+
+	if (apiCore.physicalDevice == VK_NULL_HANDLE) {
+		throw std::runtime_error("failed to find suitable GPU");
+	}
 }
 
 void destroy() {

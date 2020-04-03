@@ -15,4 +15,5 @@ struct Core {
     } window;
 
 	VkInstance instance;
+    VkPhysicalDevice physicalDevice;
 };

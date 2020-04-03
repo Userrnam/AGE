@@ -15,5 +15,5 @@
 @includePath include/
 @CC clang++
 @debug true
-@CFLAGS -std=c++11
+@CFLAGS -std=c++17
 @linkFlags -lvulkan.1 -lvulkan.1.2.131 -lglfw
