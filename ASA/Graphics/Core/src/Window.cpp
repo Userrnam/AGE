@@ -5,9 +5,11 @@
 #include "Window.hpp"
 #include "Core.hpp"
 
-extern Core apiCore;
 
 namespace core {
+
+extern Core apiCore;
+
 namespace window {
 
 void create(int width, int height, const char *title) {

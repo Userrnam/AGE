@@ -3,9 +3,10 @@
 #include "QueueFamilyIndicies.hpp"
 #include "Core.hpp"
 
-extern Core apiCore;
 
 namespace core {
+
+extern Core apiCore;
 
 // FIXME: add required queues
 QueueFamilyIndicies findQueueFamilies(VkPhysicalDevice device) {

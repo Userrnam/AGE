@@ -1,9 +1,10 @@
 #include "SwapchainSupportDetails.hpp"
 #include "Core.hpp"
 
-extern Core apiCore;
 
 namespace core {
+
+extern Core apiCore;
 
 SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
 	SwapChainSupportDetails details;

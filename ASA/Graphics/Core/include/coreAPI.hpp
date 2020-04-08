@@ -7,6 +7,7 @@ namespace core {
 void debugEnable(bool);
 void init(const char *appName, uint32_t appVersion);
 void pickPhysicalDevice(DeviceRequirements& requirements);
+void createLogicalDevice();
 void destroy();
 
 } // namespace core

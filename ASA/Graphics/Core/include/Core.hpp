@@ -16,4 +16,5 @@ struct Core {
 
 	VkInstance instance;
     VkPhysicalDevice physicalDevice;
+    VkDevice device;
 };
