@@ -4,12 +4,11 @@
 
 #include <GLFW/glfw3.h>
 
-#include "core/coreAPI.hpp"
-#include "core/VulkanDebug.hpp"
-#include "core/Core.hpp"
-#include "core/utils.hpp"
-#include "core/QueueFamilyIndicies.hpp"
-
+#include "coreAPI.hpp"
+#include "VulkanDebug.hpp"
+#include "Core.hpp"
+#include "utils.hpp"
+#include "QueueFamilyIndicies.hpp"
 
 Core apiCore;
 

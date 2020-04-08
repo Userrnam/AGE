@@ -3,9 +3,9 @@
 #include <set>
 #include <string>
 
-#include "core/utils.hpp"
-#include "core/QueueFamilyIndicies.hpp"
-#include "core/SwapchainSupportDetails.hpp"
+#include "utils.hpp"
+#include "QueueFamilyIndicies.hpp"
+#include "SwapchainSupportDetails.hpp"
 
 namespace core {
 

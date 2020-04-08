@@ -1,7 +1,7 @@
 #include <vector>
 
-#include "core/QueueFamilyIndicies.hpp"
-#include "core/Core.hpp"
+#include "QueueFamilyIndicies.hpp"
+#include "Core.hpp"
 
 extern Core apiCore;
 

@@ -2,8 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 
-#include "core/Window.hpp"
-#include "core/Core.hpp"
+#include "Window.hpp"
+#include "Core.hpp"
 
 extern Core apiCore;
 

@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <iostream>
 
-#include "core/VulkanDebug.hpp"
+#include "VulkanDebug.hpp"
 
 
 namespace core {

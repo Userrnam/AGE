@@ -1,5 +1,5 @@
-#include "core/SwapchainSupportDetails.hpp"
-#include "core/Core.hpp"
+#include "SwapchainSupportDetails.hpp"
+#include "Core.hpp"
 
 extern Core apiCore;
 
