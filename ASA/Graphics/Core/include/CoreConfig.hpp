@@ -12,6 +12,10 @@ struct CoreConfig {
         bool samplerAnistropy = false;
         bool sampleRateShading = false;
     } features;
+    
+    struct {
+
+    } queue;
 };
 
 } // namespace core

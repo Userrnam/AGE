@@ -1,6 +1,7 @@
 #include <vector>
 #include <string.h>
 #include <iostream>
+#include <set>
 
 #include <GLFW/glfw3.h>
 
@@ -139,55 +140,59 @@ void pickPhysicalDevice() {
 	}
 }
 
+// FIXME: add queue choice
 void createLogicalDevice() {
-	// QueueFamilyIndicies indicies = findQueueFamilies(physicalDevice);
-
-	// std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	// std::set<uint32_t> uniqueQueueFamilies = { indicies.graphicsFamily.value(), indicies.presentFamily.value() };
-
-	// float queuePriority = 1.0f;
-	// for (uint32_t queueFamily : uniqueQueueFamilies) {
-	// 	VkDeviceQueueCreateInfo queueCreateInfo = {};
-	// 	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	// 	queueCreateInfo.queueFamilyIndex = queueFamily;
-	// 	queueCreateInfo.queueCount = 1;
-	// 	queueCreateInfo.pQueuePriorities = &queuePriority;
-	// 	queueCreateInfos.push_back(queueCreateInfo);
-	// }
-
-	// VkPhysicalDeviceFeatures deviceFeatures = {};
-	// deviceFeatures.samplerAnisotropy = VK_TRUE;
-	// deviceFeatures.sampleRateShading = VK_TRUE;
-
-	// VkDeviceCreateInfo createInfo = {};
-	// createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	QueueFamilyIndicies indicies = findQueueFamilies(apiCore.physicalDevice);
 	
-	// createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
-	// createInfo.pQueueCreateInfos = queueCreateInfos.data();
+	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+	std::set<uint32_t> uniqueQueueFamilies = { indicies.graphicsFamily.value(), indicies.presentFamily.value() };
 
-	// createInfo.pEnabledFeatures = &deviceFeatures;
+	float queuePriority = 1.0f;
+	for (uint32_t queueFamily : uniqueQueueFamilies) {
+		VkDeviceQueueCreateInfo queueCreateInfo = {};
+		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		queueCreateInfo.queueFamilyIndex = queueFamily;
+		queueCreateInfo.queueCount = 1;
+		queueCreateInfo.pQueuePriorities = &queuePriority;
+		queueCreateInfos.push_back(queueCreateInfo);
+	}
 
-	// createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-	// createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+	VkPhysicalDeviceFeatures deviceFeatures = {};
+	deviceFeatures.samplerAnisotropy = VK_TRUE;
+	deviceFeatures.sampleRateShading = VK_TRUE;
 
-	// if (enableValidationLayers) {
-	// 	createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-	// 	createInfo.ppEnabledLayerNames = validationLayers.data();
-	// } else {
-	// 	createInfo.enabledLayerCount = 0;
-	// }
+	VkDeviceCreateInfo createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	
+	createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+	createInfo.pQueueCreateInfos = queueCreateInfos.data();
 
-	// if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS) {
-	// 	throw std::runtime_error("failed to create logical device");
-	// }
+	createInfo.pEnabledFeatures = &deviceFeatures;
 
-	// vkGetDeviceQueue(device, indicies.graphicsFamily.value(), 0, &graphicsQueue);
-	// vkGetDeviceQueue(device, indicies.presentFamily.value(), 0, &presentQueue);
+	createInfo.enabledExtensionCount = static_cast<uint32_t>(coreConfig.deviceExtensions.size());
+	createInfo.ppEnabledExtensionNames = coreConfig.deviceExtensions.data();
+
+	if (apiCore.debug.enable) {
+		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+		createInfo.ppEnabledLayerNames = validationLayers.data();
+	} else {
+		createInfo.enabledLayerCount = 0;
+	}
+
+	if (vkCreateDevice(apiCore.physicalDevice, &createInfo, nullptr, &apiCore.device) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create logical device");
+	}
+
+	vkGetDeviceQueue(apiCore.device, indicies.graphicsFamily.value(), 0, &apiCore.queues.graphicsQueue);
+	vkGetDeviceQueue(apiCore.device, indicies.presentFamily.value(), 0, &apiCore.queues.presentQueue);
+	apiCore.queues.transferQueue = apiCore.queues.graphicsQueue;
 }
 
 void destroy() {
+	// vkDestroyDevice(apiCore.device, nullptr);
+
 	if (apiCore.debug.enable) {
-		destroyDebugUtilsMessengerEXT(apiCore.instance, apiCore.debug.messenger);
+		destroyDebugUtilsMessengerEXT(apiCore.instance, apiCore.debug.messenger, nullptr);
 	}
 
 	vkDestroySurfaceKHR(apiCore.instance, apiCore.window.surface, nullptr);

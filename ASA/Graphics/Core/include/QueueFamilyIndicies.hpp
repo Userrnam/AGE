@@ -14,6 +14,7 @@ struct QueueFamilyIndicies {
 	}
 };
 
+std::vector<VkQueueFamilyProperties> getQueueFamilyProperties(VkPhysicalDevice device);
 QueueFamilyIndicies findQueueFamilies(VkPhysicalDevice device);
 
 } // namespace core
