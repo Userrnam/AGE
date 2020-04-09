@@ -122,17 +122,21 @@ void pickPhysicalDevice() {
 	VkPhysicalDeviceFeatures deviceFeatures;
 	vkGetPhysicalDeviceFeatures(apiCore.physicalDevice, &deviceFeatures);
 	
-	if (coreConfig.features.geometryShader && deviceFeatures.geometryShader) {
+	if (coreConfig.features.geometryShader && !deviceFeatures.geometryShader) {
 		std::cerr << "warning: geometry shader unavailable\n";
+		coreConfig.features.geometryShader = false;
 	}
-	if (coreConfig.features.tesselationShader && deviceFeatures.tessellationShader) {
+	if (coreConfig.features.tesselationShader && !deviceFeatures.tessellationShader) {
 		std::cerr << "warning: tesselation shader unavailable\n";
+		coreConfig.features.tesselationShader = false;
 	}
-	if (coreConfig.features.samplerAnistropy && deviceFeatures.samplerAnisotropy) {
+	if (coreConfig.features.samplerAnistropy && !deviceFeatures.samplerAnisotropy) {
 		std::cerr << "warning: sampler anistropy unavailable\n";
+		coreConfig.features.samplerAnistropy = false;
 	}
-	if (coreConfig.features.sampleRateShading && deviceFeatures.sampleRateShading) {
+	if (coreConfig.features.sampleRateShading && !deviceFeatures.sampleRateShading) {
 		std::cerr << "warning: sample rate shading unavailable\n";
+		coreConfig.features.sampleRateShading = false;
 	}
 
 	if (apiCore.physicalDevice == VK_NULL_HANDLE) {
