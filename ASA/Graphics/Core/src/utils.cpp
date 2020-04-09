@@ -7,7 +7,11 @@
 #include "QueueFamilyIndicies.hpp"
 #include "SwapchainSupportDetails.hpp"
 
+#include "CoreConfig.hpp"
+
 namespace core {
+
+extern CoreConfig coreConfig;
 
 void getRequeredExtensions(std::vector<const char*>& extensions, bool enableValidationLayers) {
 	uint32_t glfwExtensionCount = 0;
@@ -35,10 +39,10 @@ bool checkDeviceExtensionSupport(const VkPhysicalDevice device, const std::vecto
 	return requiredExtensions.empty();
 }
 
-bool isDeviceSuitable(VkPhysicalDevice device, const DeviceRequirements& requirements) {
+int deviceSupportedFeatures(VkPhysicalDevice device) {
 	QueueFamilyIndicies indicies = findQueueFamilies(device);
 
-	bool extensionsSupported = checkDeviceExtensionSupport(device, requirements.deviceExtensions);
+	bool extensionsSupported = checkDeviceExtensionSupport(device, coreConfig.deviceExtensions);
 	
 	bool swapChainAdequate = false;
 	if (extensionsSupported) {
@@ -47,8 +51,27 @@ bool isDeviceSuitable(VkPhysicalDevice device, const DeviceRequirements& require
 	}
 	VkPhysicalDeviceFeatures supportedFeatures;
 	vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
-    // FIXME: 
-	return indicies.isComplete() && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+
+	// always required
+	if (!indicies.isComplete() || !swapChainAdequate) {
+		return -1;
+	}
+
+	int out = 0;
+	if (coreConfig.features.geometryShader && supportedFeatures.geometryShader) {
+		out += 1;
+	}
+	if (coreConfig.features.tesselationShader && supportedFeatures.tessellationShader) {
+		out += 1;
+	}
+	if (coreConfig.features.samplerAnistropy && supportedFeatures.samplerAnisotropy) {
+		out += 1;
+	}
+	if (coreConfig.features.sampleRateShading && supportedFeatures.sampleRateShading) {
+		out += 1;
+	}
+
+	return out;
 }
 
 } // namespace core

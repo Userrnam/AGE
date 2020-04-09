@@ -18,9 +18,14 @@ const std::vector<const char*> validationLayers = {
 };
 
 Core apiCore;
+CoreConfig coreConfig;
 
 void debugEnable(bool b) {
 	apiCore.debug.enable = b;
+}
+
+void setCoreConfig(const CoreConfig& config) {
+	coreConfig = config;
 }
 
 void init(const char *appName, uint32_t appVersion) {
@@ -65,7 +70,7 @@ void init(const char *appName, uint32_t appVersion) {
 	setupDebugMessenger(apiCore.instance, &apiCore.debug.messenger);
 }
 
-void pickPhysicalDevice(DeviceRequirements& requirements) {
+void pickPhysicalDevice() {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(apiCore.instance, &deviceCount, nullptr);
 	if (deviceCount == 0) {
@@ -75,12 +80,58 @@ void pickPhysicalDevice(DeviceRequirements& requirements) {
 	std::vector<VkPhysicalDevice> devices(deviceCount);
 	vkEnumeratePhysicalDevices(apiCore.instance, &deviceCount, devices.data());
 
+	VkPhysicalDevice cpu = VK_NULL_HANDLE;
+	VkPhysicalDevice bestDevice = VK_NULL_HANDLE;
+	uint32_t maxSuppotredFeatues = 0;
 	for (const auto& device : devices) {
-		if (isDeviceSuitable(device, requirements)) {
+		uint32_t supportedFeatures = deviceSupportedFeatures(device);
+		if (supportedFeatures != -1) {
+			VkPhysicalDeviceProperties deviceProperties;
+			vkGetPhysicalDeviceProperties(device, &deviceProperties);
+
+			// ignore cpu
+			if (deviceProperties.deviceType & VK_PHYSICAL_DEVICE_TYPE_CPU) {
+				cpu = device;
+				continue;
+			}
+
 			apiCore.physicalDevice = device;
-			// msaaSamples = getMaxSampleCount();
+
+			if (deviceProperties.deviceType & VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+				if (supportedFeatures > maxSuppotredFeatues) {
+					bestDevice = device;
+					maxSuppotredFeatues = supportedFeatures;
+				}
+			}
 			break;
 		}
+	}
+
+	// only cpu available
+	if (apiCore.physicalDevice == VK_NULL_HANDLE) {
+		std::cerr << "warning: only cpu available\n";
+		apiCore.physicalDevice = cpu;
+	}
+
+	if (bestDevice) {
+		apiCore.physicalDevice = bestDevice;
+	}
+
+	// update features
+	VkPhysicalDeviceFeatures deviceFeatures;
+	vkGetPhysicalDeviceFeatures(apiCore.physicalDevice, &deviceFeatures);
+	
+	if (coreConfig.features.geometryShader && deviceFeatures.geometryShader) {
+		std::cerr << "warning: geometry shader unavailable\n";
+	}
+	if (coreConfig.features.tesselationShader && deviceFeatures.tessellationShader) {
+		std::cerr << "warning: tesselation shader unavailable\n";
+	}
+	if (coreConfig.features.samplerAnistropy && deviceFeatures.samplerAnisotropy) {
+		std::cerr << "warning: sampler anistropy unavailable\n";
+	}
+	if (coreConfig.features.sampleRateShading && deviceFeatures.sampleRateShading) {
+		std::cerr << "warning: sample rate shading unavailable\n";
 	}
 
 	if (apiCore.physicalDevice == VK_NULL_HANDLE) {

@@ -14,7 +14,7 @@ struct Core {
         VkSurfaceKHR surface;
     } window;
 
-	VkInstance instance;
-    VkPhysicalDevice physicalDevice;
-    VkDevice device;
+	VkInstance instance = VK_NULL_HANDLE;
+    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+    VkDevice device = VK_NULL_HANDLE;
 };

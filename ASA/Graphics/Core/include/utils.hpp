@@ -2,12 +2,13 @@
 
 #include <vector>
 
-#include "DeviceRequirements.hpp"
-
 namespace core {
 
 bool checkDeviceExtensionSupport(const VkPhysicalDevice device, const std::vector<const char*>& deviceExtensions);
 void getRequeredExtensions(std::vector<const char*>& extensions, bool enableValidationLayers);
-bool isDeviceSuitable(const VkPhysicalDevice device, const DeviceRequirements& requirements);
+
+// returns number supported features
+// returns -1 if device cannot be used
+int deviceSupportedFeatures(const VkPhysicalDevice device);
 
 } // namespace core

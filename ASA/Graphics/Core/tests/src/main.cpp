@@ -9,8 +9,7 @@ int main() {
 
     core::window::create(100, 100, "test");
 
-    core::DeviceRequirements requirements;
-    core::pickPhysicalDevice(requirements);
+    core::pickPhysicalDevice();
 
     while (!core::window::closed()) {
         core::window::pollEvents();
