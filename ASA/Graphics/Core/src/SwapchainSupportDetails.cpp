@@ -28,4 +28,48 @@ SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
 	return details;
 }
 
+VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
+	if (capabilities.currentExtent.width != UINT32_MAX) {
+		return capabilities.currentExtent;
+	} else {
+		int width, height;
+
+		glfwGetFramebufferSize(apiCore.window.handle, &width, &height);
+
+		VkExtent2D actualExtent = {
+			static_cast<uint32_t>(width),
+			static_cast<uint32_t>(height)
+		};
+
+		actualExtent.width = std::max(capabilities.minImageExtent.width,
+										std::min(capabilities.maxImageExtent.width, actualExtent.width));
+		
+		actualExtent.height = std::max(capabilities.minImageExtent.height,
+										std::min(capabilities.maxImageExtent.height, actualExtent.height));
+		
+		return actualExtent;
+	}
+}
+
+VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+	for (const auto& availableFormat : availableFormats) {
+		// VK_FORMAT_B8G8R8A8_SRGB
+		if (availableFormat.format == VK_FORMAT_B8G8R8A8_SNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+			return availableFormat;
+		}
+	}
+	return availableFormats[0];
+}
+
+VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
+	for (const auto& availablePresentMode : availablePresentModes) {
+		// slightly faster than FIFO
+		if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+			return availablePresentMode;
+		}
+	}
+	// this should be preffered
+	return VK_PRESENT_MODE_FIFO_KHR;
+}
+
 } // namespace core

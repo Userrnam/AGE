@@ -9,6 +9,7 @@ void setCoreConfig(const CoreConfig& config);
 void init(const char *appName, uint32_t appVersion);
 void pickPhysicalDevice();
 void createLogicalDevice();
+void createSwapchain();
 void destroy();
 
 } // namespace core

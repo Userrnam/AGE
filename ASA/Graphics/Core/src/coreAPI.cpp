@@ -10,6 +10,7 @@
 #include "Core.hpp"
 #include "utils.hpp"
 #include "QueueFamilyIndicies.hpp"
+#include "SwapchainSupportDetails.hpp"
 
 
 namespace core {
@@ -145,6 +146,7 @@ void pickPhysicalDevice() {
 }
 
 // FIXME: add queue choice
+// Default: 0 compute queues, 1 graphics | presentQueue | transferQueue
 void createLogicalDevice() {
 	QueueFamilyIndicies indicies = findQueueFamilies(apiCore.physicalDevice);
 	
@@ -187,13 +189,75 @@ void createLogicalDevice() {
 		throw std::runtime_error("failed to create logical device");
 	}
 
-	vkGetDeviceQueue(apiCore.device, indicies.graphicsFamily.value(), 0, &apiCore.queues.graphicsQueue);
+// FIXME
+	apiCore.queues.graphicsQueues.resize(1);
+	vkGetDeviceQueue(apiCore.device, indicies.graphicsFamily.value(), 0, &apiCore.queues.graphicsQueues[0]);
 	vkGetDeviceQueue(apiCore.device, indicies.presentFamily.value(), 0, &apiCore.queues.presentQueue);
-	apiCore.queues.transferQueue = apiCore.queues.graphicsQueue;
+	apiCore.queues.transferQueues.push_back(apiCore.queues.graphicsQueues[0]);
+}
+
+void createSwapchain() {
+	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(apiCore.physicalDevice);
+
+	VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+	VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+	VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
+
+	uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+
+	// maxImageCount == 0 => unlimited number of images
+	if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
+		imageCount = swapChainSupport.capabilities.maxImageCount;
+	}
+
+	VkSwapchainCreateInfoKHR createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+	createInfo.surface = apiCore.window.surface;
+
+	createInfo.minImageCount = imageCount;
+	createInfo.imageFormat = surfaceFormat.format;
+	createInfo.imageColorSpace = surfaceFormat.colorSpace;
+	createInfo.imageExtent = extent;
+	createInfo.imageArrayLayers = 1;
+	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+// FIXME:
+	QueueFamilyIndicies indicies = findQueueFamilies(apiCore.physicalDevice);
+	uint32_t queueFamilyIndicies[] = { indicies.graphicsFamily.value(), indicies.presentFamily.value() };
+
+	if (indicies.graphicsFamily != indicies.presentFamily) {
+		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+		createInfo.queueFamilyIndexCount = 2;
+		createInfo.pQueueFamilyIndices = queueFamilyIndicies;
+	} else {
+		createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		createInfo.queueFamilyIndexCount = 0;           // optional
+		createInfo.pQueueFamilyIndices = nullptr;       // optional
+	}
+
+	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
+	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+
+	createInfo.presentMode = presentMode;
+	createInfo.clipped = VK_TRUE;
+
+	createInfo.oldSwapchain = VK_NULL_HANDLE;
+
+	if (vkCreateSwapchainKHR(apiCore.device, &createInfo, nullptr, &apiCore.swapchain.swapchain) != VK_SUCCESS) {
+		throw std::runtime_error("filed to create swap chain");
+	}
+	
+	vkGetSwapchainImagesKHR(apiCore.device, apiCore.swapchain.swapchain, &imageCount, nullptr);
+	apiCore.swapchain.images.resize(imageCount);
+	vkGetSwapchainImagesKHR(apiCore.device, apiCore.swapchain.swapchain, &imageCount, apiCore.swapchain.images.data());
+
+	apiCore.swapchain.format = surfaceFormat.format;
+	apiCore.swapchain.extent = extent;
 }
 
 void destroy() {
-	// vkDestroyDevice(apiCore.device, nullptr);
+	vkDestroySwapchainKHR(apiCore.device, apiCore.swapchain.swapchain, nullptr);
+	vkDestroyDevice(apiCore.device, nullptr);
 
 	if (apiCore.debug.enable) {
 		destroyDebugUtilsMessengerEXT(apiCore.instance, apiCore.debug.messenger, nullptr);

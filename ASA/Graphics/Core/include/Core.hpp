@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 
@@ -14,12 +15,20 @@ struct Core {
         VkSurfaceKHR surface = VK_NULL_HANDLE;
     } window;
 
-// FIXME: add multiple queues support
     struct {
+        // only 1 present Queue, because only 1 window is supported
         VkQueue presentQueue = VK_NULL_HANDLE;
-        VkQueue graphicsQueue = VK_NULL_HANDLE;
-        VkQueue transferQueue = VK_NULL_HANDLE;
+        std::vector<VkQueue> graphicsQueues;
+        std::vector<VkQueue> transferQueues;
+        std::vector<VkQueue> computeQueues;
     } queues;
+
+    struct {
+        VkSwapchainKHR swapchain = VK_NULL_HANDLE;
+        VkFormat format;
+        VkExtent2D extent;
+        std::vector<VkImage> images;
+    } swapchain;
 
 	VkInstance instance = VK_NULL_HANDLE;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
