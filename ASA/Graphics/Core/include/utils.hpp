@@ -11,4 +11,6 @@ void getRequeredExtensions(std::vector<const char*>& extensions, bool enableVali
 // returns -1 if device cannot be used
 int deviceSupportedFeatures(const VkPhysicalDevice device);
 
+VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevel);
+
 } // namespace core

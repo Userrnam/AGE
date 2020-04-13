@@ -28,6 +28,7 @@ struct Core {
         VkFormat format;
         VkExtent2D extent;
         std::vector<VkImage> images;
+        std::vector<VkImageView> imageViews;
     } swapchain;
 
 	VkInstance instance = VK_NULL_HANDLE;

@@ -8,9 +8,11 @@
 #include "SwapchainSupportDetails.hpp"
 
 #include "CoreConfig.hpp"
+#include "Core.hpp"
 
 namespace core {
 
+extern Core apiCore;
 extern CoreConfig coreConfig;
 
 void getRequeredExtensions(std::vector<const char*>& extensions, bool enableValidationLayers) {
@@ -72,6 +74,26 @@ int deviceSupportedFeatures(VkPhysicalDevice device) {
 	}
 
 	return out;
+}
+
+VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevel) {
+	VkImageViewCreateInfo viewInfo = {};
+	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+	viewInfo.image = image;
+	viewInfo.format = format;
+	viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+	viewInfo.subresourceRange.aspectMask = aspectFlags;
+	viewInfo.subresourceRange.baseArrayLayer = 0;
+	viewInfo.subresourceRange.baseMipLevel = 0;
+	viewInfo.subresourceRange.layerCount = 1;
+	viewInfo.subresourceRange.levelCount = mipLevel;
+
+	VkImageView imageView;
+	if (vkCreateImageView(apiCore.device, &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create image view");
+	}
+
+	return imageView;
 }
 
 } // namespace core

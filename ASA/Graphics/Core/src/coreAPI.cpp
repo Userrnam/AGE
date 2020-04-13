@@ -196,6 +196,7 @@ void createLogicalDevice() {
 	apiCore.queues.transferQueues.push_back(apiCore.queues.graphicsQueues[0]);
 }
 
+// FIXME: choose surface format
 void createSwapchain() {
 	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(apiCore.physicalDevice);
 
@@ -253,9 +254,25 @@ void createSwapchain() {
 
 	apiCore.swapchain.format = surfaceFormat.format;
 	apiCore.swapchain.extent = extent;
+
+	// create image views
+	apiCore.swapchain.imageViews.resize(imageCount);
+
+	for (size_t i = 0; i < imageCount; ++i) {
+		apiCore.swapchain.imageViews[i] = createImageView(
+			apiCore.swapchain.images[i],
+			apiCore.swapchain.format,
+			VK_IMAGE_ASPECT_COLOR_BIT,
+			1
+		);
+	}
 }
 
 void destroy() {
+	// destroy swapChain Views
+	for (auto imageView : apiCore.swapchain.imageViews) {
+		vkDestroyImageView(apiCore.device, imageView, nullptr);
+	}
 	vkDestroySwapchainKHR(apiCore.device, apiCore.swapchain.swapchain, nullptr);
 	vkDestroyDevice(apiCore.device, nullptr);
 
