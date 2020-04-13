@@ -16,6 +16,7 @@ int main() {
     core::createRenderPass();
     core::createDepthResources();
     core::createMultisamplingResources();
+    core::createFramebuffers();
 
     while (!core::window::closed()) {
         core::window::pollEvents();

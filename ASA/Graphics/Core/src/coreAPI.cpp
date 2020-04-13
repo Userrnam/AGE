@@ -396,7 +396,44 @@ void createMultisamplingResources() {
 	apiCore.multisampling.imageView = createImageView(apiCore.multisampling.image, apiCore.swapchain.format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 }
 
+void createFramebuffers() {
+	apiCore.swapchain.framebuffers.resize(apiCore.swapchain.imageViews.size());
+
+	uint32_t attachmentCount = (apiCore.multisampling.sampleCount == VK_SAMPLE_COUNT_1_BIT) ? 2 : 3;
+	VkImageView attachments[3] = {};
+	size_t swapchainImageViewIndex = 0;
+	// no multisampling
+	if (attachmentCount == 2) {
+		attachments[1] = apiCore.depth.imageView;
+	} else {
+		attachments[0] = apiCore.multisampling.imageView;
+		attachments[1] = apiCore.depth.imageView;
+		swapchainImageViewIndex = 2;
+	}
+
+	for (size_t i = 0; i < apiCore.swapchain.imageViews.size(); ++i) {
+		attachments[swapchainImageViewIndex] = apiCore.swapchain.imageViews[i];
+
+		VkFramebufferCreateInfo framebufferInfo = {};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = apiCore.renderPass;
+		framebufferInfo.attachmentCount = attachmentCount;
+		framebufferInfo.pAttachments = attachments;
+		framebufferInfo.width = apiCore.swapchain.extent.width;
+		framebufferInfo.height = apiCore.swapchain.extent.height;
+		framebufferInfo.layers = 1;
+
+		if (vkCreateFramebuffer(apiCore.device, &framebufferInfo, nullptr, &apiCore.swapchain.framebuffers[i]) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create framebuffer");
+		}
+	}
+}
+
 void destroy() {
+	for (auto framebuffer : apiCore.swapchain.framebuffers) {
+		vkDestroyFramebuffer(apiCore.device, framebuffer, nullptr);
+	}
+
 	vkDestroyImage(apiCore.device, apiCore.multisampling.image, nullptr);
 	vkDestroyImageView(apiCore.device, apiCore.multisampling.imageView, nullptr);
 	vkFreeMemory(apiCore.device, apiCore.multisampling.imageMemory, nullptr);

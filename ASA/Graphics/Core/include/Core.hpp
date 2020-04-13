@@ -29,6 +29,7 @@ struct Core {
         VkExtent2D extent;
         std::vector<VkImage> images;
         std::vector<VkImageView> imageViews;
+        std::vector<VkFramebuffer> framebuffers;
     } swapchain;
 
     struct {

@@ -13,6 +13,7 @@ void createSwapchain();
 void createRenderPass();
 void createDepthResources();
 void createMultisamplingResources();
+void createFramebuffers();
 void destroy();
 
 } // namespace core
