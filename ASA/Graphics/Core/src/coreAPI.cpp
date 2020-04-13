@@ -157,13 +157,55 @@ void pickPhysicalDevice() {
 // FIXME: add queue choice
 // Default: 0 compute queues, 1 graphics | presentQueue | transferQueue
 void createLogicalDevice() {
-	QueueFamilyIndicies indicies = findQueueFamilies(apiCore.physicalDevice);
-	
-	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	std::set<uint32_t> uniqueQueueFamilies = { indicies.graphicsFamily.value(), indicies.presentFamily.value() };
+	std::vector<VkQueueFamilyProperties> queues = getQueueFamilyProperties(apiCore.physicalDevice);
 
+	bool graphicsQueueFound = false;
+	bool computeQueueFound = false;
+	bool transferQueueFound = false;
+
+	// try to find queue that supports only transfer or compute
+	uint32_t index = 0;
+	for (auto& queue : queues) {
+		if (queue.queueFlags == VK_QUEUE_TRANSFER_BIT) {
+			transferQueueFound = true;
+			apiCore.queues.transfer.index = index;
+		} else if (coreConfig.queue.compute && queue.queueFlags == VK_QUEUE_COMPUTE_BIT) {
+			computeQueueFound = true;
+			apiCore.queues.compute.index = index;
+		}
+	}
+
+	index = 0;
+	for (auto &queue : queues) {
+		if (!graphicsQueueFound && queue.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+			VkBool32 presentSupport = false;
+			vkGetPhysicalDeviceSurfaceSupportKHR(apiCore.physicalDevice, index, apiCore.window.surface, &presentSupport);
+			if (presentSupport) {
+				apiCore.queues.graphics.index = index;
+				graphicsQueueFound = true;
+			}
+		} else if (coreConfig.queue.compute && !computeQueueFound && queue.queueFlags & VK_QUEUE_COMPUTE_BIT) {
+			apiCore.queues.compute.index = index;
+			computeQueueFound = true;
+		} else if (!transferQueueFound && queue.queueFlags & VK_QUEUE_TRANSFER_BIT) {
+			apiCore.queues.transfer.index = index;
+			transferQueueFound = true;
+		}
+		index++;
+	}
+	
+	std::vector<uint32_t> queueFamilies = {
+		apiCore.queues.graphics.index,
+		apiCore.queues.transfer.index
+	};
+
+	if (computeQueueFound) {
+		queueFamilies.push_back(apiCore.queues.compute.index);
+	}
+
+	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	float queuePriority = 1.0f;
-	for (uint32_t queueFamily : uniqueQueueFamilies) {
+	for (uint32_t queueFamily : queueFamilies) {
 		VkDeviceQueueCreateInfo queueCreateInfo = {};
 		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queueCreateInfo.queueFamilyIndex = queueFamily;
@@ -199,10 +241,11 @@ void createLogicalDevice() {
 	}
 
 // FIXME
-	apiCore.queues.graphicsQueues.resize(1);
-	vkGetDeviceQueue(apiCore.device, indicies.graphicsFamily.value(), 0, &apiCore.queues.graphicsQueues[0]);
-	vkGetDeviceQueue(apiCore.device, indicies.presentFamily.value(), 0, &apiCore.queues.presentQueue);
-	apiCore.queues.transferQueues.push_back(apiCore.queues.graphicsQueues[0]);
+	vkGetDeviceQueue(apiCore.device, apiCore.queues.graphics.index, 0, &apiCore.queues.graphics.queue);
+	vkGetDeviceQueue(apiCore.device, apiCore.queues.transfer.index, 0, &apiCore.queues.transfer.queue);
+	if (computeQueueFound) {
+		vkGetDeviceQueue(apiCore.device, apiCore.queues.compute.index, 0, &apiCore.queues.compute.queue);
+	}
 }
 
 // FIXME: choose surface format

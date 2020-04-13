@@ -29,7 +29,7 @@ struct CoreConfig {
     
 // FIXME
     struct {
-
+        bool compute = false;
     } queue;
 };
 

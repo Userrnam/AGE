@@ -6,6 +6,11 @@
 
 namespace core {
 
+struct Queue {
+    uint32_t index;
+    VkQueue queue;
+};
+
 struct Core {
 	struct {
 		bool enable = true;
@@ -18,11 +23,10 @@ struct Core {
     } window;
 
     struct {
-        // only 1 present Queue, because only 1 window is supported
-        VkQueue presentQueue = VK_NULL_HANDLE;
-        std::vector<VkQueue> graphicsQueues;
-        std::vector<VkQueue> transferQueues;
-        std::vector<VkQueue> computeQueues;
+        // graphics also used for present
+        Queue graphics;
+        Queue transfer;
+        Queue compute;
     } queues;
 
     struct {
