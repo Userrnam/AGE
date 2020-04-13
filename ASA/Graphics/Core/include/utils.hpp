@@ -12,5 +12,7 @@ void getRequeredExtensions(std::vector<const char*>& extensions, bool enableVali
 int deviceSupportedFeatures(const VkPhysicalDevice device);
 
 VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevel);
+VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+VkFormat findDepthFormat();
 
 } // namespace core

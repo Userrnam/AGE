@@ -13,6 +13,7 @@ int main() {
     core::pickPhysicalDevice();
     core::createLogicalDevice();
     core::createSwapchain();
+    core::createRenderPass();
 
     while (!core::window::closed()) {
         core::window::pollEvents();

@@ -10,6 +10,7 @@ void init(const char *appName, uint32_t appVersion);
 void pickPhysicalDevice();
 void createLogicalDevice();
 void createSwapchain();
+void createRenderPass();
 void destroy();
 
 } // namespace core
