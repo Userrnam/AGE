@@ -15,6 +15,7 @@ int main() {
     core::createSwapchain();
     core::createRenderPass();
     core::createDepthResources();
+    core::createMultisamplingResources();
 
     while (!core::window::closed()) {
         core::window::pollEvents();

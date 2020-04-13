@@ -37,7 +37,12 @@ struct Core {
         VkDeviceMemory imageMemory;
     } depth;
 
-    VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+    struct {
+        VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
+        VkImage image;
+        VkImageView imageView;
+        VkDeviceMemory imageMemory;
+    } multisampling;
 
 	VkInstance instance = VK_NULL_HANDLE;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;

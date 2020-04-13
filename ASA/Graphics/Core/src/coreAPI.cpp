@@ -143,6 +143,15 @@ void pickPhysicalDevice() {
 	if (apiCore.physicalDevice == VK_NULL_HANDLE) {
 		throw std::runtime_error("failed to find suitable GPU");
 	}
+
+	// set multisampling
+	VkSampleCountFlagBits maxSamples = getMaxSampleCount();
+	if (coreConfig.multisampling.sampleCount > (SampleCount)maxSamples) {
+		std::cout << "warning: sample count reduced to " << maxSamples << std::endl;
+		// FIXME:
+		coreConfig.multisampling.sampleCount = (SampleCount)maxSamples;
+	}
+	apiCore.multisampling.sampleCount = (VkSampleCountFlagBits)coreConfig.multisampling.sampleCount;
 }
 
 // FIXME: add queue choice
@@ -272,7 +281,7 @@ void createSwapchain() {
 void createRenderPass() {
 	VkAttachmentDescription colorAttachment = {};
 	colorAttachment.format = apiCore.swapchain.format;
-	colorAttachment.samples = apiCore.msaaSamples;
+	colorAttachment.samples = apiCore.multisampling.sampleCount;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -282,7 +291,7 @@ void createRenderPass() {
 
 	VkAttachmentDescription depthAttachment = {};
 	depthAttachment.format = findDepthFormat();
-	depthAttachment.samples = apiCore.msaaSamples;
+	depthAttachment.samples = apiCore.multisampling.sampleCount; // ??
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -314,7 +323,7 @@ void createRenderPass() {
 	
 	VkAttachmentDescription colorAttachmentResolve = {};
 	uint32_t attachmentCount = 2;
-	if (apiCore.msaaSamples != VK_SAMPLE_COUNT_1_BIT) {
+	if (apiCore.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
 		colorAttachmentResolve.format = apiCore.swapchain.format;
 		colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
 		colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -354,7 +363,7 @@ void createDepthResources() {
 		apiCore.swapchain.extent.width,
 		apiCore.swapchain.extent.height,
 		1,
-		apiCore.msaaSamples,
+		apiCore.multisampling.sampleCount,
 		format,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
@@ -366,7 +375,32 @@ void createDepthResources() {
 	apiCore.depth.imageView = createImageView(apiCore.depth.image, format, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 }
 
+void createMultisamplingResources() {
+	if (apiCore.multisampling.sampleCount == VK_SAMPLE_COUNT_1_BIT) {
+		return;
+	}
+
+	createImage(
+		apiCore.swapchain.extent.width,
+		apiCore.swapchain.extent.height,
+		1,
+		apiCore.multisampling.sampleCount,
+		apiCore.swapchain.format,
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		apiCore.multisampling.image,
+		apiCore.multisampling.imageMemory
+	);
+
+	apiCore.multisampling.imageView = createImageView(apiCore.multisampling.image, apiCore.swapchain.format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+}
+
 void destroy() {
+	vkDestroyImage(apiCore.device, apiCore.multisampling.image, nullptr);
+	vkDestroyImageView(apiCore.device, apiCore.multisampling.imageView, nullptr);
+	vkFreeMemory(apiCore.device, apiCore.multisampling.imageMemory, nullptr);
+
 	vkDestroyImage(apiCore.device, apiCore.depth.image, nullptr);
 	vkDestroyImageView(apiCore.device, apiCore.depth.imageView, nullptr);
 	vkFreeMemory(apiCore.device, apiCore.depth.imageMemory, nullptr);

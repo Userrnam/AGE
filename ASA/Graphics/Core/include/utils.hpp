@@ -19,5 +19,6 @@ void createImage(uint32_t width, uint32_t height, uint32_t mipLevel,
     VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, 
     VkDeviceMemory& imageMemory);
 uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+VkSampleCountFlagBits getMaxSampleCount();
 
 } // namespace core

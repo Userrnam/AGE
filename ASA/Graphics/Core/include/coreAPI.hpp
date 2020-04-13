@@ -12,6 +12,7 @@ void createLogicalDevice();
 void createSwapchain();
 void createRenderPass();
 void createDepthResources();
+void createMultisamplingResources();
 void destroy();
 
 } // namespace core
