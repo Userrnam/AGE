@@ -31,6 +31,12 @@ struct Core {
         std::vector<VkImageView> imageViews;
     } swapchain;
 
+    struct {
+        VkImage image;
+        VkImageView imageView;
+        VkDeviceMemory imageMemory;
+    } depth;
+
     VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
 	VkInstance instance = VK_NULL_HANDLE;

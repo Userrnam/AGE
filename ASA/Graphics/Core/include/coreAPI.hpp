@@ -11,6 +11,7 @@ void pickPhysicalDevice();
 void createLogicalDevice();
 void createSwapchain();
 void createRenderPass();
+void createDepthResources();
 void destroy();
 
 } // namespace core

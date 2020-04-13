@@ -17,6 +17,8 @@ std::vector<VkQueueFamilyProperties> getQueueFamilyProperties(VkPhysicalDevice d
 	return queueFamiles;
 }
 
+// FIXME: works only if queue supports both graphics family and present family
+// reason: framebuffer
 QueueFamilyIndicies findQueueFamilies(VkPhysicalDevice device) {
 	QueueFamilyIndicies indicies;
 	uint32_t queueFamilyCount = 0;
@@ -27,14 +29,10 @@ QueueFamilyIndicies findQueueFamilies(VkPhysicalDevice device) {
 	for (const auto& queueFamily : queueFamiles) {
 		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 			indicies.graphicsFamily = i;
-		}
-		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, apiCore.window.surface, &presentSupport);
-		if (presentSupport) {
+			
+			VkBool32 presentSupport = false;
+			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, apiCore.window.surface, &presentSupport);
 			indicies.presentFamily = i;
-		}
-		if (indicies.isComplete()) {
-			break;
 		}
 		i++;
 	}

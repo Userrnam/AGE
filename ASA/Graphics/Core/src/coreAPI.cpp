@@ -268,7 +268,7 @@ void createSwapchain() {
 	}
 }
 
-// TODO: user defined subpasses
+// FIXME: add user defined subpasses
 void createRenderPass() {
 	VkAttachmentDescription colorAttachment = {};
 	colorAttachment.format = apiCore.swapchain.format;
@@ -347,7 +347,30 @@ void createRenderPass() {
 	}
 }
 
+void createDepthResources() {
+	VkFormat format = findDepthFormat();
+
+	createImage(
+		apiCore.swapchain.extent.width,
+		apiCore.swapchain.extent.height,
+		1,
+		apiCore.msaaSamples,
+		format,
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		apiCore.depth.image,
+		apiCore.depth.imageMemory
+	);
+
+	apiCore.depth.imageView = createImageView(apiCore.depth.image, format, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+}
+
 void destroy() {
+	vkDestroyImage(apiCore.device, apiCore.depth.image, nullptr);
+	vkDestroyImageView(apiCore.device, apiCore.depth.imageView, nullptr);
+	vkFreeMemory(apiCore.device, apiCore.depth.imageMemory, nullptr);
+
 	vkDestroyRenderPass(apiCore.device, apiCore.renderPass, nullptr);
 
 	// destroy swapChain Views

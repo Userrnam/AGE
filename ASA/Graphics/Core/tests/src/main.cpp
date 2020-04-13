@@ -14,6 +14,7 @@ int main() {
     core::createLogicalDevice();
     core::createSwapchain();
     core::createRenderPass();
+    core::createDepthResources();
 
     while (!core::window::closed()) {
         core::window::pollEvents();
