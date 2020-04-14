@@ -145,17 +145,17 @@ void pickPhysicalDevice() {
 	}
 
 	// set multisampling
+	// FIXME: typecast
 	VkSampleCountFlagBits maxSamples = getMaxSampleCount();
 	if (coreConfig.multisampling.sampleCount > (SampleCount)maxSamples) {
 		std::cout << "warning: sample count reduced to " << maxSamples << std::endl;
-		// FIXME:
 		coreConfig.multisampling.sampleCount = (SampleCount)maxSamples;
 	}
 	apiCore.multisampling.sampleCount = (VkSampleCountFlagBits)coreConfig.multisampling.sampleCount;
 }
 
 // FIXME: add queue choice
-// Default: 0 compute queues, 1 graphics | presentQueue | transferQueue
+// Default: 0 computeQueues, 1 graphicsQueue | presentQueue, 1 transferQueue
 void createLogicalDevice() {
 	std::vector<VkQueueFamilyProperties> queues = getQueueFamilyProperties(apiCore.physicalDevice);
 
@@ -256,11 +256,17 @@ void createSwapchain() {
 	VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
 	VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
 
-	uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
-
-	// maxImageCount == 0 => unlimited number of images
-	if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
-		imageCount = swapChainSupport.capabilities.maxImageCount;
+	uint32_t imageCount = swapChainSupport.capabilities.minImageCount;
+	if (swapChainSupport.capabilities.minImageCount <= 3) {
+		if (swapChainSupport.capabilities.maxImageCount > 0) {
+			if (3 <= swapChainSupport.capabilities.maxImageCount) {
+				imageCount = 3;
+			} else {
+				imageCount = swapChainSupport.capabilities.maxImageCount;
+			}
+		} else {
+			imageCount = 3;
+		}
 	}
 
 	VkSwapchainCreateInfoKHR createInfo = {};
@@ -273,20 +279,21 @@ void createSwapchain() {
 	createInfo.imageExtent = extent;
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
+	createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	
 // FIXME:
-	QueueFamilyIndicies indicies = findQueueFamilies(apiCore.physicalDevice);
-	uint32_t queueFamilyIndicies[] = { indicies.graphicsFamily.value(), indicies.presentFamily.value() };
+	// QueueFamilyIndicies indicies = findQueueFamilies(apiCore.physicalDevice);
+	// uint32_t queueFamilyIndicies[] = { indicies.graphicsFamily.value(), indicies.presentFamily.value() };
 
-	if (indicies.graphicsFamily != indicies.presentFamily) {
-		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-		createInfo.queueFamilyIndexCount = 2;
-		createInfo.pQueueFamilyIndices = queueFamilyIndicies;
-	} else {
-		createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		createInfo.queueFamilyIndexCount = 0;           // optional
-		createInfo.pQueueFamilyIndices = nullptr;       // optional
-	}
+	// if (indicies.graphicsFamily != indicies.presentFamily) {
+	// 	createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+	// 	createInfo.queueFamilyIndexCount = 2;
+	// 	createInfo.pQueueFamilyIndices = queueFamilyIndicies;
+	// } else {
+	// 	createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	// 	createInfo.queueFamilyIndexCount = 0;           // optional
+	// 	createInfo.pQueueFamilyIndices = nullptr;       // optional
+	// }
 
 	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
 	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
@@ -309,7 +316,6 @@ void createSwapchain() {
 
 	// create image views
 	apiCore.swapchain.imageViews.resize(imageCount);
-
 	for (size_t i = 0; i < imageCount; ++i) {
 		apiCore.swapchain.imageViews[i] = createImageView(
 			apiCore.swapchain.images[i],
