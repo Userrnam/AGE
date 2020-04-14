@@ -326,6 +326,7 @@ void createSwapchain() {
 	}
 }
 
+
 // FIXME: add user defined subpasses
 void createRenderPass() {
 	VkAttachmentDescription colorAttachment = {};
