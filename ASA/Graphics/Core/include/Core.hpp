@@ -4,6 +4,8 @@
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 
+#include "coreAPI.hpp"
+
 namespace core {
 
 struct Queue {
@@ -55,6 +57,14 @@ struct Core {
         VkCommandPool transferPool;
         VkCommandPool graphicsPool;
     } commandPools;
+
+    struct {
+        struct DU {
+            VkDescriptorPool pool;
+            DescriptorUsage usage;
+        };
+        std::vector<DU> pools;
+    } descriptor;
 
 	VkInstance instance = VK_NULL_HANDLE;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;

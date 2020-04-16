@@ -501,7 +501,41 @@ void createCommandPools() {
 	}
 }
 
+void createDescriptorPool(DescriptorUsage usage) {
+	std::vector<VkDescriptorPoolSize> poolSizes;
+	poolSizes.resize(2);
+	
+	uint32_t i = 0;
+	if (usage & DescriptorUsage::UBO_BIT) {
+		poolSizes[i].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSizes[i].descriptorCount = static_cast<uint32_t>(apiCore.swapchain.images.size());
+		i++;
+	}
+	if (usage & DescriptorUsage::SAMPLER_BIT) {
+		poolSizes[i].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		poolSizes[i].descriptorCount = static_cast<uint32_t>(apiCore.swapchain.images.size());
+		i++;
+	}
+
+	VkDescriptorPoolCreateInfo poolInfo = {};
+	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolInfo.poolSizeCount = i;
+	poolInfo.pPoolSizes = poolSizes.data();
+	poolInfo.maxSets = static_cast<uint32_t>(apiCore.swapchain.images.size());
+
+	VkDescriptorPool dp;
+	if (vkCreateDescriptorPool(apiCore.device, &poolInfo, nullptr, &dp) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create descriptor pool");
+	}
+
+	apiCore.descriptor.pools.push_back({dp, usage});
+}
+
 void destroy() {
+	for (auto dp : apiCore.descriptor.pools) {
+		vkDestroyDescriptorPool(apiCore.device, dp.pool, nullptr);
+	}
+
 	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.graphicsPool, nullptr);
 	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.transferPool, nullptr);
 
