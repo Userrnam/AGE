@@ -17,6 +17,7 @@ int main() {
     core::createDepthResources();
     core::createMultisamplingResources();
     core::createFramebuffers();
+    core::createCommandPools();
 
     while (!core::window::closed()) {
         core::window::pollEvents();

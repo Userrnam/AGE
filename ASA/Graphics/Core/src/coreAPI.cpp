@@ -326,7 +326,6 @@ void createSwapchain() {
 	}
 }
 
-
 // FIXME: add user defined subpasses
 void createRenderPass() {
 	VkAttachmentDescription colorAttachment = {};
@@ -484,7 +483,28 @@ void createFramebuffers() {
 	}
 }
 
+// FIXME: add compute
+void createCommandPools() {
+	VkCommandPoolCreateInfo poolInfo = {};
+	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	poolInfo.queueFamilyIndex = apiCore.queues.graphics.index;
+
+	// create graphics command pool
+	if (vkCreateCommandPool(apiCore.device, &poolInfo, nullptr, &apiCore.commandPools.graphicsPool) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create command pool");
+	}
+
+	// create transfer command pool
+	poolInfo.queueFamilyIndex = apiCore.queues.transfer.index;
+	if (vkCreateCommandPool(apiCore.device, &poolInfo, nullptr, &apiCore.commandPools.transferPool) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create command pool");
+	}
+}
+
 void destroy() {
+	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.graphicsPool, nullptr);
+	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.transferPool, nullptr);
+
 	for (auto framebuffer : apiCore.swapchain.framebuffers) {
 		vkDestroyFramebuffer(apiCore.device, framebuffer, nullptr);
 	}

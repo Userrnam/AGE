@@ -51,6 +51,11 @@ struct Core {
         VkDeviceMemory imageMemory;
     } multisampling;
 
+    struct {
+        VkCommandPool transferPool;
+        VkCommandPool graphicsPool;
+    } commandPools;
+
 	VkInstance instance = VK_NULL_HANDLE;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
     VkDevice device = VK_NULL_HANDLE;

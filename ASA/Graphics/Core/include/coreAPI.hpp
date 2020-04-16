@@ -14,6 +14,7 @@ void createRenderPass();
 void createDepthResources();
 void createMultisamplingResources();
 void createFramebuffers();
+void createCommandPools();
 void destroy();
 
 } // namespace core
