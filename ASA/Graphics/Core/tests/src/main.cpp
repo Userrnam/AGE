@@ -19,6 +19,7 @@ int main() {
     core::createFramebuffers();
     core::createCommandPools();
     core::createDescriptorPool();
+    core::createDescriptorSetLayout();
 
     while (!core::window::closed()) {
         core::window::pollEvents();

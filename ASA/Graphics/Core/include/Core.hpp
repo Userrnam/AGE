@@ -59,11 +59,18 @@ struct Core {
     } commandPools;
 
     struct {
-        struct DU {
+        struct DPU {
             VkDescriptorPool pool;
             DescriptorUsage usage;
         };
-        std::vector<DU> pools;
+        struct DLU {
+            VkDescriptorSetLayout layout;
+            uint32_t uboCount;
+            uint32_t samplerCount;
+        };
+
+        std::vector<DPU> pools;
+        std::vector<DLU> layouts;
     } descriptor;
 
 	VkInstance instance = VK_NULL_HANDLE;

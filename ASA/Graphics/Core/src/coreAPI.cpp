@@ -531,7 +531,48 @@ void createDescriptorPool(DescriptorUsage usage) {
 	apiCore.descriptor.pools.push_back({dp, usage});
 }
 
+void createDescriptorSetLayout(uint32_t uboCount, uint32_t samplerCount) {
+	uint32_t binding = 0;
+	std::vector<VkDescriptorSetLayoutBinding> bindings;
+
+	if (uboCount > 0) {
+		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
+		uboLayoutBinding.binding = binding;
+		uboLayoutBinding.descriptorCount = uboCount;
+		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		uboLayoutBinding.pImmutableSamplers = nullptr;
+		bindings.push_back(uboLayoutBinding);
+		binding++;
+	}
+
+	if (samplerCount > 0) {
+		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+		samplerLayoutBinding.binding = 1;
+		samplerLayoutBinding.descriptorCount = samplerCount;
+		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		samplerLayoutBinding.pImmutableSamplers = nullptr;
+		bindings.push_back(samplerLayoutBinding);
+	}
+
+	VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+	layoutInfo.pBindings = bindings.data();
+
+	VkDescriptorSetLayout descriptorSetLayout;
+	if (vkCreateDescriptorSetLayout(apiCore.device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create descriptor set layout");
+	}
+	apiCore.descriptor.layouts.push_back({descriptorSetLayout, uboCount, samplerCount});
+}
+
 void destroy() {
+	for (auto dl : apiCore.descriptor.layouts) {
+		vkDestroyDescriptorSetLayout(apiCore.device, dl.layout, nullptr);
+	}
+
 	for (auto dp : apiCore.descriptor.pools) {
 		vkDestroyDescriptorPool(apiCore.device, dp.pool, nullptr);
 	}
