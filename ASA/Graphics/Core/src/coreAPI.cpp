@@ -568,7 +568,36 @@ void createDescriptorSetLayout(uint32_t uboCount, uint32_t samplerCount) {
 	apiCore.descriptor.layouts.push_back({descriptorSetLayout, uboCount, samplerCount});
 }
 
+void createSyncObjects() {
+	apiCore.sync.imageAvailableSemaphores.resize(coreConfig.maxFramesInFlight);
+	apiCore.sync.renderFinishedSemaphores.resize(coreConfig.maxFramesInFlight);
+	apiCore.sync.inFlightFences.resize(coreConfig.maxFramesInFlight);
+	apiCore.sync.imagesInFlight.resize(apiCore.swapchain.images.size(), VK_NULL_HANDLE);
+
+	VkSemaphoreCreateInfo semaphoreInfo = {};
+	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+	VkFenceCreateInfo fenceInfo = {};
+	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+	for (size_t i = 0; i < coreConfig.maxFramesInFlight; ++i) {
+		if (vkCreateSemaphore(apiCore.device, &semaphoreInfo, nullptr, &apiCore.sync.imageAvailableSemaphores[i]) != VK_SUCCESS ||
+			vkCreateSemaphore(apiCore.device, &semaphoreInfo, nullptr, &apiCore.sync.renderFinishedSemaphores[i]) != VK_SUCCESS ||
+			vkCreateFence(apiCore.device, &fenceInfo, nullptr, &apiCore.sync.inFlightFences[i])) {
+			
+			throw std::runtime_error("failed to create semaphores");
+		}
+	}
+}
+
 void destroy() {
+	for (size_t i = 0; i < coreConfig.maxFramesInFlight; ++i) {
+		vkDestroySemaphore(apiCore.device, apiCore.sync.renderFinishedSemaphores[i], nullptr);
+		vkDestroySemaphore(apiCore.device, apiCore.sync.imageAvailableSemaphores[i], nullptr);
+		vkDestroyFence(apiCore.device, apiCore.sync.inFlightFences[i], nullptr);
+	}
+
 	for (auto dl : apiCore.descriptor.layouts) {
 		vkDestroyDescriptorSetLayout(apiCore.device, dl.layout, nullptr);
 	}
