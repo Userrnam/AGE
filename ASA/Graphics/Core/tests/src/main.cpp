@@ -21,6 +21,7 @@ int main() {
     core::createDescriptorPool();
     core::createDescriptorSetLayout();
     core::createSyncObjects();
+    core::allocateCommandBuffers();
 
     while (!core::window::closed()) {
         core::window::pollEvents();

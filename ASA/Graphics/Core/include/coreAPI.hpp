@@ -28,6 +28,7 @@ void createDescriptorPool(DescriptorUsage usage = static_cast<DescriptorUsage>(
 void createDescriptorSetLayout(uint32_t uboCount = 1, uint32_t samplerCount = 1);
 
 void createSyncObjects();
+void allocateCommandBuffers();
 
 void destroy();
 

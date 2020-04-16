@@ -591,7 +591,24 @@ void createSyncObjects() {
 	}
 }
 
+void allocateCommandBuffers() {
+	apiCore.commandBuffers.resize(apiCore.swapchain.framebuffers.size());
+
+	VkCommandBufferAllocateInfo allocInfo = {};
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.commandPool = apiCore.commandPools.graphicsPool;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandBufferCount = apiCore.commandBuffers.size();
+
+	if (vkAllocateCommandBuffers(apiCore.device, &allocInfo, apiCore.commandBuffers.data()) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create command buffers");
+	}
+}
+
 void destroy() {
+	vkFreeCommandBuffers(apiCore.device, apiCore.commandPools.graphicsPool,
+		apiCore.commandBuffers.size(), apiCore.commandBuffers.data());
+
 	for (size_t i = 0; i < coreConfig.maxFramesInFlight; ++i) {
 		vkDestroySemaphore(apiCore.device, apiCore.sync.renderFinishedSemaphores[i], nullptr);
 		vkDestroySemaphore(apiCore.device, apiCore.sync.imageAvailableSemaphores[i], nullptr);
