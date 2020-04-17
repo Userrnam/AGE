@@ -624,6 +624,13 @@ void fillCommandBuffers(void(*func)(int i)) {
 	}
 }
 
+void setClearColor(const Color& color) {
+	apiCore.swapchain.clearColor.float32[0] = color.r;
+	apiCore.swapchain.clearColor.float32[1] = color.g;
+	apiCore.swapchain.clearColor.float32[2] = color.b;
+	apiCore.swapchain.clearColor.float32[3] = color.a;
+}
+
 void destroy() {
 	vkDeviceWaitIdle(apiCore.device);
 

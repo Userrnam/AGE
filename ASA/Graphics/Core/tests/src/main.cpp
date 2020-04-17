@@ -28,6 +28,8 @@ int main() {
     core::createSyncObjects();
 
     core::allocateCommandBuffers();
+
+    core::setClearColor({1, 1, 0, 1});
     core::fillCommandBuffers(fillCmd);
 
     while (!core::window::closed()) {

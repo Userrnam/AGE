@@ -38,6 +38,7 @@ struct Core {
         std::vector<VkImage> images;
         std::vector<VkImageView> imageViews;
         std::vector<VkFramebuffer> framebuffers;
+        VkClearColorValue clearColor = {};
     } swapchain;
 
     struct {

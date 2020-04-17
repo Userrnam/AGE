@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "CoreConfig.hpp"
+#include "Color.hpp"
 
 namespace core {
 
@@ -32,6 +33,8 @@ void allocateCommandBuffers();
 
 // func is function that will be called to fill command buffers
 void fillCommandBuffers(void(*func)(int i));
+
+void setClearColor(const Color& color);
 
 void destroy();
 

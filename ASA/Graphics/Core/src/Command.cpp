@@ -11,7 +11,6 @@ extern Core apiCore;
 namespace cmd {
 
 void clear(int i) {
-    VkClearColorValue ccv = {1, 0, 0, 1};
 	VkImageSubresourceRange isr;
 	isr.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	isr.baseMipLevel = 0;
@@ -48,7 +47,7 @@ void clear(int i) {
         apiCore.commandBuffers[i],
         apiCore.swapchain.images[i],
         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        &ccv, 1, &isr
+        &apiCore.swapchain.clearColor, 1, &isr
     );
 
     vkCmdPipelineBarrier(apiCore.commandBuffers[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &clearToPresentBarrier);
