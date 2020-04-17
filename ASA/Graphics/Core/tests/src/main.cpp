@@ -2,6 +2,11 @@
 
 #include "coreAPI.hpp"
 #include "Window.hpp"
+#include "Command.hpp"
+
+void fillCmd(int i) {
+    core::cmd::clear(i);
+}
 
 int main() {
     core::debugEnable(true);
@@ -21,10 +26,13 @@ int main() {
     core::createDescriptorPool();
     core::createDescriptorSetLayout();
     core::createSyncObjects();
+
     core::allocateCommandBuffers();
+    core::fillCommandBuffers(fillCmd);
 
     while (!core::window::closed()) {
         core::window::pollEvents();
+        core::window::present();
     }
 
     core::destroy();

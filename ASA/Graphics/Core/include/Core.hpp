@@ -78,9 +78,11 @@ struct Core {
         std::vector<VkSemaphore> renderFinishedSemaphores;
         std::vector<VkFence> inFlightFences;
         std::vector<VkFence> imagesInFlight;
+        uint32_t currentFrame = 0;
     } sync;
 
     std::vector<VkCommandBuffer> commandBuffers;
+    bool framebufferResized = false;
 
 	VkInstance instance = VK_NULL_HANDLE;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;

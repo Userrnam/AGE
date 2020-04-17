@@ -277,8 +277,8 @@ void createSwapchain() {
 	createInfo.imageFormat = surfaceFormat.format;
 	createInfo.imageColorSpace = surfaceFormat.colorSpace;
 	createInfo.imageExtent = extent;
-	createInfo.imageArrayLayers = 1;
-	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	createInfo.imageArrayLayers = 1;								// need for vkClearColorImage
+	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	
 // FIXME:
@@ -605,7 +605,28 @@ void allocateCommandBuffers() {
 	}
 }
 
+void fillCommandBuffers(void(*func)(int i)) {
+	VkCommandBufferBeginInfo beginInfo = {};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = 0;
+	beginInfo.pInheritanceInfo = nullptr;
+
+	for (size_t i = 0; i < apiCore.commandBuffers.size(); ++i) {
+		if (vkBeginCommandBuffer(apiCore.commandBuffers[i], &beginInfo) != VK_SUCCESS) {
+			throw std::runtime_error("failed to begin recording command buffer");
+		}
+
+		func(i);
+
+		if (vkEndCommandBuffer(apiCore.commandBuffers[i]) != VK_SUCCESS) {
+			throw std::runtime_error("failed to record command buffer");
+		}
+	}
+}
+
 void destroy() {
+	vkDeviceWaitIdle(apiCore.device);
+
 	vkFreeCommandBuffers(apiCore.device, apiCore.commandPools.graphicsPool,
 		apiCore.commandBuffers.size(), apiCore.commandBuffers.data());
 

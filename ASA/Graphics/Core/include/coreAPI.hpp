@@ -30,6 +30,9 @@ void createDescriptorSetLayout(uint32_t uboCount = 1, uint32_t samplerCount = 1)
 void createSyncObjects();
 void allocateCommandBuffers();
 
+// func is function that will be called to fill command buffers
+void fillCommandBuffers(void(*func)(int i));
+
 void destroy();
 
 } // namespace core
