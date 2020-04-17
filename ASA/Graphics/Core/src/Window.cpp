@@ -19,6 +19,7 @@ void create(int width, int height, const char *title) {
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     apiCore.window.handle = glfwCreateWindow(width, height, title, nullptr, nullptr);
 
