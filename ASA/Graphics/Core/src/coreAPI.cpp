@@ -166,10 +166,10 @@ void createLogicalDevice() {
 	// try to find queue that supports only transfer or compute
 	uint32_t index = 0;
 	for (auto& queue : queues) {
-		if (queue.queueFlags == VK_QUEUE_TRANSFER_BIT) {
+		if (!transferQueueFound && queue.queueFlags == VK_QUEUE_TRANSFER_BIT) {
 			transferQueueFound = true;
 			apiCore.queues.transfer.index = index;
-		} else if (coreConfig.queue.compute && queue.queueFlags == VK_QUEUE_COMPUTE_BIT) {
+		} else if (coreConfig.queue.compute && !computeQueueFound && queue.queueFlags == VK_QUEUE_COMPUTE_BIT) {
 			computeQueueFound = true;
 			apiCore.queues.compute.index = index;
 		}
@@ -179,23 +179,28 @@ void createLogicalDevice() {
 	for (auto &queue : queues) {
 		if ( (transferQueueFound && apiCore.queues.transfer.index == index) ||
 			(computeQueueFound && apiCore.queues.compute.index == index) ) {
+			index++;
 			continue;
 		}
-		if (!graphicsQueueFound && queue.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+		if (!graphicsQueueFound && (queue.queueFlags & VK_QUEUE_GRAPHICS_BIT)) {
 			VkBool32 presentSupport = false;
 			vkGetPhysicalDeviceSurfaceSupportKHR(apiCore.physicalDevice, index, apiCore.window.surface, &presentSupport);
 			if (presentSupport) {
 				apiCore.queues.graphics.index = index;
 				graphicsQueueFound = true;
 			}
-		} else if (coreConfig.queue.compute && !computeQueueFound && queue.queueFlags & VK_QUEUE_COMPUTE_BIT) {
+		} else if (coreConfig.queue.compute && !computeQueueFound && (queue.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
 			apiCore.queues.compute.index = index;
 			computeQueueFound = true;
-		} else if (!transferQueueFound && queue.queueFlags & VK_QUEUE_TRANSFER_BIT) {
+		} else if (!transferQueueFound && (queue.queueFlags & VK_QUEUE_TRANSFER_BIT)) {
 			apiCore.queues.transfer.index = index;
 			transferQueueFound = true;
 		}
 		index++;
+	}
+
+	if (!graphicsQueueFound) {
+		std::runtime_error("graphics queue not found");
 	}
 	
 	std::vector<uint32_t> queueFamilies = {

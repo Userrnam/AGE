@@ -15,7 +15,7 @@ set_source_files_properties( "External/src/stb_impl.cpp" PROPERTIES COMPILE_FLAG
 
 if (APPLE)
 target_link_libraries(core glfw vulkan)
-elseif (LINUX)
+else ()
 target_link_libraries(core vulkan glfw3 rt m dl X11 pthread xcb Xau Xdmcp)
 endif ()
 
