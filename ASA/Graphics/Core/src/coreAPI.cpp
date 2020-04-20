@@ -173,6 +173,7 @@ void createLogicalDevice() {
 			computeQueueFound = true;
 			apiCore.queues.compute.index = index;
 		}
+		index++;
 	}
 
 	index = 0;
@@ -200,7 +201,7 @@ void createLogicalDevice() {
 	}
 
 	if (!graphicsQueueFound) {
-		std::runtime_error("graphics queue not found");
+		throw std::runtime_error("graphics queue not found");
 	}
 	
 	std::vector<uint32_t> queueFamilies = {
