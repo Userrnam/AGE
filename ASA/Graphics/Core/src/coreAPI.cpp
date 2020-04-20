@@ -177,6 +177,10 @@ void createLogicalDevice() {
 
 	index = 0;
 	for (auto &queue : queues) {
+		if ( (transferQueueFound && apiCore.queues.transfer.index == index) ||
+			(computeQueueFound && apiCore.queues.compute.index == index) ) {
+			continue;
+		}
 		if (!graphicsQueueFound && queue.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
 			VkBool32 presentSupport = false;
 			vkGetPhysicalDeviceSurfaceSupportKHR(apiCore.physicalDevice, index, apiCore.window.surface, &presentSupport);
@@ -280,7 +284,7 @@ void createSwapchain() {
 	createInfo.imageArrayLayers = 1;								// need for vkClearColorImage
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-	
+
 // FIXME:
 	// QueueFamilyIndicies indicies = findQueueFamilies(apiCore.physicalDevice);
 	// uint32_t queueFamilyIndicies[] = { indicies.graphicsFamily.value(), indicies.presentFamily.value() };
@@ -290,7 +294,7 @@ void createSwapchain() {
 	// 	createInfo.queueFamilyIndexCount = 2;
 	// 	createInfo.pQueueFamilyIndices = queueFamilyIndicies;
 	// } else {
-	// 	createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	//  createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	// 	createInfo.queueFamilyIndexCount = 0;           // optional
 	// 	createInfo.pQueueFamilyIndices = nullptr;       // optional
 	// }

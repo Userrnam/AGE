@@ -1,4 +1,4 @@
-if [[ -d ".build" ]]; then
+if [[ -d ".build" ]]; then {}
 else
     mkdir .build
 fi
