@@ -12,7 +12,6 @@
 
 namespace age::core {
 
-extern Core apiCore;
 extern CoreConfig coreConfig;
 
 void getRequeredExtensions(std::vector<const char*>& extensions, bool enableValidationLayers) {

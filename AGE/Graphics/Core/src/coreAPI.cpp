@@ -30,7 +30,7 @@ void setCoreConfig(const CoreConfig& config) {
 	coreConfig = config;
 }
 
-void init(const char *appName, uint32_t appVersion) {
+void init() {
 	glfwInit();
 
 	if (apiCore.debug.enable && !checkValidationLayerSupport(validationLayers)) {
@@ -39,8 +39,8 @@ void init(const char *appName, uint32_t appVersion) {
 
 	VkApplicationInfo appInfo = {};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = appName;
-	appInfo.applicationVersion = appVersion;
+	appInfo.pApplicationName = coreConfig.appInfo.name;
+	appInfo.applicationVersion = coreConfig.appInfo.version;
 	appInfo.pEngineName = "ASA";
 	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 	appInfo.apiVersion = VK_API_VERSION_1_0;
@@ -498,6 +498,7 @@ void createCommandPools() {
 	VkCommandPoolCreateInfo poolInfo = {};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	poolInfo.queueFamilyIndex = apiCore.queues.graphics.index;
+	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
 	// create graphics command pool
 	if (vkCreateCommandPool(apiCore.device, &poolInfo, nullptr, &apiCore.commandPools.graphicsPool) != VK_SUCCESS) {

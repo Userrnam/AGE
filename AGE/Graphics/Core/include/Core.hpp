@@ -92,4 +92,6 @@ struct Core {
     VkRenderPass renderPass = VK_NULL_HANDLE;
 };
 
+extern Core apiCore;
+
 } // namespace age::core

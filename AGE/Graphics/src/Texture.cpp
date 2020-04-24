@@ -4,6 +4,7 @@
 #include "stb_image.h"
 
 #include "Texture.hpp"
+#include "utils.hpp"
 
 
 namespace age {
@@ -19,4 +20,4 @@ void Texture::load(const char* filename) {
     
 }
 
-}
+} // namespace age

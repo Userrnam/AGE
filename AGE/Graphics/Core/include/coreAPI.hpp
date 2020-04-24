@@ -14,7 +14,7 @@ enum DescriptorUsage {
 
 void debugEnable(bool);
 void setCoreConfig(const CoreConfig& config);
-void init(const char *appName, uint32_t appVersion);
+void init();
 void pickPhysicalDevice();
 void createLogicalDevice();
 void createSwapchain();

@@ -2,6 +2,9 @@
 
 #include <vector>
 
+#define MAKE_VERSION(major, minor, patch) \
+    (((major) << 22) | ((minor) << 12) | (patch))
+
 namespace age::core {
 
 enum SampleCount {
@@ -24,7 +27,15 @@ struct CoreConfig {
     } features;
 
     struct {
+        char* name = nullptr;
+        uint32_t version = MAKE_VERSION(1, 0, 0);
+    } appInfo;
+
+    struct {
         bool resizable = false;
+        const char* title = "AGE";
+        int width = 0;
+        int height = 0;
     } window;
 
     struct {

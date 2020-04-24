@@ -6,8 +6,6 @@
 
 namespace age::core {
 
-extern Core apiCore;
-
 std::vector<VkQueueFamilyProperties> getQueueFamilyProperties(VkPhysicalDevice device) {
 	uint32_t queueFamilyCount = 0;
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);

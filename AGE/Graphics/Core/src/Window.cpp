@@ -8,20 +8,48 @@
 
 namespace age::core {
 
-extern Core apiCore;
 extern CoreConfig coreConfig;
 
 namespace window {
 
-void create(int width, int height, const char *title) {
+void windowSizeCallback(GLFWwindow* window, int width, int height) {
+    glfwSetWindowSize(apiCore.window.handle, coreConfig.window.width, coreConfig.window.height);
+}
+
+void create() {
     if (apiCore.window.handle) {
-        throw std::runtime_error("ASA supports only one window");
+        throw std::runtime_error("AGE supports only one window");
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    apiCore.window.handle = glfwCreateWindow(width, height, title, nullptr, nullptr);
+    if (!coreConfig.window.resizable) {
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    }
+
+    int width = 0;
+    int height = 0;
+
+    auto monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+    bool fullScreen = coreConfig.window.width == 0 || coreConfig.window.height == 0;
+    if (fullScreen) {
+        width = mode->width;
+        height = mode->height;
+    } else {
+        width = coreConfig.window.width;
+        height = coreConfig.window.height;
+    }
+
+    apiCore.window.handle = glfwCreateWindow(width, height, coreConfig.window.title, nullptr, nullptr);
+
+    if (fullScreen) {
+        glfwSetWindowMonitor(apiCore.window.handle, monitor, 0, 0, width, height, mode->refreshRate);
+    }
+
+    if (!coreConfig.window.resizable) {
+        glfwSetWindowSizeLimits(apiCore.window.handle, width, height, width, height);
+    }
 
     if (glfwCreateWindowSurface(apiCore.instance, apiCore.window.handle, nullptr, &apiCore.window.surface) != VK_SUCCESS) {
         throw std::runtime_error("failed to create surface");

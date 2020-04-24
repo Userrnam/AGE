@@ -4,8 +4,6 @@
 
 namespace age::core {
 
-extern Core apiCore;
-
 SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
 	SwapChainSupportDetails details;
 

@@ -6,8 +6,6 @@
 
 namespace age::core {
 
-extern Core apiCore;
-
 namespace cmd {
 
 void clear(int i) {

@@ -2,7 +2,7 @@
 
 namespace age::core::window {
 
-void create(int width, int height, const char *title);
+void create();
 void pollEvents();
 bool closed();
 void present();

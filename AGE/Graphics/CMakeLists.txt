@@ -10,13 +10,11 @@ file (GLOB sources
     "External/src/*.cpp"
 )
 
-add_library(core STATIC ${sources})
+add_library(graphics STATIC ${sources})
 set_source_files_properties( "External/src/stb_impl.cpp" PROPERTIES COMPILE_FLAGS "-Ofast" )
 
 if (APPLE)
-target_link_libraries(core glfw vulkan)
+target_link_libraries(graphics glfw vulkan)
 else ()
-target_link_libraries(core vulkan glfw3 rt m dl X11 pthread xcb Xau Xdmcp)
+target_link_libraries(graphics vulkan glfw3 rt m dl X11 pthread xcb Xau Xdmcp)
 endif ()
-
-add_subdirectory(Core)
