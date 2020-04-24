@@ -1,10 +1,12 @@
 #include <vulkan/vulkan.h>
 #include <stdexcept>
 
-#include "Texture.hpp"
-
 #include "stb_image.h"
 
+#include "Texture.hpp"
+
+
+namespace age {
 
 void Texture::load(const char* filename) {
     int texWidth, texHeight, texChannels;
@@ -15,4 +17,6 @@ void Texture::load(const char* filename) {
     }
 
     
+}
+
 }

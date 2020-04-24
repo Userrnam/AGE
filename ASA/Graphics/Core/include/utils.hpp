@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace core {
+namespace age::core {
 
 bool checkDeviceExtensionSupport(const VkPhysicalDevice device, const std::vector<const char*>& deviceExtensions);
 void getRequeredExtensions(std::vector<const char*>& extensions, bool enableValidationLayers);
@@ -25,4 +25,4 @@ void createImage(uint32_t width, uint32_t height, uint32_t mipLevel,
 void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
 					  VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 
-} // namespace core
+} // namespace age::core

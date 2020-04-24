@@ -3,7 +3,7 @@
 #include <optional>
 #include <vulkan/vulkan.h>
 
-namespace core {
+namespace age::core {
 
 struct QueueFamilyIndicies {
 	std::optional<uint32_t> graphicsFamily;
@@ -17,4 +17,4 @@ struct QueueFamilyIndicies {
 std::vector<VkQueueFamilyProperties> getQueueFamilyProperties(VkPhysicalDevice device);
 QueueFamilyIndicies findQueueFamilies(VkPhysicalDevice device);
 
-} // namespace core
+} // namespace age::core

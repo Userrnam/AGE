@@ -5,39 +5,39 @@
 #include "Command.hpp"
 
 void fillCmd(int i) {
-    core::cmd::clear(i);
+    age::core::cmd::clear(i);
 }
 
 int main() {
-    core::debugEnable(true);
+    age::core::debugEnable(true);
 
-    core::init("test", 0);
+    age::core::init("test", 0);
 
-    core::window::create(100, 100, "test");
+    age::core::window::create(100, 100, "test");
 
-    core::pickPhysicalDevice();
-    core::createLogicalDevice();
-    core::createSwapchain();
-    core::createRenderPass();
-    core::createDepthResources();
-    core::createMultisamplingResources();
-    core::createFramebuffers();
-    core::createCommandPools();
-    core::createDescriptorPool();
-    core::createDescriptorSetLayout();
-    core::createSyncObjects();
+    age::core::pickPhysicalDevice();
+    age::core::createLogicalDevice();
+    age::core::createSwapchain();
+    age::core::createRenderPass();
+    age::core::createDepthResources();
+    age::core::createMultisamplingResources();
+    age::core::createFramebuffers();
+    age::core::createCommandPools();
+    age::core::createDescriptorPool();
+    age::core::createDescriptorSetLayout();
+    age::core::createSyncObjects();
 
-    core::allocateCommandBuffers();
+    age::core::allocateCommandBuffers();
 
-    core::setClearColor({1, 1, 0, 1});
-    core::fillCommandBuffers(fillCmd);
+    age::core::setClearColor({1, 1, 0, 1});
+    age::core::fillCommandBuffers(fillCmd);
 
-    while (!core::window::closed()) {
-        core::window::pollEvents();
-        core::window::present();
+    while (!age::core::window::closed()) {
+        age::core::window::pollEvents();
+        age::core::window::present();
     }
 
-    core::destroy();
+    age::core::destroy();
 
     return 0;
 }

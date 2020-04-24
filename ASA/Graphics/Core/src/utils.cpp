@@ -10,7 +10,7 @@
 #include "CoreConfig.hpp"
 #include "Core.hpp"
 
-namespace core {
+namespace age::core {
 
 extern Core apiCore;
 extern CoreConfig coreConfig;
@@ -213,4 +213,4 @@ void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyF
 	vkBindBufferMemory(apiCore.device, buffer, bufferMemory, 0);
 }
 
-} // namespace core
+} // namespace age::core

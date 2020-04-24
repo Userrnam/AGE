@@ -1,9 +1,7 @@
 #pragma once
 
-namespace core {
-namespace cmd {
+namespace age::core::cmd {
 
 void clear(int i);
 
-} // namespace cmd
-} // namespace core
+} // namespace age::core::cmd

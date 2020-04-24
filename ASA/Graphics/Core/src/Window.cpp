@@ -6,7 +6,7 @@
 #include "Core.hpp"
 
 
-namespace core {
+namespace age::core {
 
 extern Core apiCore;
 extern CoreConfig coreConfig;
@@ -106,5 +106,5 @@ void present() {
     apiCore.sync.currentFrame = (apiCore.sync.currentFrame + 1) % coreConfig.maxFramesInFlight;
 }
 
+} // namespace age::core
 } // namespace window
-} // namespace core

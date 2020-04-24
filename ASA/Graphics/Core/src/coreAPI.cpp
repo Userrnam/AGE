@@ -13,7 +13,7 @@
 #include "SwapchainSupportDetails.hpp"
 
 
-namespace core {
+namespace age::core {
 
 const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation"
@@ -696,4 +696,4 @@ void destroy() {
 	glfwTerminate();
 }
 
-} // namespace core
+} // namespace age::core

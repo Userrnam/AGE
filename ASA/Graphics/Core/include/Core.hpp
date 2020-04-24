@@ -6,7 +6,7 @@
 
 #include "coreAPI.hpp"
 
-namespace core {
+namespace age::core {
 
 struct Queue {
     uint32_t index;
@@ -92,4 +92,4 @@ struct Core {
     VkRenderPass renderPass = VK_NULL_HANDLE;
 };
 
-}
+} // namespace age::core

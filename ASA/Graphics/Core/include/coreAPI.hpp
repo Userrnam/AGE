@@ -5,7 +5,7 @@
 #include "CoreConfig.hpp"
 #include "Color.hpp"
 
-namespace core {
+namespace age::core {
 
 enum DescriptorUsage {
     UBO_BIT = 1,
@@ -38,4 +38,4 @@ void setClearColor(const Color& color);
 
 void destroy();
 
-} // namespace core
+} // namespace age::core

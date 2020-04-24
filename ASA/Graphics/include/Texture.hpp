@@ -1,5 +1,8 @@
 #pragma once
 
+
+namespace age {
+
 namespace vk {
 
 typedef struct Image_T* Image;
@@ -15,3 +18,5 @@ class Texture {
 public:
     void load(const char* filename);
 };
+
+}

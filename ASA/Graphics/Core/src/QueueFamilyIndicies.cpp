@@ -4,7 +4,7 @@
 #include "Core.hpp"
 
 
-namespace core {
+namespace age::core {
 
 extern Core apiCore;
 
@@ -40,4 +40,4 @@ QueueFamilyIndicies findQueueFamilies(VkPhysicalDevice device) {
 	return indicies;
 }
 
-} // namespace core
+} // namespace age::core

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace core {
+namespace age::core {
 
 enum SampleCount {
     SAMPLE_COUNT_1 = 1,
@@ -24,6 +24,10 @@ struct CoreConfig {
     } features;
 
     struct {
+        bool resizable = false;
+    } window;
+
+    struct {
         SampleCount sampleCount = SAMPLE_COUNT_1;
     } multisampling;
 
@@ -35,4 +39,4 @@ struct CoreConfig {
     } queue;
 };
 
-} // namespace core
+} // namespace age::core

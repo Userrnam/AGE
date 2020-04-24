@@ -1,6 +1,6 @@
 #pragma once
 
-namespace core {
+namespace age::core {
 
 struct Color {
     float r;

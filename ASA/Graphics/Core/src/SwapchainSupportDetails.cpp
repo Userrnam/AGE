@@ -2,7 +2,7 @@
 #include "Core.hpp"
 
 
-namespace core {
+namespace age::core {
 
 extern Core apiCore;
 
@@ -71,4 +71,4 @@ VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& avai
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-} // namespace core
+} // namespace age::core

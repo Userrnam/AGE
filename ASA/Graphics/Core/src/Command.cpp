@@ -4,7 +4,7 @@
 #include "Core.hpp"
 
 
-namespace core {
+namespace age::core {
 
 extern Core apiCore;
 
@@ -54,4 +54,4 @@ void clear(int i) {
 }
 
 } // namespace cmd
-} // namespace core
+} // namespace age::core
