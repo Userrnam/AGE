@@ -3,10 +3,10 @@
 namespace age::core {
 
 struct Color {
-    float r;
-    float g;
-    float b;
-    float a;
+    double r;
+    double g;
+    double b;
+    double a;
 };
 
 } // namespace core

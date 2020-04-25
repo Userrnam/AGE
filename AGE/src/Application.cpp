@@ -8,20 +8,27 @@
 namespace age {
 
 void Application::updateCommandBuffers() {
+    // update active commandBuffer
+    if (core::apiCore.commandBuffers.active == core::apiCore.commandBuffers.data.data()) {
+        core::apiCore.commandBuffers.active += core::apiCore.swapchain.framebuffers.size();
+    } else {
+        core::apiCore.commandBuffers.active -= core::apiCore.swapchain.framebuffers.size();
+    }
+
     VkCommandBufferBeginInfo beginInfo = {};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	beginInfo.flags = 0;
 	beginInfo.pInheritanceInfo = nullptr;
 
-	for (size_t i = 0; i < core::apiCore.commandBuffers.size(); ++i) {
-        vkResetCommandBuffer(core::apiCore.commandBuffers[i], 0);
-		if (vkBeginCommandBuffer(core::apiCore.commandBuffers[i], &beginInfo) != VK_SUCCESS) {
+	for (size_t i = 0; i < core::apiCore.commandBuffers.size; ++i) {
+        vkResetCommandBuffer(core::apiCore.commandBuffers.active[i], 0);
+		if (vkBeginCommandBuffer(core::apiCore.commandBuffers.active[i], &beginInfo) != VK_SUCCESS) {
 			throw std::runtime_error("failed to begin recording command buffer");
 		}
 
 		draw(i);
 
-		if (vkEndCommandBuffer(core::apiCore.commandBuffers[i]) != VK_SUCCESS) {
+		if (vkEndCommandBuffer(core::apiCore.commandBuffers.active[i]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to record command buffer");
 		}
 	}

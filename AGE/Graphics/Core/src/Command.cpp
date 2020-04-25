@@ -39,16 +39,16 @@ void clear(int i) {
     clearToPresentBarrier.image = apiCore.swapchain.images[i];
     clearToPresentBarrier.subresourceRange = isr;
 
-    vkCmdPipelineBarrier(apiCore.commandBuffers[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &presentToClearBarrier);
+    vkCmdPipelineBarrier(apiCore.commandBuffers.active[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &presentToClearBarrier);
 
     vkCmdClearColorImage(
-        apiCore.commandBuffers[i],
+        apiCore.commandBuffers.active[i],
         apiCore.swapchain.images[i],
         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         &apiCore.swapchain.clearColor, 1, &isr
     );
 
-    vkCmdPipelineBarrier(apiCore.commandBuffers[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &clearToPresentBarrier);
+    vkCmdPipelineBarrier(apiCore.commandBuffers.active[i], VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &clearToPresentBarrier);
 }
 
 } // namespace cmd

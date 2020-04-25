@@ -99,7 +99,7 @@ void present() {
     submitInfo.pWaitSemaphores = waitSemaphores;
     submitInfo.pWaitDstStageMask = waitStages;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &apiCore.commandBuffers[imageIndex];
+    submitInfo.pCommandBuffers = &apiCore.commandBuffers.active[imageIndex];
 
     VkSemaphore signalSemaphores[] = { apiCore.sync.renderFinishedSemaphores[apiCore.sync.currentFrame] };
     submitInfo.signalSemaphoreCount = 1;

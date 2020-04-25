@@ -603,35 +603,18 @@ void createSyncObjects() {
 }
 
 void allocateCommandBuffers() {
-	apiCore.commandBuffers.resize(apiCore.swapchain.framebuffers.size());
+	apiCore.commandBuffers.data.resize(apiCore.swapchain.framebuffers.size() * 2);
+	apiCore.commandBuffers.active = apiCore.commandBuffers.data.data();
+	apiCore.commandBuffers.size = apiCore.swapchain.framebuffers.size();
 
 	VkCommandBufferAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocInfo.commandPool = apiCore.commandPools.graphicsPool;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandBufferCount = apiCore.commandBuffers.size();
+	allocInfo.commandBufferCount = apiCore.commandBuffers.data.size();
 
-	if (vkAllocateCommandBuffers(apiCore.device, &allocInfo, apiCore.commandBuffers.data()) != VK_SUCCESS) {
+	if (vkAllocateCommandBuffers(apiCore.device, &allocInfo, apiCore.commandBuffers.data.data()) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create command buffers");
-	}
-}
-
-void fillCommandBuffers(void(*func)(int i)) {
-	VkCommandBufferBeginInfo beginInfo = {};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = 0;
-	beginInfo.pInheritanceInfo = nullptr;
-
-	for (size_t i = 0; i < apiCore.commandBuffers.size(); ++i) {
-		if (vkBeginCommandBuffer(apiCore.commandBuffers[i], &beginInfo) != VK_SUCCESS) {
-			throw std::runtime_error("failed to begin recording command buffer");
-		}
-
-		func(i);
-
-		if (vkEndCommandBuffer(apiCore.commandBuffers[i]) != VK_SUCCESS) {
-			throw std::runtime_error("failed to record command buffer");
-		}
 	}
 }
 
@@ -646,7 +629,7 @@ void destroy() {
 	vkDeviceWaitIdle(apiCore.device);
 
 	vkFreeCommandBuffers(apiCore.device, apiCore.commandPools.graphicsPool,
-		apiCore.commandBuffers.size(), apiCore.commandBuffers.data());
+		apiCore.commandBuffers.data.size(), apiCore.commandBuffers.data.data());
 
 	for (size_t i = 0; i < coreConfig.maxFramesInFlight; ++i) {
 		vkDestroySemaphore(apiCore.device, apiCore.sync.renderFinishedSemaphores[i], nullptr);

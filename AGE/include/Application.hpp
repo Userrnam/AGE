@@ -2,10 +2,6 @@
 
 namespace age {
 
-struct Functor {
-    virtual void draw();
-};
-
 class Application {
 protected:
     void updateCommandBuffers();

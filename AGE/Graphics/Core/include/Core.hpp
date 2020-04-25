@@ -82,7 +82,12 @@ struct Core {
         uint32_t currentFrame = 0;
     } sync;
 
-    std::vector<VkCommandBuffer> commandBuffers;
+    struct {
+        std::vector<VkCommandBuffer> data;
+        VkCommandBuffer* active = nullptr;
+        uint32_t size = 0;
+    } commandBuffers;
+
     bool framebufferResized = false;
 
 	VkInstance instance = VK_NULL_HANDLE;
