@@ -4,6 +4,7 @@
 #include <set>
 
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 #include "coreAPI.hpp"
 #include "VulkanDebug.hpp"
@@ -421,22 +422,17 @@ void createRenderPass() {
 }
 
 void createDepthResources() {
-	VkFormat format = findDepthFormat();
+	ImageCreateInfo info = {};
+	info.format = findDepthFormat();
+	info.extent = apiCore.swapchain.extent;
+	info.mipLevel = 1;
+	info.numberOfSamples = apiCore.multisampling.sampleCount;
+	info.tiling = VK_IMAGE_TILING_OPTIMAL;
+	info.imageUsage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+	info.memoryProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	info.aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
 
-	createImage(
-		apiCore.swapchain.extent.width,
-		apiCore.swapchain.extent.height,
-		1,
-		apiCore.multisampling.sampleCount,
-		format,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		apiCore.depth.image,
-		apiCore.depth.imageMemory
-	);
-
-	apiCore.depth.imageView = createImageView(apiCore.depth.image, format, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+	apiCore.depthImage.create(info);
 }
 
 void createMultisamplingResources() {
@@ -444,20 +440,17 @@ void createMultisamplingResources() {
 		return;
 	}
 
-	createImage(
-		apiCore.swapchain.extent.width,
-		apiCore.swapchain.extent.height,
-		1,
-		apiCore.multisampling.sampleCount,
-		apiCore.swapchain.format,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		apiCore.multisampling.image,
-		apiCore.multisampling.imageMemory
-	);
+	ImageCreateInfo info = {};
+	info.format = apiCore.swapchain.format;
+	info.extent = apiCore.swapchain.extent;
+	info.mipLevel = 1;
+	info.numberOfSamples = apiCore.multisampling.sampleCount;
+	info.tiling = VK_IMAGE_TILING_OPTIMAL;
+	info.imageUsage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT;
+	info.memoryProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+	info.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
 
-	apiCore.multisampling.imageView = createImageView(apiCore.multisampling.image, apiCore.swapchain.format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+	apiCore.multisampling.image.create(info);
 }
 
 void createFramebuffers() {
@@ -468,10 +461,10 @@ void createFramebuffers() {
 	size_t swapchainImageViewIndex = 0;
 	// no multisampling
 	if (attachmentCount == 2) {
-		attachments[1] = apiCore.depth.imageView;
+		attachments[1] = apiCore.depthImage.getView();
 	} else {
-		attachments[0] = apiCore.multisampling.imageView;
-		attachments[1] = apiCore.depth.imageView;
+		attachments[0] = apiCore.multisampling.image.getView();
+		attachments[1] = apiCore.depthImage.getView();
 		swapchainImageViewIndex = 2;
 	}
 
@@ -512,6 +505,8 @@ void createCommandPools() {
 	}
 }
 
+// FIXME: this descriptor pool can allocate descriptors
+// containing 1 or 0 ubos and 1 or 0 samplers
 void createDescriptorPool(DescriptorUsage usage) {
 	std::vector<VkDescriptorPoolSize> poolSizes;
 	poolSizes.resize(2);
@@ -618,6 +613,42 @@ void allocateCommandBuffers() {
 	}
 }
 
+void createCamera() {
+	// create buffers
+	VkDeviceSize bufferSize = sizeof(glm::mat4);
+
+	apiCore.camera.buffers.resize(apiCore.swapchain.images.size());
+	apiCore.camera.buffersMemory.resize(apiCore.swapchain.images.size());
+
+	// for (size_t i = 0; i < swapChainImages.size(); ++i) {
+	// 	createBuffer(
+	// 		bufferSize,
+	// 		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+	// 		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+	// 		uniformBuffers[i],
+	// 		uniformBuffersMemory[i]
+	// 	);
+	// }
+
+	createDescriptorPool(DescriptorUsage::UBO_BIT);
+	createDescriptorSetLayout(1, 0);
+
+	std::vector<VkDescriptorSetLayout> layouts(apiCore.swapchain.images.size(), apiCore.descriptor.layouts[0].layout);
+	
+	VkDescriptorSetAllocateInfo allocInfo = {};
+	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	allocInfo.descriptorPool = apiCore.descriptor.pools[0].pool;
+	allocInfo.descriptorSetCount = static_cast<uint32_t>(apiCore.swapchain.images.size());
+	allocInfo.pSetLayouts = layouts.data();
+
+	for (size_t i = 0; i < apiCore.swapchain.images.size(); ++i) {
+		VkDescriptorBufferInfo bufferInfo = {};
+		bufferInfo.buffer = apiCore.camera.buffers[i];
+		bufferInfo.offset = 0;
+		bufferInfo.range = sizeof(glm::mat4);
+	}
+}
+
 void setClearColor(const Color& color) {
 	apiCore.swapchain.clearColor.float32[0] = color.r;
 	apiCore.swapchain.clearColor.float32[1] = color.g;
@@ -652,13 +683,15 @@ void destroy() {
 		vkDestroyFramebuffer(apiCore.device, framebuffer, nullptr);
 	}
 
-	vkDestroyImage(apiCore.device, apiCore.multisampling.image, nullptr);
-	vkDestroyImageView(apiCore.device, apiCore.multisampling.imageView, nullptr);
-	vkFreeMemory(apiCore.device, apiCore.multisampling.imageMemory, nullptr);
+	apiCore.multisampling.image.destroy();
+	apiCore.depthImage.destroy();
+	// vkDestroyImage(apiCore.device, apiCore.multisampling.image, nullptr);
+	// vkDestroyImageView(apiCore.device, apiCore.multisampling.imageView, nullptr);
+	// vkFreeMemory(apiCore.device, apiCore.multisampling.imageMemory, nullptr);
 
-	vkDestroyImage(apiCore.device, apiCore.depth.image, nullptr);
-	vkDestroyImageView(apiCore.device, apiCore.depth.imageView, nullptr);
-	vkFreeMemory(apiCore.device, apiCore.depth.imageMemory, nullptr);
+	// vkDestroyImage(apiCore.device, apiCore.depth.image, nullptr);
+	// vkDestroyImageView(apiCore.device, apiCore.depth.imageView, nullptr);
+	// vkFreeMemory(apiCore.device, apiCore.depth.imageMemory, nullptr);
 
 	vkDestroyRenderPass(apiCore.device, apiCore.renderPass, nullptr);
 

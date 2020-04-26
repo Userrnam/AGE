@@ -17,12 +17,5 @@ uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 VkFormat findDepthFormat();
 
 VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevel);
-void createImage(uint32_t width, uint32_t height, uint32_t mipLevel, 
-    VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, 
-    VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, 
-    VkDeviceMemory& imageMemory);
-
-void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
-					  VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 
 } // namespace age::core

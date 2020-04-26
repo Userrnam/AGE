@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include "coreAPI.hpp"
+#include "Image.hpp"
 
 namespace age::core {
 
@@ -41,17 +42,11 @@ struct Core {
         VkClearColorValue clearColor = {};
     } swapchain;
 
-    struct {
-        VkImage image;
-        VkImageView imageView;
-        VkDeviceMemory imageMemory;
-    } depth;
+    Image depthImage;
 
     struct {
         VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
-        VkImage image;
-        VkImageView imageView;
-        VkDeviceMemory imageMemory;
+        Image image;
     } multisampling;
 
     struct {
@@ -81,6 +76,12 @@ struct Core {
         std::vector<VkFence> imagesInFlight;
         uint32_t currentFrame = 0;
     } sync;
+
+    struct {
+        std::vector<VkDescriptorSet> descriptors;
+        std::vector<VkBuffer> buffers;
+        std::vector<VkDeviceMemory> buffersMemory;
+    } camera;
 
     struct {
         std::vector<VkCommandBuffer> data;
