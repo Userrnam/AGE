@@ -12,7 +12,7 @@
 #include "utils.hpp"
 #include "QueueFamilyIndicies.hpp"
 #include "SwapchainSupportDetails.hpp"
-
+#include "DescriptorManager.hpp"
 
 namespace age::core {
 
@@ -505,75 +505,6 @@ void createCommandPools() {
 	}
 }
 
-// FIXME: this descriptor pool can allocate descriptors
-// containing 1 or 0 ubos and 1 or 0 samplers
-void createDescriptorPool(DescriptorUsage usage) {
-	std::vector<VkDescriptorPoolSize> poolSizes;
-	poolSizes.resize(2);
-	
-	uint32_t i = 0;
-	if (usage & DescriptorUsage::UBO_BIT) {
-		poolSizes[i].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSizes[i].descriptorCount = static_cast<uint32_t>(apiCore.swapchain.images.size());
-		i++;
-	}
-	if (usage & DescriptorUsage::SAMPLER_BIT) {
-		poolSizes[i].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		poolSizes[i].descriptorCount = static_cast<uint32_t>(apiCore.swapchain.images.size());
-		i++;
-	}
-
-	VkDescriptorPoolCreateInfo poolInfo = {};
-	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	poolInfo.poolSizeCount = i;
-	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = static_cast<uint32_t>(apiCore.swapchain.images.size());
-
-	VkDescriptorPool dp;
-	if (vkCreateDescriptorPool(apiCore.device, &poolInfo, nullptr, &dp) != VK_SUCCESS) {
-		throw std::runtime_error("failed to create descriptor pool");
-	}
-
-	apiCore.descriptor.pools.push_back({dp, usage});
-}
-
-void createDescriptorSetLayout(uint32_t uboCount, uint32_t samplerCount) {
-	uint32_t binding = 0;
-	std::vector<VkDescriptorSetLayoutBinding> bindings;
-
-	if (uboCount > 0) {
-		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-		uboLayoutBinding.binding = binding;
-		uboLayoutBinding.descriptorCount = uboCount;
-		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-		uboLayoutBinding.pImmutableSamplers = nullptr;
-		bindings.push_back(uboLayoutBinding);
-		binding++;
-	}
-
-	if (samplerCount > 0) {
-		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-		samplerLayoutBinding.binding = 1;
-		samplerLayoutBinding.descriptorCount = samplerCount;
-		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		samplerLayoutBinding.pImmutableSamplers = nullptr;
-		bindings.push_back(samplerLayoutBinding);
-	}
-
-	VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-	layoutInfo.pBindings = bindings.data();
-
-	VkDescriptorSetLayout descriptorSetLayout;
-	if (vkCreateDescriptorSetLayout(apiCore.device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
-		throw std::runtime_error("failed to create descriptor set layout");
-	}
-	apiCore.descriptor.layouts.push_back({descriptorSetLayout, uboCount, samplerCount});
-}
-
 void createSyncObjects() {
 	apiCore.sync.imagesInFlight.resize(apiCore.swapchain.images.size(), VK_NULL_HANDLE);
 
@@ -620,11 +551,13 @@ void createCamera() {
 	createDescriptorPool(DescriptorUsage::UBO_BIT);
 	createDescriptorSetLayout(1, 0);
 
+	auto descriptorSetLayout = createDescriptorSetLayout(1, 0);
+
 	VkDescriptorSetAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = apiCore.descriptor.pools[0].pool;
+	allocInfo.descriptorPool = createDescriptorPool(DescriptorUsage::UBO_BIT);
 	allocInfo.descriptorSetCount = 1;
-	allocInfo.pSetLayouts = &apiCore.descriptor.layouts[0].layout;
+	allocInfo.pSetLayouts = &descriptorSetLayout;
 
 	if (vkAllocateDescriptorSets(apiCore.device, &allocInfo, &apiCore.camera.descriptor) != VK_SUCCESS) {
 		throw std::runtime_error("failed to allocate descriptor set");

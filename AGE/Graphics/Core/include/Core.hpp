@@ -4,7 +4,7 @@
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 
-#include "coreAPI.hpp"
+#include "DescriptorManager.hpp"
 #include "Image.hpp"
 #include "Buffer.hpp"
 

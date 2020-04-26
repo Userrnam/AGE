@@ -4,7 +4,7 @@
 
 #include "Window.hpp"
 #include "Core.hpp"
-
+#include "CoreConfig.hpp"
 
 namespace age::core {
 
