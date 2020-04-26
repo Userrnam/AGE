@@ -16,9 +16,9 @@ struct ImageCreateInfo {
 };
 
 class Image {
-    VkImage image;
-    VkImageView imageView;
-    VkDeviceMemory memory;
+    VkImage image = VK_NULL_HANDLE;
+    VkImageView imageView = VK_NULL_HANDLE;
+    VkDeviceMemory memory = VK_NULL_HANDLE;
 public:
     VkImage getImage() { return image; }
     VkImageView getView() { return imageView; }

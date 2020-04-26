@@ -609,34 +609,42 @@ void allocateCommandBuffers() {
 }
 
 void createCamera() {
-	// create buffers
 	VkDeviceSize bufferSize = sizeof(glm::mat4);
 
-	// for (size_t i = 0; i < swapChainImages.size(); ++i) {
-	// 	createBuffer(
-	// 		bufferSize,
-	// 		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-	// 		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-	// 		uniformBuffers[i],
-	// 		uniformBuffersMemory[i]
-	// 	);
-	// }
+	BufferCreateInfo bufferInfo;
+	bufferInfo.size = bufferSize;
+	bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+	bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+	apiCore.camera.buffer.create(bufferInfo);
 
 	createDescriptorPool(DescriptorUsage::UBO_BIT);
 	createDescriptorSetLayout(1, 0);
 
-	std::vector<VkDescriptorSetLayout> layouts(apiCore.swapchain.images.size(), apiCore.descriptor.layouts[0].layout);
-	
 	VkDescriptorSetAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	allocInfo.descriptorPool = apiCore.descriptor.pools[0].pool;
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(apiCore.swapchain.images.size());
-	allocInfo.pSetLayouts = layouts.data();
+	allocInfo.descriptorSetCount = 1;
+	allocInfo.pSetLayouts = &apiCore.descriptor.layouts[0].layout;
 
-	VkDescriptorBufferInfo bufferInfo = {};
-	bufferInfo.buffer = apiCore.camera.buffer.getBuffer();
-	bufferInfo.offset = 0;
-	bufferInfo.range = sizeof(glm::mat4);
+	if (vkAllocateDescriptorSets(apiCore.device, &allocInfo, &apiCore.camera.descriptor) != VK_SUCCESS) {
+		throw std::runtime_error("failed to allocate descriptor set");
+	}
+
+	VkDescriptorBufferInfo descriptorBufferInfo = {};
+	descriptorBufferInfo.buffer = apiCore.camera.buffer.getBuffer();
+	descriptorBufferInfo.offset = 0;
+	descriptorBufferInfo.range = sizeof(glm::mat4);
+
+	VkWriteDescriptorSet descriptorWrites = {};
+	descriptorWrites.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	descriptorWrites.dstSet = apiCore.camera.descriptor;
+	descriptorWrites.dstBinding = 0;
+	descriptorWrites.dstArrayElement = 0;
+	descriptorWrites.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	descriptorWrites.descriptorCount = 1;
+	descriptorWrites.pBufferInfo = &descriptorBufferInfo;
+
+	vkUpdateDescriptorSets(apiCore.device, 1, &descriptorWrites, 0, nullptr);
 }
 
 void setClearColor(const Color& color) {
@@ -648,6 +656,8 @@ void setClearColor(const Color& color) {
 
 void destroy() {
 	vkDeviceWaitIdle(apiCore.device);
+
+	apiCore.camera.buffer.destroy();
 
 	vkFreeCommandBuffers(apiCore.device, apiCore.commandPools.graphicsPool,
 		apiCore.commandBuffers.data.size(), apiCore.commandBuffers.data.data());

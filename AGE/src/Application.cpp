@@ -70,6 +70,7 @@ void Application::init() {
     core::createSyncObjects();
 
     core::allocateCommandBuffers();
+    core::createCamera();
 
     onCreate();
 }
