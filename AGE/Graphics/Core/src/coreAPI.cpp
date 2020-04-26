@@ -575,9 +575,6 @@ void createDescriptorSetLayout(uint32_t uboCount, uint32_t samplerCount) {
 }
 
 void createSyncObjects() {
-	apiCore.sync.imageAvailableSemaphores.resize(coreConfig.maxFramesInFlight);
-	apiCore.sync.renderFinishedSemaphores.resize(coreConfig.maxFramesInFlight);
-	apiCore.sync.inFlightFences.resize(coreConfig.maxFramesInFlight);
 	apiCore.sync.imagesInFlight.resize(apiCore.swapchain.images.size(), VK_NULL_HANDLE);
 
 	VkSemaphoreCreateInfo semaphoreInfo = {};
@@ -587,13 +584,11 @@ void createSyncObjects() {
 	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-	for (size_t i = 0; i < coreConfig.maxFramesInFlight; ++i) {
-		if (vkCreateSemaphore(apiCore.device, &semaphoreInfo, nullptr, &apiCore.sync.imageAvailableSemaphores[i]) != VK_SUCCESS ||
-			vkCreateSemaphore(apiCore.device, &semaphoreInfo, nullptr, &apiCore.sync.renderFinishedSemaphores[i]) != VK_SUCCESS ||
-			vkCreateFence(apiCore.device, &fenceInfo, nullptr, &apiCore.sync.inFlightFences[i])) {
-			
-			throw std::runtime_error("failed to create semaphores");
-		}
+	if (vkCreateSemaphore(apiCore.device, &semaphoreInfo, nullptr, &apiCore.sync.imageAvailableSemaphore) != VK_SUCCESS ||
+		vkCreateSemaphore(apiCore.device, &semaphoreInfo, nullptr, &apiCore.sync.renderFinishedSemaphore) != VK_SUCCESS ||
+		vkCreateFence(apiCore.device, &fenceInfo, nullptr, &apiCore.sync.inFlightFence)) {
+		
+		throw std::runtime_error("failed to create semaphores");
 	}
 }
 
@@ -617,9 +612,6 @@ void createCamera() {
 	// create buffers
 	VkDeviceSize bufferSize = sizeof(glm::mat4);
 
-	apiCore.camera.buffers.resize(apiCore.swapchain.images.size());
-	apiCore.camera.buffersMemory.resize(apiCore.swapchain.images.size());
-
 	// for (size_t i = 0; i < swapChainImages.size(); ++i) {
 	// 	createBuffer(
 	// 		bufferSize,
@@ -641,12 +633,10 @@ void createCamera() {
 	allocInfo.descriptorSetCount = static_cast<uint32_t>(apiCore.swapchain.images.size());
 	allocInfo.pSetLayouts = layouts.data();
 
-	for (size_t i = 0; i < apiCore.swapchain.images.size(); ++i) {
-		VkDescriptorBufferInfo bufferInfo = {};
-		bufferInfo.buffer = apiCore.camera.buffers[i];
-		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(glm::mat4);
-	}
+	VkDescriptorBufferInfo bufferInfo = {};
+	bufferInfo.buffer = apiCore.camera.buffer.getBuffer();
+	bufferInfo.offset = 0;
+	bufferInfo.range = sizeof(glm::mat4);
 }
 
 void setClearColor(const Color& color) {
@@ -662,11 +652,9 @@ void destroy() {
 	vkFreeCommandBuffers(apiCore.device, apiCore.commandPools.graphicsPool,
 		apiCore.commandBuffers.data.size(), apiCore.commandBuffers.data.data());
 
-	for (size_t i = 0; i < coreConfig.maxFramesInFlight; ++i) {
-		vkDestroySemaphore(apiCore.device, apiCore.sync.renderFinishedSemaphores[i], nullptr);
-		vkDestroySemaphore(apiCore.device, apiCore.sync.imageAvailableSemaphores[i], nullptr);
-		vkDestroyFence(apiCore.device, apiCore.sync.inFlightFences[i], nullptr);
-	}
+	vkDestroySemaphore(apiCore.device, apiCore.sync.renderFinishedSemaphore, nullptr);
+	vkDestroySemaphore(apiCore.device, apiCore.sync.imageAvailableSemaphore, nullptr);
+	vkDestroyFence(apiCore.device, apiCore.sync.inFlightFence, nullptr);
 
 	for (auto dl : apiCore.descriptor.layouts) {
 		vkDestroyDescriptorSetLayout(apiCore.device, dl.layout, nullptr);
@@ -685,13 +673,6 @@ void destroy() {
 
 	apiCore.multisampling.image.destroy();
 	apiCore.depthImage.destroy();
-	// vkDestroyImage(apiCore.device, apiCore.multisampling.image, nullptr);
-	// vkDestroyImageView(apiCore.device, apiCore.multisampling.imageView, nullptr);
-	// vkFreeMemory(apiCore.device, apiCore.multisampling.imageMemory, nullptr);
-
-	// vkDestroyImage(apiCore.device, apiCore.depth.image, nullptr);
-	// vkDestroyImageView(apiCore.device, apiCore.depth.imageView, nullptr);
-	// vkFreeMemory(apiCore.device, apiCore.depth.imageMemory, nullptr);
 
 	vkDestroyRenderPass(apiCore.device, apiCore.renderPass, nullptr);
 

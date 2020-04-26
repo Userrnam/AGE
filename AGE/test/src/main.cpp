@@ -17,7 +17,7 @@ class Application : public age::Application {
     }
 
     void onUpdate() override {
-        age::core::setClearColor({1, sin(counter), 1, 1});
+        age::core::setClearColor({1, (1.0 + sin(counter)) / 2.0, 1, 1});
         updateCommandBuffers();
         counter += 0.05;
     }

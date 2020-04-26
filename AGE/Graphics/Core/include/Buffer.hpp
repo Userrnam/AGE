@@ -14,8 +14,10 @@ class Buffer {
     VkBuffer buffer;
     VkDeviceMemory memory;
 public:
-    ~Buffer();
+    VkBuffer getBuffer() { return buffer; }
+
     void create(BufferCreateInfo& info);
+    void destroy();
 };
 
 } // namespace age::core

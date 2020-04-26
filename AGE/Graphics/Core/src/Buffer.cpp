@@ -5,11 +5,6 @@
 
 namespace age::core {
 
-Buffer::~Buffer() {
-    vkDestroyBuffer(apiCore.device, buffer, nullptr);
-    vkFreeMemory(apiCore.device, memory, nullptr);
-}
-
 void Buffer::create(BufferCreateInfo& info) {
     VkBufferCreateInfo bufferInfo = {};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -34,6 +29,11 @@ void Buffer::create(BufferCreateInfo& info) {
 	}
 
 	vkBindBufferMemory(apiCore.device, buffer, memory, 0);
+}
+
+void Buffer::destroy() {
+	vkDestroyBuffer(apiCore.device, buffer, nullptr);
+    vkFreeMemory(apiCore.device, memory, nullptr);
 }
 
 } // namespace age::core

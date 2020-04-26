@@ -69,11 +69,11 @@ void recreateSwapchain() {
 }
 
 void present() {
-    vkWaitForFences(apiCore.device, 1, &apiCore.sync.inFlightFences[apiCore.sync.currentFrame], VK_TRUE, UINT64_MAX);
+    vkWaitForFences(apiCore.device, 1, &apiCore.sync.inFlightFence, VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(apiCore.device, apiCore.swapchain.swapchain, 
-        UINT64_MAX, apiCore.sync.imageAvailableSemaphores[apiCore.sync.currentFrame], VK_NULL_HANDLE, &imageIndex);
+        UINT64_MAX, apiCore.sync.imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         recreateSwapchain();
@@ -87,13 +87,13 @@ void present() {
         vkWaitForFences(apiCore.device, 1, &apiCore.sync.imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
     }
     // mark the image as now being in use by this frame
-    apiCore.sync.imagesInFlight[imageIndex] = apiCore.sync.inFlightFences[apiCore.sync.currentFrame];
+    apiCore.sync.imagesInFlight[imageIndex] = apiCore.sync.inFlightFence;
 
     // updateUniformBuffer(imageIndex);
 
     VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    VkSemaphore waitSemaphores[] = { apiCore.sync.imageAvailableSemaphores[apiCore.sync.currentFrame] };
+    VkSemaphore waitSemaphores[] = { apiCore.sync.imageAvailableSemaphore };
     VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
     submitInfo.waitSemaphoreCount = 1;
     submitInfo.pWaitSemaphores = waitSemaphores;
@@ -101,14 +101,14 @@ void present() {
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &apiCore.commandBuffers.active[imageIndex];
 
-    VkSemaphore signalSemaphores[] = { apiCore.sync.renderFinishedSemaphores[apiCore.sync.currentFrame] };
+    VkSemaphore signalSemaphores[] = { apiCore.sync.renderFinishedSemaphore };
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    vkResetFences(apiCore.device, 1, &apiCore.sync.inFlightFences[apiCore.sync.currentFrame]);
+    vkResetFences(apiCore.device, 1, &apiCore.sync.inFlightFence);
 
     if (vkQueueSubmit(apiCore.queues.graphics.queue, 1, &submitInfo,
-        apiCore.sync.inFlightFences[apiCore.sync.currentFrame]) != VK_SUCCESS) {
+        apiCore.sync.inFlightFence) != VK_SUCCESS) {
         throw std::runtime_error("failed to submit draw command buffer");
     }
 
@@ -130,8 +130,6 @@ void present() {
     } else if (result != VK_SUCCESS) {
         throw std::runtime_error("failed to present swap chain image");
     }
-
-    apiCore.sync.currentFrame = (apiCore.sync.currentFrame + 1) % coreConfig.maxFramesInFlight;
 }
 
 } // namespace age::core

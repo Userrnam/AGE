@@ -41,8 +41,6 @@ struct CoreConfig {
     struct {
         SampleCount sampleCount = SAMPLE_COUNT_1;
     } multisampling;
-
-    uint32_t maxFramesInFlight = 1;
     
 // FIXME
     struct {

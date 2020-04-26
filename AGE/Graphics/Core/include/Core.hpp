@@ -6,6 +6,7 @@
 
 #include "coreAPI.hpp"
 #include "Image.hpp"
+#include "Buffer.hpp"
 
 namespace age::core {
 
@@ -70,17 +71,15 @@ struct Core {
     } descriptor;
 
     struct {
-        std::vector<VkSemaphore> imageAvailableSemaphores;
-        std::vector<VkSemaphore> renderFinishedSemaphores;
-        std::vector<VkFence> inFlightFences;
+        VkSemaphore imageAvailableSemaphore;
+        VkSemaphore renderFinishedSemaphore;
+        VkFence inFlightFence;
         std::vector<VkFence> imagesInFlight;
-        uint32_t currentFrame = 0;
     } sync;
 
     struct {
-        std::vector<VkDescriptorSet> descriptors;
-        std::vector<VkBuffer> buffers;
-        std::vector<VkDeviceMemory> buffersMemory;
+        VkDescriptorSet descriptor;
+        Buffer buffer;
     } camera;
 
     struct {
