@@ -1,3 +1,5 @@
+#pragma once
+
 #include <glm/glm.hpp>
 #include <vector>
 
@@ -6,7 +8,7 @@
 
 namespace age::core {
 
-struct BindingDescriptoion {
+struct BindingDescription {
     uint32_t binding;
     uint32_t stride;
 };
@@ -14,12 +16,12 @@ struct BindingDescriptoion {
 struct AttributeDescription {
     uint32_t binding;
     uint32_t location;
-    uint32_t format;
+    Format format;
     uint32_t offset;
 };
 
 struct Vertex {
-    virtual BindingDescriptoion getBindingDescription() = 0;
+    virtual BindingDescription getBindingDescription() = 0;
     virtual std::vector<AttributeDescription> getAttributeDescriptions() = 0;
 };
 

@@ -1,5 +1,11 @@
 #pragma once
 
+#include <string>
+#include <vector>
+
+#include "Core/Vertex.hpp"
+#include "Shader.hpp"
+
 namespace age {
 
 namespace vk {
@@ -10,9 +16,10 @@ typedef struct Pipeline_T* Pipeline;
     
 } // namespace vk
 
-// 
 struct ObjectCreateInfo {
-
+    core::Vertex* vertex = nullptr;
+    std::vector<Shader> shaders;
+    bool depthTestEnable = true;
 };
 
 class Object {
