@@ -15,6 +15,11 @@ struct Queue {
     VkQueue queue;
 };
 
+struct PipelineLayoutRef {
+    std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
+    VkPipelineLayout pipelineLayout;
+};
+
 struct Core {
 	struct {
 		bool enable = true;
@@ -76,6 +81,8 @@ struct Core {
         VkFence inFlightFence;
         std::vector<VkFence> imagesInFlight;
     } sync;
+
+    std::vector<PipelineLayoutRef> pipelineLayouts;
 
     struct {
         VkDescriptorSet descriptor;

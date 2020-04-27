@@ -590,6 +590,10 @@ void setClearColor(const Color& color) {
 void destroy() {
 	vkDeviceWaitIdle(apiCore.device);
 
+	for (auto& pipelineLayout : apiCore.pipelineLayouts) {
+		vkDestroyPipelineLayout(apiCore.device, pipelineLayout.pipelineLayout, nullptr);
+	}
+
 	apiCore.camera.buffer.destroy();
 
 	vkFreeCommandBuffers(apiCore.device, apiCore.commandPools.graphicsPool,

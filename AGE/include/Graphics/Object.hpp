@@ -6,6 +6,9 @@
 #include "Core/Vertex.hpp"
 #include "Shader.hpp"
 
+// FIXME
+#include "Core/Buffer.hpp"
+
 namespace age {
 
 namespace vk {
@@ -20,13 +23,15 @@ struct ObjectCreateInfo {
     core::Vertex* vertex = nullptr;
     std::vector<Shader> shaders;
     bool depthTestEnable = true;
+    bool requiresCamera = true;
+    std::vector<VkDescriptorSetLayout> layouts;
 };
 
 class Object {
 private:
     vk::Pipeline pipeline;
-    vk::Buffer vertexBuffer = nullptr;
-    vk::Buffer indexBuffer = nullptr;
+    core::Buffer vertexBuffer;
+    core::Buffer indexBuffer;
     vk::Descriptor descriptor = nullptr; // ubo + sampler
     bool useCameraDescriptor = true;
     uint32_t indexCount = 0;

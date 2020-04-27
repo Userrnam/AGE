@@ -1,6 +1,7 @@
 #include <vulkan/vulkan.h>
 
-#include "Core.hpp"
+#include "Core/Core.hpp"
+#include "Core/PipelineLayoutManager.hpp"
 
 #include "Object.hpp"
 #include "Vertex.hpp"
@@ -126,16 +127,15 @@ void Object::create(ObjectCreateInfo& info) {
     colorBlending.attachmentCount = 1;
     colorBlending.pAttachments = &colorBlendAttachment;
 
-    // VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
-    // pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    // pipelineLayoutInfo.setLayoutCount = 1;
-    // pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
-    // pipelineLayoutInfo.pushConstantRangeCount = 0;
-    // pipelineLayoutInfo.pPushConstantRanges = nullptr;
+    if (info.requiresCamera) {
+        info.layouts.push_back(core::apiCore.descriptor.layouts[0].layout);
+    }
 
-    // if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-    //     std::runtime_error("failed to create pipeline layout");
-    // }
+    VkPipelineLayout pipelineLayout = core::requestPipelineLayout(info.layouts);
+
+    if (info.requiresCamera) {
+        info.layouts.pop_back();
+    }
 
     VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
     pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -152,7 +152,7 @@ void Object::create(ObjectCreateInfo& info) {
     pipelineCreateInfo.pDynamicState = nullptr;
     pipelineCreateInfo.pDepthStencilState = &depthStencil;
 
-    // pipelineCreateInfo.layout = pipelineLayout;
+    pipelineCreateInfo.layout = pipelineLayout;
 
     pipelineCreateInfo.renderPass = core::apiCore.renderPass;
     pipelineCreateInfo.subpass = 0; // index
@@ -178,13 +178,13 @@ void Object::draw(int i) {
     renderPassInfo.renderArea.offset = { 0, 0 };
     renderPassInfo.renderArea.extent = core::apiCore.swapchain.extent;
 
-    VkBuffer vertexBuffers[] = { (VkBuffer)vertexBuffer };
+    VkBuffer vertexBuffers[] = { vertexBuffer.getBuffer() };
     VkDeviceSize offsets[] = { 0 };
 
     vkCmdBeginRenderPass(core::apiCore.commandBuffers.active[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         vkCmdBindPipeline(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, (VkPipeline)pipeline);
         vkCmdBindVertexBuffers(core::apiCore.commandBuffers.active[i], 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(core::apiCore.commandBuffers.active[i], (VkBuffer)indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(core::apiCore.commandBuffers.active[i], indexBuffer.getBuffer(), 0, VK_INDEX_TYPE_UINT32);
         // vkCmdBindDescriptorSets(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
         vkCmdDrawIndexed(core::apiCore.commandBuffers.active[i], indexCount, 1, 0, 0, 0);
     vkCmdEndRenderPass(core::apiCore.commandBuffers.active[i]);
