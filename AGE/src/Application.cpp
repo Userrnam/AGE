@@ -65,8 +65,6 @@ void Application::init() {
     core::createMultisamplingResources();
     core::createFramebuffers();
     core::createCommandPools();
-    core::createDescriptorPool();
-    core::createDescriptorSetLayout();
     core::createSyncObjects();
 
     core::allocateCommandBuffers();
