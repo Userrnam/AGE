@@ -1,9 +1,9 @@
 #include "Application.hpp"
 
-#include "coreAPI.hpp"
-#include "Window.hpp"
-#include "Core.hpp"
-#include "Command.hpp"
+#include "Graphics/Core/coreAPI.hpp"
+#include "Graphics/Core/Window.hpp"
+#include "Graphics/Core/Core.hpp"
+#include "Graphics/Core/Command.hpp"
 
 namespace age {
 

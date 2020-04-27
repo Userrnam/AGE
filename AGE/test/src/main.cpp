@@ -1,7 +1,8 @@
 #include <math.h>
 
 #include "Application.hpp"
-#include "Core.hpp"
+
+#include "Graphics/Core/coreAPI.hpp"
 
 class Application : public age::Application {
     double counter = 0;

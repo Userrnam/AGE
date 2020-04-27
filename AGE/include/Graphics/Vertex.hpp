@@ -4,7 +4,7 @@
 #include <vector>
 
 // FIXME
-#include "../Core/include/Vertex.hpp"
+#include "Core/Vertex.hpp"
 
 namespace age {
 
