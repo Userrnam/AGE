@@ -3,9 +3,17 @@
 #include "Application.hpp"
 
 #include "Graphics/Core/coreAPI.hpp"
+#include "Graphics/Model.hpp"
+#include "utils.hpp"
 
 class Application : public age::Application {
     double counter = 0;
+    age::Model model;
+
+    void onCreate() override {
+        updateCommandBuffers();
+        model.load("Dragon.3ds");
+    }
 
     void onConfigure() override {
         age::core::CoreConfig config;
@@ -26,6 +34,8 @@ class Application : public age::Application {
 };
 
 int main() {
+    age::setResourcePath("/Users/antonkondratuk/Desktop/Vulkan/AGE/AGE/test/Resources/");
+
     Application app;
     app.init();
     app.run();

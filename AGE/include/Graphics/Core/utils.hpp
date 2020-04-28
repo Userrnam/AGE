@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <vulkan/vulkan.h>
 
 namespace age::core {
 
@@ -15,6 +16,9 @@ VkSampleCountFlagBits getMaxSampleCount();
 VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 VkFormat findDepthFormat();
+
+VkCommandBuffer beginSingleTimeCommands();
+void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
 VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevel);
 
