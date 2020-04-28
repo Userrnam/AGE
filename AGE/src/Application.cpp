@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include "Application.hpp"
 
 #include "Graphics/Core/coreAPI.hpp"
@@ -74,9 +76,13 @@ void Application::init() {
 }
 
 void Application::run() {
+    static auto startTime = std::chrono::high_resolution_clock::now();
     while (!core::window::closed()) {
         core::window::pollEvents();
-        onUpdate();
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        float elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+        startTime = currentTime;
+        onUpdate(elapsedTime);
         core::window::present();
     }
 }

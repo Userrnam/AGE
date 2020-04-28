@@ -10,7 +10,7 @@ protected:
     virtual void draw(int i);
     virtual void onConfigure();
     virtual void onCreate();
-    virtual void onUpdate() {}
+    virtual void onUpdate(float elapsedTime) {}
 
 public:
     ~Application();
