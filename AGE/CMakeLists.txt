@@ -27,13 +27,12 @@ file (GLOB sources
     "src/*.cpp"
 )
 add_library(age STATIC ${sources})
-target_include_directories(age PRIVATE Graphics/Core/include)
+target_include_directories(age PRIVATE include/Graphics)
 target_link_libraries(age graphics)
 # end build age
 
 # build test
 add_executable(tst test/src/main.cpp)
-target_include_directories(tst PRIVATE Graphics)
 target_link_libraries(tst age)
 # end build test
 

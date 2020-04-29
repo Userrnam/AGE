@@ -7,15 +7,13 @@
 
 namespace age::core {
 
-// FIXME: look again here 
-// pool.usage & usage
-VkDescriptorPool requestDescriptorPool(DescriptorUsage usage) {
+VkDescriptorPool requestDescriptorPool(uint32_t uboCount, uint32_t samplerCount) {
     for (auto& pool : apiCore.descriptor.pools) {
-        if (pool.usage & usage) {
+        if (pool.uboCount >= uboCount && pool.samplerCount >= samplerCount) {
             return pool.pool;
         }
     }
-    return createDescriptorPool(usage);
+    return createDescriptorPool(uboCount, samplerCount);
 }
 
 VkDescriptorSetLayout requestDescriptorSetLayout(uint32_t uboCount, uint32_t samplerCount) {
@@ -27,20 +25,18 @@ VkDescriptorSetLayout requestDescriptorSetLayout(uint32_t uboCount, uint32_t sam
     return createDescriptorSetLayout(uboCount, samplerCount);
 }
 
-// FIXME: maybe this descriptor pool can allocate descriptors
-// containing 1 or 0 ubos and 1 or 0 samplers
-VkDescriptorPool createDescriptorPool(DescriptorUsage usage) {
+VkDescriptorPool createDescriptorPool(uint32_t uboCount, uint32_t samplerCount) {
 	VkDescriptorPoolSize poolSizes[2];
 	
 	uint32_t i = 0;
-	if (usage & DescriptorUsage::UBO_BIT) {
+	if (uboCount) {
 		poolSizes[i].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSizes[i].descriptorCount = 1;
+		poolSizes[i].descriptorCount = uboCount;
 		i++;
 	}
-	if (usage & DescriptorUsage::SAMPLER_BIT) {
+	if (samplerCount) {
 		poolSizes[i].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		poolSizes[i].descriptorCount = 1;
+		poolSizes[i].descriptorCount = samplerCount;
 		i++;
 	}
 
@@ -55,7 +51,7 @@ VkDescriptorPool createDescriptorPool(DescriptorUsage usage) {
 		throw std::runtime_error("failed to create descriptor pool");
 	}
 
-	apiCore.descriptor.pools.push_back({descriptorPool, usage});
+	apiCore.descriptor.pools.push_back({descriptorPool, uboCount, samplerCount});
 
     return descriptorPool;
 }

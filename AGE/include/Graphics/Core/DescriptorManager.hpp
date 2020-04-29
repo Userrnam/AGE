@@ -4,15 +4,10 @@
 
 namespace age::core {
 
-enum DescriptorUsage {
-    UBO_BIT = 1,
-    SAMPLER_BIT = 2
-};
-
-VkDescriptorPool requestDescriptorPool(DescriptorUsage usage);
+VkDescriptorPool requestDescriptorPool(uint32_t uboCount, uint32_t samplerCount);
 VkDescriptorSetLayout requestDescriptorSetLayout(uint32_t uboCount, uint32_t samplerCount);
 
-VkDescriptorPool createDescriptorPool(DescriptorUsage usage);
+VkDescriptorPool createDescriptorPool(uint32_t uboCount, uint32_t samplerCount);
 VkDescriptorSetLayout createDescriptorSetLayout(uint32_t uboCount, uint32_t samplerCount);
     
 } // namespace age::core

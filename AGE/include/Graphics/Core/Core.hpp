@@ -68,7 +68,8 @@ struct Core {
     struct {
         struct DPU {
             VkDescriptorPool pool;
-            DescriptorUsage usage;
+            uint32_t uboCount;
+            uint32_t samplerCount;
         };
         struct DLU {
             VkDescriptorSetLayout layout;
@@ -107,7 +108,6 @@ struct Core {
     VkDevice device = VK_NULL_HANDLE;
 
     std::vector<RenderPassRef> renderPasses;
-    // VkRenderPass renderPass = VK_NULL_HANDLE;
 };
 
 extern Core apiCore;

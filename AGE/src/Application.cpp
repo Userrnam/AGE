@@ -6,6 +6,7 @@
 #include "Graphics/Core/Window.hpp"
 #include "Graphics/Core/Core.hpp"
 #include "Graphics/Core/Command.hpp"
+#include "Viewport.hpp"
 
 namespace age {
 
@@ -69,6 +70,8 @@ void Application::init() {
 
     core::allocateCommandBuffers();
     core::createCamera();
+
+    setDefaultViewport();
 
     onCreate();
 }
