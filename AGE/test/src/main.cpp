@@ -2,6 +2,8 @@
 
 #include "Application.hpp"
 
+#include <glm/glm.hpp>
+
 #include "Graphics/Core/coreAPI.hpp"
 #include "utils.hpp"
 

@@ -7,6 +7,8 @@
 #include "DescriptorManager.hpp"
 #include "Image.hpp"
 #include "Buffer.hpp"
+#include "RenderPassManager.hpp"
+#include "RenderPassRef.hpp"
 
 namespace age::core {
 
@@ -44,11 +46,14 @@ struct Core {
         VkExtent2D extent;
         std::vector<VkImage> images;
         std::vector<VkImageView> imageViews;
-        std::vector<VkFramebuffer> framebuffers;
+        // std::vector<VkFramebuffer> framebuffers;
         VkClearColorValue clearColor = {};
     } swapchain;
 
-    Image depthImage;
+    struct {
+        Image image;
+        VkFormat format;
+    } depth;
 
     struct {
         VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
@@ -101,7 +106,8 @@ struct Core {
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
     VkDevice device = VK_NULL_HANDLE;
 
-    VkRenderPass renderPass = VK_NULL_HANDLE;
+    std::vector<RenderPassRef> renderPasses;
+    // VkRenderPass renderPass = VK_NULL_HANDLE;
 };
 
 extern Core apiCore;

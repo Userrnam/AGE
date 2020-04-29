@@ -12,9 +12,9 @@ namespace age {
 void Application::updateCommandBuffers() {
     // update active commandBuffer
     if (core::apiCore.commandBuffers.active == core::apiCore.commandBuffers.data.data()) {
-        core::apiCore.commandBuffers.active += core::apiCore.swapchain.framebuffers.size();
+        core::apiCore.commandBuffers.active += core::apiCore.swapchain.images.size();
     } else {
-        core::apiCore.commandBuffers.active -= core::apiCore.swapchain.framebuffers.size();
+        core::apiCore.commandBuffers.active -= core::apiCore.swapchain.images.size();
     }
 
     VkCommandBufferBeginInfo beginInfo = {};
@@ -62,10 +62,8 @@ void Application::init() {
     core::pickPhysicalDevice();
     core::createLogicalDevice();
     core::createSwapchain();
-    core::createRenderPass();
     core::createDepthResources();
     core::createMultisamplingResources();
-    core::createFramebuffers();
     core::createCommandPools();
     core::createSyncObjects();
 

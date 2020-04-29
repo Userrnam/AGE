@@ -153,6 +153,8 @@ void pickPhysicalDevice() {
 		coreConfig.multisampling.sampleCount = (SampleCount)maxSamples;
 	}
 	apiCore.multisampling.sampleCount = (VkSampleCountFlagBits)coreConfig.multisampling.sampleCount;
+
+	apiCore.depth.format = findDepthFormat();
 }
 
 // FIXME: add queue choice
@@ -337,89 +339,89 @@ void createSwapchain() {
 	}
 }
 
-// FIXME: add user defined subpasses
-void createRenderPass() {
-	VkAttachmentDescription colorAttachment = {};
-	colorAttachment.format = apiCore.swapchain.format;
-	colorAttachment.samples = apiCore.multisampling.sampleCount;
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+// // FIXME: add user defined subpasses
+// void createRenderPass() {
+// 	VkAttachmentDescription colorAttachment = {};
+// 	colorAttachment.format = apiCore.swapchain.format;
+// 	colorAttachment.samples = apiCore.multisampling.sampleCount;
+// 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+// 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+// 	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+// 	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+// 	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
-	if (apiCore.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
-		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	} else {
-		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-	}
+// 	if (apiCore.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
+// 		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+// 	} else {
+// 		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+// 	}
 
-	VkAttachmentDescription depthAttachment = {};
-	depthAttachment.format = findDepthFormat();
-	depthAttachment.samples = apiCore.multisampling.sampleCount; // ??
-	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+// 	VkAttachmentDescription depthAttachment = {};
+// 	depthAttachment.format = findDepthFormat();
+// 	depthAttachment.samples = apiCore.multisampling.sampleCount; // ??
+// 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+// 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+// 	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+// 	depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+// 	depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+// 	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-	VkAttachmentReference colorAttachmentRef = {};
-	colorAttachmentRef.attachment = 0;		// this is index
-	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+// 	VkAttachmentReference colorAttachmentRef = {};
+// 	colorAttachmentRef.attachment = 0;		// this is index
+// 	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	VkAttachmentReference depthAttachmentRef = {};
-	depthAttachmentRef.attachment = 1;
-	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+// 	VkAttachmentReference depthAttachmentRef = {};
+// 	depthAttachmentRef.attachment = 1;
+// 	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	
-	VkSubpassDependency dependency = {};
-	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	dependency.dstSubpass = 0;
-	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.srcAccessMask = 0;
-	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+// 	VkSubpassDependency dependency = {};
+// 	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+// 	dependency.dstSubpass = 0;
+// 	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+// 	dependency.srcAccessMask = 0;
+// 	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+// 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 	
-	VkSubpassDescription subpass = {};
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass.colorAttachmentCount = 1;
-	subpass.pColorAttachments = &colorAttachmentRef;
-	subpass.pDepthStencilAttachment = &depthAttachmentRef;
+// 	VkSubpassDescription subpass = {};
+// 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+// 	subpass.colorAttachmentCount = 1;
+// 	subpass.pColorAttachments = &colorAttachmentRef;
+// 	subpass.pDepthStencilAttachment = &depthAttachmentRef;
 	
-	VkAttachmentDescription colorAttachmentResolve = {};
-	uint32_t attachmentCount = 2;
-	if (apiCore.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
-		colorAttachmentResolve.format = apiCore.swapchain.format;
-		colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-		colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+// 	VkAttachmentDescription colorAttachmentResolve = {};
+// 	uint32_t attachmentCount = 2;
+// 	if (apiCore.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
+// 		colorAttachmentResolve.format = apiCore.swapchain.format;
+// 		colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
+// 		colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+// 		colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+// 		colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+// 		colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+// 		colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+// 		colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 		
-		VkAttachmentReference colorAttachmentResolveRef = {};
-		colorAttachmentResolveRef.attachment = 2;
-		colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+// 		VkAttachmentReference colorAttachmentResolveRef = {};
+// 		colorAttachmentResolveRef.attachment = 2;
+// 		colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-		subpass.pResolveAttachments = &colorAttachmentResolveRef;
-		attachmentCount += 1;
-	}
+// 		subpass.pResolveAttachments = &colorAttachmentResolveRef;
+// 		attachmentCount += 1;
+// 	}
 
-	VkAttachmentDescription attachments[3] = { colorAttachment, depthAttachment, colorAttachmentResolve };
-	VkRenderPassCreateInfo renderPassInfo = {};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassInfo.attachmentCount = attachmentCount;
-	renderPassInfo.pAttachments = attachments;
-	renderPassInfo.subpassCount = 1;
-	renderPassInfo.pSubpasses = &subpass;
-	renderPassInfo.dependencyCount = 1;
-	renderPassInfo.pDependencies = &dependency;
+// 	VkAttachmentDescription attachments[3] = { colorAttachment, depthAttachment, colorAttachmentResolve };
+// 	VkRenderPassCreateInfo renderPassInfo = {};
+// 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+// 	renderPassInfo.attachmentCount = attachmentCount;
+// 	renderPassInfo.pAttachments = attachments;
+// 	renderPassInfo.subpassCount = 1;
+// 	renderPassInfo.pSubpasses = &subpass;
+// 	renderPassInfo.dependencyCount = 1;
+// 	renderPassInfo.pDependencies = &dependency;
 
-	if (vkCreateRenderPass(apiCore.device, &renderPassInfo, nullptr, &apiCore.renderPass) != VK_SUCCESS) {
-		throw std::runtime_error("failed to create render pass");
-	}
-}
+// 	if (vkCreateRenderPass(apiCore.device, &renderPassInfo, nullptr, &apiCore.renderPass) != VK_SUCCESS) {
+// 		throw std::runtime_error("failed to create render pass");
+// 	}
+// }
 
 void createDepthResources() {
 	ImageCreateInfo info = {};
@@ -432,7 +434,7 @@ void createDepthResources() {
 	info.memoryProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	info.aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
 
-	apiCore.depthImage.create(info);
+	apiCore.depth.image.create(info);
 }
 
 void createMultisamplingResources() {
@@ -453,38 +455,38 @@ void createMultisamplingResources() {
 	apiCore.multisampling.image.create(info);
 }
 
-void createFramebuffers() {
-	apiCore.swapchain.framebuffers.resize(apiCore.swapchain.imageViews.size());
+// void createFramebuffers() {
+// 	apiCore.swapchain.framebuffers.resize(apiCore.swapchain.imageViews.size());
 
-	uint32_t attachmentCount = (apiCore.multisampling.sampleCount == VK_SAMPLE_COUNT_1_BIT) ? 2 : 3;
-	VkImageView attachments[3] = {};
-	size_t swapchainImageViewIndex = 0;
-	// no multisampling
-	if (attachmentCount == 2) {
-		attachments[1] = apiCore.depthImage.getView();
-	} else {
-		attachments[0] = apiCore.multisampling.image.getView();
-		attachments[1] = apiCore.depthImage.getView();
-		swapchainImageViewIndex = 2;
-	}
+// 	uint32_t attachmentCount = (apiCore.multisampling.sampleCount == VK_SAMPLE_COUNT_1_BIT) ? 2 : 3;
+// 	VkImageView attachments[3] = {};
+// 	size_t swapchainImageViewIndex = 0;
+// 	// no multisampling
+// 	if (attachmentCount == 2) {
+// 		attachments[1] = apiCore.depth.image.getView();
+// 	} else {
+// 		attachments[0] = apiCore.multisampling.image.getView();
+// 		attachments[1] = apiCore.depth.image.getView();
+// 		swapchainImageViewIndex = 2;
+// 	}
 
-	for (size_t i = 0; i < apiCore.swapchain.imageViews.size(); ++i) {
-		attachments[swapchainImageViewIndex] = apiCore.swapchain.imageViews[i];
+// 	for (size_t i = 0; i < apiCore.swapchain.imageViews.size(); ++i) {
+// 		attachments[swapchainImageViewIndex] = apiCore.swapchain.imageViews[i];
 
-		VkFramebufferCreateInfo framebufferInfo = {};
-		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferInfo.renderPass = apiCore.renderPass;
-		framebufferInfo.attachmentCount = attachmentCount;
-		framebufferInfo.pAttachments = attachments;
-		framebufferInfo.width = apiCore.swapchain.extent.width;
-		framebufferInfo.height = apiCore.swapchain.extent.height;
-		framebufferInfo.layers = 1;
+// 		VkFramebufferCreateInfo framebufferInfo = {};
+// 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+// 		framebufferInfo.renderPass = apiCore.renderPass;
+// 		framebufferInfo.attachmentCount = attachmentCount;
+// 		framebufferInfo.pAttachments = attachments;
+// 		framebufferInfo.width = apiCore.swapchain.extent.width;
+// 		framebufferInfo.height = apiCore.swapchain.extent.height;
+// 		framebufferInfo.layers = 1;
 
-		if (vkCreateFramebuffer(apiCore.device, &framebufferInfo, nullptr, &apiCore.swapchain.framebuffers[i]) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create framebuffer");
-		}
-	}
-}
+// 		if (vkCreateFramebuffer(apiCore.device, &framebufferInfo, nullptr, &apiCore.swapchain.framebuffers[i]) != VK_SUCCESS) {
+// 			throw std::runtime_error("failed to create framebuffer");
+// 		}
+// 	}
+// }
 
 // FIXME: add compute
 void createCommandPools() {
@@ -524,9 +526,9 @@ void createSyncObjects() {
 }
 
 void allocateCommandBuffers() {
-	apiCore.commandBuffers.data.resize(apiCore.swapchain.framebuffers.size() * 2);
+	apiCore.commandBuffers.data.resize(apiCore.swapchain.images.size() * 2);
 	apiCore.commandBuffers.active = apiCore.commandBuffers.data.data();
-	apiCore.commandBuffers.size = apiCore.swapchain.framebuffers.size();
+	apiCore.commandBuffers.size = apiCore.swapchain.images.size();
 
 	VkCommandBufferAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -614,14 +616,16 @@ void destroy() {
 	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.graphicsPool, nullptr);
 	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.transferPool, nullptr);
 
-	for (auto framebuffer : apiCore.swapchain.framebuffers) {
-		vkDestroyFramebuffer(apiCore.device, framebuffer, nullptr);
+	for (auto pipelineLayoutRef : apiCore.pipelineLayouts) {
+		vkDestroyPipelineLayout(apiCore.device, pipelineLayoutRef.pipelineLayout, nullptr);
+	}
+
+	for (auto renderPassRef : apiCore.renderPasses) {
+		renderPassRef.destroy();
 	}
 
 	apiCore.multisampling.image.destroy();
-	apiCore.depthImage.destroy();
-
-	vkDestroyRenderPass(apiCore.device, apiCore.renderPass, nullptr);
+	apiCore.depth.image.destroy();
 
 	// destroy swapChain Views
 	for (auto imageView : apiCore.swapchain.imageViews) {

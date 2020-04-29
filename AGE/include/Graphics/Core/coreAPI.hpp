@@ -13,10 +13,8 @@ void init();
 void pickPhysicalDevice();
 void createLogicalDevice();
 void createSwapchain();
-void createRenderPass();
 void createDepthResources();
 void createMultisamplingResources();
-void createFramebuffers();
 void createCommandPools();
 
 void createSyncObjects();
