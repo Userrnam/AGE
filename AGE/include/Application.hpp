@@ -8,13 +8,12 @@ protected:
 
     // FIXME: rename Warning: draw must not be empty
     virtual void draw(int i);
-    virtual void onConfigure();
     virtual void onCreate();
     virtual void onUpdate(float elapsedTime) {}
 
 public:
+    Application();
     ~Application();
-    void init();
     void run();
 };
 

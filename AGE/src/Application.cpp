@@ -41,11 +41,6 @@ void Application::draw(int i) {
     core::cmd::clear(i);
 }
 
-void Application::onConfigure() {
-    core::debugEnable(true);
-    core::setClearColor({1, 1, 1, 1});
-}
-
 void Application::onCreate() {
     updateCommandBuffers();
 }
@@ -54,9 +49,7 @@ Application::~Application() {
     core::destroy();
 }
 
-void Application::init() {
-    onConfigure();
-
+Application::Application() {
     core::init();
     core::window::create();
 

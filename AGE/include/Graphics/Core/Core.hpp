@@ -9,6 +9,8 @@
 #include "Buffer.hpp"
 #include "RenderPassManager.hpp"
 #include "RenderPassRef.hpp"
+#include "DescriptorLayout.hpp"
+#include "Pool.hpp"
 
 namespace age::core {
 
@@ -46,7 +48,6 @@ struct Core {
         VkExtent2D extent;
         std::vector<VkImage> images;
         std::vector<VkImageView> imageViews;
-        // std::vector<VkFramebuffer> framebuffers;
         VkClearColorValue clearColor = {};
     } swapchain;
 
@@ -66,19 +67,8 @@ struct Core {
     } commandPools;
 
     struct {
-        struct DPU {
-            VkDescriptorPool pool;
-            uint32_t uboCount;
-            uint32_t samplerCount;
-        };
-        struct DLU {
-            VkDescriptorSetLayout layout;
-            uint32_t uboCount;
-            uint32_t samplerCount;
-        };
-
-        std::vector<DPU> pools;
-        std::vector<DLU> layouts;
+        std::vector<Pool> pools;
+        std::vector<DescriptorLayout> layouts;
     } descriptor;
 
     struct {

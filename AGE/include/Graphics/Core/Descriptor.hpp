@@ -3,11 +3,11 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 
-namespace age {
+namespace age::core {
 
 struct Descriptor {
     std::vector<VkDescriptorSetLayout> layouts;
     std::vector<VkDescriptorSet> sets;
 };
 
-} // namespace age
+} // namespace age::core

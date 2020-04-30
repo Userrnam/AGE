@@ -339,90 +339,6 @@ void createSwapchain() {
 	}
 }
 
-// // FIXME: add user defined subpasses
-// void createRenderPass() {
-// 	VkAttachmentDescription colorAttachment = {};
-// 	colorAttachment.format = apiCore.swapchain.format;
-// 	colorAttachment.samples = apiCore.multisampling.sampleCount;
-// 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-// 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-// 	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-// 	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-// 	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-
-// 	if (apiCore.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
-// 		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-// 	} else {
-// 		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-// 	}
-
-// 	VkAttachmentDescription depthAttachment = {};
-// 	depthAttachment.format = findDepthFormat();
-// 	depthAttachment.samples = apiCore.multisampling.sampleCount; // ??
-// 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-// 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-// 	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-// 	depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-// 	depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-// 	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-// 	VkAttachmentReference colorAttachmentRef = {};
-// 	colorAttachmentRef.attachment = 0;		// this is index
-// 	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-// 	VkAttachmentReference depthAttachmentRef = {};
-// 	depthAttachmentRef.attachment = 1;
-// 	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	
-// 	VkSubpassDependency dependency = {};
-// 	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-// 	dependency.dstSubpass = 0;
-// 	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-// 	dependency.srcAccessMask = 0;
-// 	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-// 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	
-// 	VkSubpassDescription subpass = {};
-// 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-// 	subpass.colorAttachmentCount = 1;
-// 	subpass.pColorAttachments = &colorAttachmentRef;
-// 	subpass.pDepthStencilAttachment = &depthAttachmentRef;
-	
-// 	VkAttachmentDescription colorAttachmentResolve = {};
-// 	uint32_t attachmentCount = 2;
-// 	if (apiCore.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
-// 		colorAttachmentResolve.format = apiCore.swapchain.format;
-// 		colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-// 		colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-// 		colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-// 		colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-// 		colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-// 		colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-// 		colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		
-// 		VkAttachmentReference colorAttachmentResolveRef = {};
-// 		colorAttachmentResolveRef.attachment = 2;
-// 		colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-// 		subpass.pResolveAttachments = &colorAttachmentResolveRef;
-// 		attachmentCount += 1;
-// 	}
-
-// 	VkAttachmentDescription attachments[3] = { colorAttachment, depthAttachment, colorAttachmentResolve };
-// 	VkRenderPassCreateInfo renderPassInfo = {};
-// 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-// 	renderPassInfo.attachmentCount = attachmentCount;
-// 	renderPassInfo.pAttachments = attachments;
-// 	renderPassInfo.subpassCount = 1;
-// 	renderPassInfo.pSubpasses = &subpass;
-// 	renderPassInfo.dependencyCount = 1;
-// 	renderPassInfo.pDependencies = &dependency;
-
-// 	if (vkCreateRenderPass(apiCore.device, &renderPassInfo, nullptr, &apiCore.renderPass) != VK_SUCCESS) {
-// 		throw std::runtime_error("failed to create render pass");
-// 	}
-// }
-
 void createDepthResources() {
 	ImageCreateInfo info = {};
 	info.format = findDepthFormat();
@@ -517,33 +433,15 @@ void createCamera() {
 	bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 	apiCore.camera.buffer.create(bufferInfo);
 
-	auto descriptorSetLayout = createDescriptorSetLayout(1, 0);
+	UniformBuffer ubo;
+	ubo.buffer = apiCore.camera.buffer.getBuffer();
+	ubo.size = sizeof(glm::mat4);
 
-	VkDescriptorSetAllocateInfo allocInfo = {};
-	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = createDescriptorPool(1, 0);
-	allocInfo.descriptorSetCount = 1;
-	allocInfo.pSetLayouts = &descriptorSetLayout;
+	DescriptorInfo descriptorInfo;
+	descriptorInfo.ubos.push_back(ubo);
+	descriptorInfo.ubosBinding = 0;
 
-	if (vkAllocateDescriptorSets(apiCore.device, &allocInfo, &apiCore.camera.descriptor) != VK_SUCCESS) {
-		throw std::runtime_error("failed to allocate descriptor set");
-	}
-
-	VkDescriptorBufferInfo descriptorBufferInfo = {};
-	descriptorBufferInfo.buffer = apiCore.camera.buffer.getBuffer();
-	descriptorBufferInfo.offset = 0;
-	descriptorBufferInfo.range = sizeof(glm::mat4);
-
-	VkWriteDescriptorSet descriptorWrites = {};
-	descriptorWrites.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-	descriptorWrites.dstSet = apiCore.camera.descriptor;
-	descriptorWrites.dstBinding = 0;
-	descriptorWrites.dstArrayElement = 0;
-	descriptorWrites.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	descriptorWrites.descriptorCount = 1;
-	descriptorWrites.pBufferInfo = &descriptorBufferInfo;
-
-	vkUpdateDescriptorSets(apiCore.device, 1, &descriptorWrites, 0, nullptr);
+	apiCore.camera.descriptor = getDescriptor(descriptorInfo).sets.back();
 }
 
 void setClearColor(const Color& color) {

@@ -6,18 +6,20 @@
 
 #include "Graphics/Core/coreAPI.hpp"
 #include "utils.hpp"
+// #include "Graphics/Rectangle.hpp"
+#include "Graphics/Core/Command.hpp"
 
 class Application : public age::Application {
     double counter = 0;
+    // age::Rectangle rect;
 
-    void onConfigure() override {
-        age::core::CoreConfig config;
-        config.window.width = 800;
-        config.window.height = 600;
-        config.appInfo.name = (char*)"test";
-        config.window.title = (char*)"hello";
-        age::core::setCoreConfig(config);
-        age::core::setClearColor({1, 1, 1, 1});
+    void draw(int i) override {
+        age::core::cmd::clear(i);
+        // rect.draw(i);
+    }
+
+    void onCreate() override {
+        updateCommandBuffers();
     }
 
     void onUpdate(float elapsedTime) override {
@@ -28,8 +30,15 @@ class Application : public age::Application {
 };
 
 int main() {
+    age::core::CoreConfig config;
+    config.window.width = 800;
+    config.window.height = 600;
+    config.appInfo.name = (char*)"test";
+    config.window.title = (char*)"hello";
+    age::core::setCoreConfig(config);
+    age::core::setClearColor({1, 1, 1, 1});
+
     Application app;
-    app.init();
     app.run();
 
     return 0;
