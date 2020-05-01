@@ -21,6 +21,16 @@ target_link_libraries(graphics vulkan glfw3 rt m dl X11 pthread xcb Xau Xdmcp)
 endif ()
 # end build graphics
 
+# build event
+file (GLOB event_sources
+    "src/Events/*.cpp"
+)
+add_library(event STATIC ${event_sources})
+target_include_directories(event PRIVATE
+    "include/Events"
+)
+# end build event
+
 # build age
 include_directories(include)
 file (GLOB sources
@@ -28,7 +38,7 @@ file (GLOB sources
 )
 add_library(age STATIC ${sources})
 target_include_directories(age PRIVATE Graphics/Core/include)
-target_link_libraries(age graphics)
+target_link_libraries(age graphics event)
 # end build age
 
 # build test
