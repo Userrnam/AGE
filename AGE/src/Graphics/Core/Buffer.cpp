@@ -3,7 +3,14 @@
 #include "Core.hpp"
 #include "utils.hpp"
 
+#include <iostream>
+
 namespace age::core {
+
+void Buffer::destroy() {
+	vkDestroyBuffer(apiCore.device, m_buffer, nullptr);
+    vkFreeMemory(apiCore.device, m_memory, nullptr);
+}
 
 void Buffer::create(BufferCreateInfo& info) {
     VkBufferCreateInfo bufferInfo = {};
@@ -43,16 +50,11 @@ void Buffer::copyTo(Buffer& buffer, VkDeviceSize size, VkDeviceSize srcOffset, V
 	endSingleTimeCommands(commandBuffer);
 }
 
-void Buffer::loadData(void* data, VkDeviceSize size) {
+void Buffer::loadData(const void* data, VkDeviceSize size) {
 	void* mapped;
 	vkMapMemory(apiCore.device, m_memory, 0, size, 0, &mapped);
-	memcpy(mapped, data, static_cast<size_t>(size));
+		memcpy(mapped, data, static_cast<size_t>(size));
 	vkUnmapMemory(apiCore.device, m_memory);
-}
-
-void Buffer::destroy() {
-	vkDestroyBuffer(apiCore.device, m_buffer, nullptr);
-    vkFreeMemory(apiCore.device, m_memory, nullptr);
 }
 
 Buffer createDeviceLocalBuffer(void* data, VkDeviceSize size, VkBufferUsageFlags usage) {
@@ -61,14 +63,20 @@ Buffer createDeviceLocalBuffer(void* data, VkDeviceSize size, VkBufferUsageFlags
 
 	BufferCreateInfo createInfo;
 	createInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-	createInfo.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+	createInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 	createInfo.size = size;
 	stagingBuffer.create(createInfo);
+
+	void* mapped;
+	vkMapMemory(apiCore.device, stagingBuffer.getMemory(), 0, size, 0, &mapped);
+		memcpy(mapped, data, (size_t)size);
+	vkUnmapMemory(apiCore.device, stagingBuffer.getMemory());
 
 	createInfo.memoryProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	createInfo.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage;
 	out.create(createInfo);
 
+ // for some reason this throws in debugger
 	stagingBuffer.copyTo(out, size);
 
 	stagingBuffer.destroy();

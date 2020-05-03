@@ -71,26 +71,26 @@ Descriptor getDescriptor(const DescriptorInfo& info) {
 		descriptorWrites.resize(1);
 	}
 
-	uint32_t dstBinding = 0;
+	uint32_t i = 0;
 	if (info.ubos.size() != 0) {
-		descriptorWrites[dstBinding].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[dstBinding].dstSet = out.sets[0];
-		descriptorWrites[dstBinding].dstBinding = info.ubosBinding;
-		descriptorWrites[dstBinding].dstArrayElement = 0;
-		descriptorWrites[dstBinding].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrites[dstBinding].descriptorCount = bufferInfos.size();
-		descriptorWrites[dstBinding].pBufferInfo = bufferInfos.data();
-		dstBinding++;
+		descriptorWrites[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[i].dstSet = out.sets[0];
+		descriptorWrites[i].dstBinding = info.ubosBinding;
+		descriptorWrites[i].dstArrayElement = 0;
+		descriptorWrites[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		descriptorWrites[i].descriptorCount = bufferInfos.size();
+		descriptorWrites[i].pBufferInfo = bufferInfos.data();
+		i++;
 	}
 
 	if (info.samplers.size() != 0) {
-		descriptorWrites[dstBinding].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[dstBinding].dstSet = out.sets[0];
-		descriptorWrites[dstBinding].dstBinding = info.samplersBinding;
-		descriptorWrites[dstBinding].dstArrayElement = 0;
-		descriptorWrites[dstBinding].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorWrites[dstBinding].descriptorCount = imageInfos.size();
-		descriptorWrites[dstBinding].pImageInfo = imageInfos.data();
+		descriptorWrites[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[i].dstSet = out.sets[0];
+		descriptorWrites[i].dstBinding = info.samplersBinding;
+		descriptorWrites[i].dstArrayElement = 0;
+		descriptorWrites[i].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorWrites[i].descriptorCount = imageInfos.size();
+		descriptorWrites[i].pImageInfo = imageInfos.data();
 	}
 
 	vkUpdateDescriptorSets(apiCore.device, descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);

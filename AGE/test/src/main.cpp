@@ -3,33 +3,60 @@
 #include "Application.hpp"
 
 #include <glm/glm.hpp>
+#include <iostream>
 
 #include "Graphics/Core/coreAPI.hpp"
 #include "utils.hpp"
-// #include "Graphics/Rectangle.hpp"
+#include "Graphics/Rectangle.hpp"
 #include "Graphics/Core/Command.hpp"
 
 class Application : public age::Application {
     double counter = 0;
-    // age::Rectangle rect;
+    std::vector<age::Rectangle> rects;
 
     void draw(int i) override {
         age::core::cmd::clear(i);
-        // rect.draw(i);
+        for (auto& r : rects) {
+            r.draw(i);
+        }
     }
 
     void onCreate() override {
+        for (int i = 0; i < 10; ++i) {
+            age::Rectangle r;
+            r.create();
+            r.setSize({ 50 * i, 50 * i });
+            r.setColor({ 0.05 * i, 0.05 * i, 0.05*i, 1.0});
+            r.setPosition({i * 70, i * 70});
+            r.upload();
+
+            rects.push_back(r);
+        }
         updateCommandBuffers();
+    }
+
+    void onDelete() override {
+        for (auto& r : rects) {
+            r.destroy();
+        }
     }
 
     void onUpdate(float elapsedTime) override {
-        age::core::setClearColor({1, (1.0 + sin(counter)) / 2.0, 1, 1});
-        updateCommandBuffers();
-        counter += 2 * elapsedTime;
+        counter += 2*elapsedTime;
+
+        for (auto& r : rects) {
+            auto pos = r.getPosition();
+            auto size = r.getSize();
+            r.setPosition({ 600 + 100 * (2 + sin(counter + pos.x / size.x / 5)), pos.y });
+            r.upload();
+        }
     }
 };
 
-int main() {
+int main(int argc, char* argv[]) {
+    std::cout << argv[0] << "\n";
+    // age::setResourcePath("/Users/antonkondratuk/Desktop/Vulkan/AGE/AGE/src/Graphics/Shaders/");
+
     age::core::CoreConfig config;
     config.window.width = 800;
     config.window.height = 600;
@@ -39,6 +66,7 @@ int main() {
     age::core::setClearColor({1, 1, 1, 1});
 
     Application app;
+    app.create();
     app.run();
 
     return 0;

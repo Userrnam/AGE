@@ -4,8 +4,9 @@
 #include <vulkan/vulkan.h>
 
 #include "Shader.hpp"
-#include "Descriptor.hpp"
+#include "Core/Descriptor.hpp"
 #include "Core/RenderPassRef.hpp"
+#include "Core/Buffer.hpp"
 
 namespace age {
 
@@ -13,34 +14,34 @@ struct ObjectCreateInfo {
     bool depthTest;
     float minSampleShading = 0.0f;
     std::vector<Shader> shaders;
-    Descriptor descriptor;
+    core::Descriptor descriptor;
     struct {
         VkVertexInputBindingDescription bindingDescription;
         std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-        VkBuffer buffer;
+        core::Buffer buffer;
     } vertex;
     struct {
         uint32_t count;
         VkIndexType type;
-        VkBuffer buffer;
+        core::Buffer buffer;
     } index;
 };
 
 class Object {
+protected:
     core::RenderPassRef* m_renderPass;
     VkPipelineLayout m_pipelineLayout;
     VkPipeline m_pipeline;
     std::vector<VkDescriptorSet> m_descriptorSets;
     struct {
-        VkBuffer buffer;
+        core::Buffer buffer;
     } m_vertex;
     struct {
         uint32_t count;
         VkIndexType type;
-        VkBuffer buffer;
+        core::Buffer buffer;
     } m_index;
-protected:
-    void create(const ObjectCreateInfo& createInfo);
+    void createObject(const ObjectCreateInfo& createInfo);
 public:
     void draw(int i);
 };

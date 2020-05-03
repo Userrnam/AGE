@@ -1,8 +1,10 @@
 #pragma once
 
+#include "Graphics/Core/CoreLayer.hpp"
+
 namespace age {
 
-class Application {
+class Application : public core::CoreLayer {
 protected:
     void updateCommandBuffers();
 
@@ -10,10 +12,11 @@ protected:
     virtual void draw(int i);
     virtual void onCreate();
     virtual void onUpdate(float elapsedTime) {}
+    virtual void onDelete() {}
 
 public:
     Application();
-    ~Application();
+    void create();
     void run();
 };
 

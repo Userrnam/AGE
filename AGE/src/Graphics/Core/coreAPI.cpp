@@ -433,6 +433,15 @@ void createCamera() {
 	bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 	apiCore.camera.buffer.create(bufferInfo);
 
+	glm::mat4 identity = {
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	};
+
+	apiCore.camera.buffer.loadData(&identity, sizeof(identity));
+
 	UniformBuffer ubo;
 	ubo.buffer = apiCore.camera.buffer.getBuffer();
 	ubo.size = sizeof(glm::mat4);
@@ -452,59 +461,54 @@ void setClearColor(const Color& color) {
 }
 
 void destroy() {
-	vkDeviceWaitIdle(apiCore.device);
+	// vkDeviceWaitIdle(apiCore.device);
 
-	for (auto& pipelineLayout : apiCore.pipelineLayouts) {
-		vkDestroyPipelineLayout(apiCore.device, pipelineLayout.pipelineLayout, nullptr);
-	}
+	// apiCore.camera.buffer.destroy();
 
-	apiCore.camera.buffer.destroy();
+	// vkFreeCommandBuffers(apiCore.device, apiCore.commandPools.graphicsPool,
+	// 	apiCore.commandBuffers.data.size(), apiCore.commandBuffers.data.data());
 
-	vkFreeCommandBuffers(apiCore.device, apiCore.commandPools.graphicsPool,
-		apiCore.commandBuffers.data.size(), apiCore.commandBuffers.data.data());
+	// vkDestroySemaphore(apiCore.device, apiCore.sync.renderFinishedSemaphore, nullptr);
+	// vkDestroySemaphore(apiCore.device, apiCore.sync.imageAvailableSemaphore, nullptr);
+	// vkDestroyFence(apiCore.device, apiCore.sync.inFlightFence, nullptr);
 
-	vkDestroySemaphore(apiCore.device, apiCore.sync.renderFinishedSemaphore, nullptr);
-	vkDestroySemaphore(apiCore.device, apiCore.sync.imageAvailableSemaphore, nullptr);
-	vkDestroyFence(apiCore.device, apiCore.sync.inFlightFence, nullptr);
+	// for (auto dl : apiCore.descriptor.layouts) {
+	// 	vkDestroyDescriptorSetLayout(apiCore.device, dl.layout, nullptr);
+	// }
 
-	for (auto dl : apiCore.descriptor.layouts) {
-		vkDestroyDescriptorSetLayout(apiCore.device, dl.layout, nullptr);
-	}
+	// for (auto dp : apiCore.descriptor.pools) {
+	// 	vkDestroyDescriptorPool(apiCore.device, dp.pool, nullptr);
+	// }
 
-	for (auto dp : apiCore.descriptor.pools) {
-		vkDestroyDescriptorPool(apiCore.device, dp.pool, nullptr);
-	}
+	// vkDestroyCommandPool(apiCore.device, apiCore.commandPools.graphicsPool, nullptr);
+	// vkDestroyCommandPool(apiCore.device, apiCore.commandPools.transferPool, nullptr);
 
-	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.graphicsPool, nullptr);
-	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.transferPool, nullptr);
+	// for (auto pipelineLayoutRef : apiCore.pipelineLayouts) {
+	// 	vkDestroyPipelineLayout(apiCore.device, pipelineLayoutRef.pipelineLayout, nullptr);
+	// }
 
-	for (auto pipelineLayoutRef : apiCore.pipelineLayouts) {
-		vkDestroyPipelineLayout(apiCore.device, pipelineLayoutRef.pipelineLayout, nullptr);
-	}
+	// for (auto renderPassRef : apiCore.renderPasses) {
+	// 	renderPassRef.destroy();
+	// }
 
-	for (auto renderPassRef : apiCore.renderPasses) {
-		renderPassRef.destroy();
-	}
+	// apiCore.multisampling.image.destroy();
+	// apiCore.depth.image.destroy();
 
-	apiCore.multisampling.image.destroy();
-	apiCore.depth.image.destroy();
+	// // destroy swapChain Views
+	// for (auto imageView : apiCore.swapchain.imageViews) {
+	// 	vkDestroyImageView(apiCore.device, imageView, nullptr);
+	// }
+	// vkDestroySwapchainKHR(apiCore.device, apiCore.swapchain.swapchain, nullptr);
+	// vkDestroyDevice(apiCore.device, nullptr);
 
-	// destroy swapChain Views
-	for (auto imageView : apiCore.swapchain.imageViews) {
-		vkDestroyImageView(apiCore.device, imageView, nullptr);
-	}
-	vkDestroySwapchainKHR(apiCore.device, apiCore.swapchain.swapchain, nullptr);
-	vkDestroyDevice(apiCore.device, nullptr);
+	// if (apiCore.debug.enable) {
+	// 	destroyDebugUtilsMessengerEXT(apiCore.instance, apiCore.debug.messenger, nullptr);
+	// }
 
-	if (apiCore.debug.enable) {
-		destroyDebugUtilsMessengerEXT(apiCore.instance, apiCore.debug.messenger, nullptr);
-	}
-
-	vkDestroySurfaceKHR(apiCore.instance, apiCore.window.surface, nullptr);
-	vkDestroyInstance(apiCore.instance, nullptr);
-
-	glfwDestroyWindow(apiCore.window.handle);
-	glfwTerminate();
+	// vkDestroySurfaceKHR(apiCore.instance, apiCore.window.surface, nullptr);
+	// vkDestroyInstance(apiCore.instance, nullptr);
+	// glfwDestroyWindow(apiCore.window.handle);
+	// glfwTerminate();
 }
 
 } // namespace age::core

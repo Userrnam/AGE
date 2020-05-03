@@ -1,20 +1,21 @@
 #include "Object.hpp"
 
 #include "Core/Core.hpp"
+#include "Core/RenderPassManager.hpp"
 #include "PipelineLayoutManager.hpp"
-#include "RenderPassManager.hpp"
 #include "Viewport.hpp"
 
 namespace age {
 
 extern Viewport currentViewport;
 
-void Object::create(const ObjectCreateInfo& info) {
+void Object::createObject(const ObjectCreateInfo& info) {
     m_index.buffer = info.index.buffer;
     m_index.count = info.index.count;
     m_index.type = info.index.type;
     m_vertex.buffer = info.vertex.buffer;
     m_descriptorSets = info.descriptor.sets;
+    m_renderPass = core::requestRenderPass(core::RENDER_PASS_DEPTH_BIT);
 
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
     shaderStages.resize(info.shaders.size());
@@ -75,6 +76,7 @@ void Object::create(const ObjectCreateInfo& info) {
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizer.lineWidth = 1.0f;
     rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+    // rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
     rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterizer.depthBiasEnable = VK_FALSE;
     rasterizer.depthBiasConstantFactor = 0.0f;
@@ -144,10 +146,12 @@ void Object::draw(int i) {
 
     VkDeviceSize offsets[] = { 0 };
 
+    VkBuffer vertexBuffer = m_vertex.buffer.getBuffer();
+    VkBuffer indexBuffer = m_index.buffer.getBuffer();
     vkCmdBeginRenderPass(core::apiCore.commandBuffers.active[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         vkCmdBindPipeline(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
-        vkCmdBindVertexBuffers(core::apiCore.commandBuffers.active[i], 0, 1, &m_vertex.buffer, offsets);
-        vkCmdBindIndexBuffer(core::apiCore.commandBuffers.active[i], m_index.buffer, 0, m_index.type);
+        vkCmdBindVertexBuffers(core::apiCore.commandBuffers.active[i], 0, 1, &vertexBuffer, offsets);
+        vkCmdBindIndexBuffer(core::apiCore.commandBuffers.active[i], indexBuffer, 0, m_index.type);
         vkCmdBindDescriptorSets(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, 
         m_pipelineLayout, 0, m_descriptorSets.size(), m_descriptorSets.data(), 0, nullptr);
         vkCmdDrawIndexed(core::apiCore.commandBuffers.active[i], m_index.count, 1, 0, 0, 0);

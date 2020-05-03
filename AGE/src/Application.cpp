@@ -10,6 +10,10 @@
 
 namespace age {
 
+Application::Application() {
+    setDefaultViewport();
+}
+
 void Application::updateCommandBuffers() {
     // update active commandBuffer
     if (core::apiCore.commandBuffers.active == core::apiCore.commandBuffers.data.data()) {
@@ -45,27 +49,7 @@ void Application::onCreate() {
     updateCommandBuffers();
 }
 
-Application::~Application() {
-    core::destroy();
-}
-
-Application::Application() {
-    core::init();
-    core::window::create();
-
-    core::pickPhysicalDevice();
-    core::createLogicalDevice();
-    core::createSwapchain();
-    core::createDepthResources();
-    core::createMultisamplingResources();
-    core::createCommandPools();
-    core::createSyncObjects();
-
-    core::allocateCommandBuffers();
-    core::createCamera();
-
-    setDefaultViewport();
-
+void Application::create() {
     onCreate();
 }
 
@@ -79,6 +63,9 @@ void Application::run() {
         onUpdate(elapsedTime);
         core::window::present();
     }
+
+    vkDeviceWaitIdle(core::apiCore.device);
+    onDelete();
 }
 
 } // namespace age

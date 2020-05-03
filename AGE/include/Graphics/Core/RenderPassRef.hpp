@@ -2,9 +2,13 @@
 
 #include <vulkan/vulkan.h>
 #include <vector>
-#include "RenderPassManager.hpp"
 
 namespace age::core {
+
+enum RenderPassConfig {
+    RENDER_PASS_DEPTH_BIT,
+    RENDER_PASS_MULTISAMPLING_BIT
+};
 
 struct RenderPassRef {
     std::vector<VkFramebuffer> framebuffers;

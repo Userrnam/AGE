@@ -13,7 +13,7 @@ public:
 
     VkShaderModule getShaderModule() const { return m_shaderModule; }
 
-    void create(const std::string& filename);
+    void create(const std::string& filename, bool relative=true);
     void destroy();
 };
 
