@@ -6,7 +6,7 @@
 #include <iostream>
 
 #include "Graphics/Core/coreAPI.hpp"
-#include "utils.hpp"
+#include "Utils/utils.hpp"
 #include "Graphics/Rectangle.hpp"
 #include "Graphics/Core/Command.hpp"
 
