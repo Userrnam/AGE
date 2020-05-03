@@ -2,6 +2,7 @@
 
 #include <vulkan/vulkan.h>
 #include <stdexcept>
+#include <cstring>
 
 namespace age::core {
 

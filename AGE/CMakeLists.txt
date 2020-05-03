@@ -55,7 +55,7 @@ target_include_directories(graphics PRIVATE
 if (APPLE)
 target_link_libraries(graphics glfw vulkan utils)
 else ()
-target_link_libraries(graphics vulkan glfw3 rt m dl X11 pthread xcb Xau Xdmcp)
+target_link_libraries(graphics vulkan glfw3 rt m dl X11 pthread xcb Xau Xdmcp utils)
 endif ()
 # end build graphics
 
