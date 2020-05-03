@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Graphics/Core/CoreLayer.hpp"
+#include <glm/glm.hpp>
 
 namespace age {
 
 class Application : public core::CoreLayer {
 protected:
     void updateCommandBuffers();
+    glm::vec2 getWindowSize();
 
     // FIXME: rename Warning: draw must not be empty
     virtual void draw(int i);

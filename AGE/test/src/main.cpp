@@ -22,12 +22,15 @@ class Application : public age::Application {
     }
 
     void onCreate() override {
+        auto winSize = getWindowSize();
+        float size = winSize.y / 24.;
+        float pos = winSize.x / 20.;
         for (int i = 0; i < 10; ++i) {
             age::Rectangle r;
             r.create();
-            r.setSize({ 50 * i, 50 * i });
+            r.setSize({ size * i, size * i });
             r.setColor({ 0.05 * i, 0.05 * i, 0.05*i, 1.0});
-            r.setPosition({i * 70, i * 70});
+            r.setPosition({i * pos, i * pos});
             r.upload();
 
             rects.push_back(r);

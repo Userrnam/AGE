@@ -34,8 +34,8 @@ foreach(shader_source ${shader_sources})
 endforeach(shader_source ${shader_sources})
 
 add_custom_target(shaders DEPENDS ${shader_outs})
-
 # end build shaders
+
 file (GLOB sources
     "src/Graphics/*.cpp"
     "src/Graphics/Core/*.cpp"

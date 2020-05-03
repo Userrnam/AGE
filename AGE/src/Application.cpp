@@ -41,6 +41,13 @@ void Application::updateCommandBuffers() {
 	}
 }
 
+glm::vec2 Application::getWindowSize() {
+    glm::vec2 out;
+    out.x = core::apiCore.swapchain.extent.width;
+    out.y = core::apiCore.swapchain.extent.height;
+    return out;
+}
+
 void Application::draw(int i) {
     core::cmd::clear(i);
 }
