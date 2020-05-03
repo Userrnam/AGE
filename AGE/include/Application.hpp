@@ -12,7 +12,7 @@ protected:
 
     // FIXME: rename Warning: draw must not be empty
     virtual void draw(int i);
-    virtual void onCreate();
+    virtual void onCreate() {}
     virtual void onUpdate(float elapsedTime) {}
     virtual void onDelete() {}
 

@@ -13,6 +13,7 @@
 class Application : public age::Application {
     double counter = 0;
     std::vector<age::Rectangle> rects;
+    glm::vec2 winSize;
 
     void draw(int i) override {
         age::core::cmd::clear(i);
@@ -22,7 +23,7 @@ class Application : public age::Application {
     }
 
     void onCreate() override {
-        auto winSize = getWindowSize();
+        winSize = getWindowSize();
         float size = winSize.y / 24.;
         float pos = winSize.x / 20.;
         for (int i = 0; i < 10; ++i) {
@@ -35,7 +36,6 @@ class Application : public age::Application {
 
             rects.push_back(r);
         }
-        updateCommandBuffers();
     }
 
     void onDelete() override {
@@ -50,7 +50,7 @@ class Application : public age::Application {
         for (auto& r : rects) {
             auto pos = r.getPosition();
             auto size = r.getSize();
-            r.setPosition({ 600 + 100 * (2 + sin(counter + pos.x / size.x / 5)), pos.y });
+            r.setPosition({ winSize.x/2 + 100 * (sin(counter + pos.x / size.x / 5)), pos.y });
             r.upload();
         }
     }

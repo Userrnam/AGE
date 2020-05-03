@@ -52,12 +52,9 @@ void Application::draw(int i) {
     core::cmd::clear(i);
 }
 
-void Application::onCreate() {
-    updateCommandBuffers();
-}
-
 void Application::create() {
     onCreate();
+    updateCommandBuffers();
 }
 
 void Application::run() {
