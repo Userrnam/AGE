@@ -6,8 +6,13 @@
 #include "Graphics/Core/Window.hpp"
 #include "Graphics/Core/Core.hpp"
 #include "Graphics/Core/Command.hpp"
+#include "Viewport.hpp"
 
 namespace age {
+
+Application::Application() {
+    setDefaultViewport();
+}
 
 void Application::updateCommandBuffers() {
     // update active commandBuffer
@@ -36,41 +41,20 @@ void Application::updateCommandBuffers() {
 	}
 }
 
+glm::vec2 Application::getWindowSize() {
+    glm::vec2 out;
+    out.x = core::apiCore.swapchain.extent.width;
+    out.y = core::apiCore.swapchain.extent.height;
+    return out;
+}
+
 void Application::draw(int i) {
     core::cmd::clear(i);
 }
 
-void Application::onConfigure() {
-    core::debugEnable(true);
-    core::setClearColor({1, 1, 1, 1});
-}
-
-void Application::onCreate() {
-    updateCommandBuffers();
-}
-
-Application::~Application() {
-    core::destroy();
-}
-
-void Application::init() {
-    onConfigure();
-
-    core::init();
-    core::window::create();
-
-    core::pickPhysicalDevice();
-    core::createLogicalDevice();
-    core::createSwapchain();
-    core::createDepthResources();
-    core::createMultisamplingResources();
-    core::createCommandPools();
-    core::createSyncObjects();
-
-    core::allocateCommandBuffers();
-    core::createCamera();
-
+void Application::create() {
     onCreate();
+    updateCommandBuffers();
 }
 
 void Application::run() {
@@ -83,6 +67,9 @@ void Application::run() {
         onUpdate(elapsedTime);
         core::window::present();
     }
+
+    vkDeviceWaitIdle(core::apiCore.device);
+    onDelete();
 }
 
 } // namespace age

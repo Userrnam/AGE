@@ -41,7 +41,7 @@ void createFramebuffers(RenderPassRef& renderPassRef) {
 	}
 }
 
-VkRenderPass createRenderPass(RenderPassConfig rpc) {
+RenderPassRef* createRenderPass(RenderPassConfig rpc) {
     RenderPassRef renderPass = {};
     renderPass.config = rpc;
 
@@ -50,7 +50,7 @@ VkRenderPass createRenderPass(RenderPassConfig rpc) {
     if (rpc & RENDER_PASS_DEPTH_BIT) {
         VkAttachmentDescription depthAttachment = {};
         depthAttachment.format = apiCore.depth.format;
-        depthAttachment.samples = apiCore.multisampling.sampleCount; // ??
+        depthAttachment.samples = apiCore.multisampling.sampleCount;
         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -146,13 +146,13 @@ VkRenderPass createRenderPass(RenderPassConfig rpc) {
 
     apiCore.renderPasses.push_back(renderPass);
 
-    return renderPass.renderPass;
+    return &apiCore.renderPasses.back();
 }
 
-VkRenderPass requestRenderPass(RenderPassConfig rpc) {
+RenderPassRef* requestRenderPass(RenderPassConfig rpc) {
 	for (auto& renderPass : apiCore.renderPasses) {
 		if (renderPass.config == rpc) {
-			return renderPass.renderPass;
+			return &renderPass;
 		}
 	}
 	

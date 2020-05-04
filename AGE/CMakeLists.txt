@@ -1,4 +1,41 @@
+# build utils
+file(GLOB utils_sources
+    "src/Utils/*.cpp"
+)
+add_library(utils STATIC ${utils_sources})
+target_include_directories(utils PRIVATE
+    "include/Utils"
+)
+# end build utils
+
 # build graphics
+
+# build shaders
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Shaders")
+
+file(GLOB shader_sources
+    "src/Graphics/Shaders/*"
+)
+
+foreach(shader_source ${shader_sources})
+    file(RELATIVE_PATH r_path ${CMAKE_CURRENT_LIST_DIR}/src/Graphics ${shader_source})
+    list(APPEND shader_outs ${CMAKE_CURRENT_BINARY_DIR}/${r_path}.spv)
+    message(${CMAKE_CURRENT_BINARY_DIR}/${r_path}.spv)
+endforeach(shader_source ${shader_sources})
+
+foreach(shader_source ${shader_sources})
+    file(RELATIVE_PATH r_path ${CMAKE_CURRENT_LIST_DIR}/src/Graphics ${shader_source})
+    file(RELATIVE_PATH r_base ${PROJECT_SOURCE_DIR} ${shader_source})
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${r_path}.spv
+        COMMAND glslc ${shader_source} -o ${CMAKE_CURRENT_BINARY_DIR}/${r_path}.spv
+        DEPENDS ${shader_source}
+        COMMENT "Building shader ${r_base}.spv"
+    )
+endforeach(shader_source ${shader_sources})
+
+add_custom_target(shaders DEPENDS ${shader_outs})
+# end build shaders
+
 file (GLOB sources
     "src/Graphics/*.cpp"
     "src/Graphics/Core/*.cpp"
@@ -7,17 +44,18 @@ file (GLOB sources
 
 add_library(graphics STATIC ${sources})
 set_source_files_properties( "src/Graphics/External/stb_impl.cpp" PROPERTIES COMPILE_FLAGS "-Ofast" )
-
+target_compile_definitions(graphics PRIVATE SHADER_PATH="${CMAKE_CURRENT_BINARY_DIR}/Shaders/" CMAKE_DEFINITION)
 target_include_directories(graphics PRIVATE
+    "include"
     "include/Graphics"
     "include/Graphics/Core"
     "include/Graphics/External"
 )
 
 if (APPLE)
-target_link_libraries(graphics glfw vulkan)
+target_link_libraries(graphics glfw vulkan utils)
 else ()
-target_link_libraries(graphics vulkan glfw3 rt m dl X11 pthread xcb Xau Xdmcp)
+target_link_libraries(graphics vulkan glfw3 rt m dl X11 pthread xcb Xau Xdmcp utils)
 endif ()
 # end build graphics
 
@@ -32,22 +70,24 @@ target_include_directories(event PRIVATE
 # end build event
 
 # build age
-include_directories(include)
+include_directories("include")
 file (GLOB sources
     "src/*.cpp"
 )
 add_library(age STATIC ${sources})
-target_include_directories(age PRIVATE Graphics/Core/include)
+target_include_directories(age PRIVATE
+    "include/Graphics"
+)
 target_link_libraries(age graphics event)
 # end build age
 
 # build test
 add_executable(tst test/src/main.cpp)
-target_include_directories(tst PRIVATE Graphics)
 target_link_libraries(tst age)
 # end build test
 
 # dependencies
+add_dependencies(graphics shaders)
 add_dependencies(age graphics)
 add_dependencies(tst age)
 

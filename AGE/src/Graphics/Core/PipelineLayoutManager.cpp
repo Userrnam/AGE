@@ -44,6 +44,11 @@ VkPipelineLayout requestPipelineLayout(const std::vector<VkDescriptorSetLayout>&
         std::runtime_error("failed to create pipeline layout");
     }
 
+    PipelineLayoutRef ref;
+    ref.descriptorSetLayouts = layouts;
+    ref.pipelineLayout = pipelineLayout;
+    apiCore.pipelineLayouts.push_back(ref);
+
     return pipelineLayout;
 }
     

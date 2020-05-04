@@ -2,6 +2,7 @@
 #include <vulkan/vulkan.h>
 #include <set>
 #include <string>
+#include <iostream>
 
 #include "utils.hpp"
 #include "QueueFamilyIndicies.hpp"
@@ -136,27 +137,38 @@ VkCommandBuffer beginSingleTimeCommands() {
 	allocInfo.commandBufferCount = 1;
 
 	VkCommandBuffer commandBuffer;
-	vkAllocateCommandBuffers(apiCore.device, &allocInfo, &commandBuffer);
+	if (vkAllocateCommandBuffers(apiCore.device, &allocInfo, &commandBuffer) != VK_SUCCESS) {
+		throw std::runtime_error("core::beginSingleTimeCommands: vkAllocateCommandBuffers");
+	}
 
 	VkCommandBufferBeginInfo beginInfo = {};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+		throw std::runtime_error("core::beginSingleTimeCommands: vkBeginCommandBuffer");
+	}
 
 	return commandBuffer;
 }
 
 void endSingleTimeCommands(VkCommandBuffer commandBuffer) {
-	vkEndCommandBuffer(commandBuffer);
+	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+		throw std::runtime_error("core::endSingleTimeCommands: vkEndCommandBuffer");
+	}
 
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &commandBuffer;
 
-	vkQueueSubmit(apiCore.queues.transfer.queue, 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(apiCore.queues.transfer.queue);
+	if (vkQueueSubmit(apiCore.queues.transfer.queue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS) {
+		throw std::runtime_error("core::endSingleTimeCommands: vkQueueSubmit");
+	}
+	
+	if (vkQueueWaitIdle(apiCore.queues.transfer.queue) != VK_SUCCESS) {
+		throw std::runtime_error("core::endSingleTimeCommands: vkQueueWaitIdle");
+	}
 
 	vkFreeCommandBuffers(apiCore.device, apiCore.commandPools.transferPool, 1, &commandBuffer);
 }

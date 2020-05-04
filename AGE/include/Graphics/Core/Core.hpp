@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <vulkan/vulkan.h>
+#include <iostream>
 #include <GLFW/glfw3.h>
 
 #include "DescriptorManager.hpp"
@@ -9,6 +10,10 @@
 #include "Buffer.hpp"
 #include "RenderPassManager.hpp"
 #include "RenderPassRef.hpp"
+#include "DescriptorLayout.hpp"
+#include "Pool.hpp"
+
+#define printVar(s, ident) for (int i=0;i<ident;++i) { std::cout << ' '; } std::cout << #s << ": " << s << "\n"
 
 namespace age::core {
 
@@ -46,7 +51,6 @@ struct Core {
         VkExtent2D extent;
         std::vector<VkImage> images;
         std::vector<VkImageView> imageViews;
-        // std::vector<VkFramebuffer> framebuffers;
         VkClearColorValue clearColor = {};
     } swapchain;
 
@@ -66,18 +70,8 @@ struct Core {
     } commandPools;
 
     struct {
-        struct DPU {
-            VkDescriptorPool pool;
-            DescriptorUsage usage;
-        };
-        struct DLU {
-            VkDescriptorSetLayout layout;
-            uint32_t uboCount;
-            uint32_t samplerCount;
-        };
-
-        std::vector<DPU> pools;
-        std::vector<DLU> layouts;
+        std::vector<Pool> pools;
+        std::vector<DescriptorLayout> layouts;
     } descriptor;
 
     struct {
@@ -107,7 +101,43 @@ struct Core {
     VkDevice device = VK_NULL_HANDLE;
 
     std::vector<RenderPassRef> renderPasses;
-    // VkRenderPass renderPass = VK_NULL_HANDLE;
+
+    void print(int tab = 4) {
+        std::cout << "descriptor.pools:\n";
+        int ident = 0;
+        ident += tab;
+        for (auto& pool : descriptor.pools) {
+            printVar(pool.layout, ident);
+            printVar(pool.pool, ident);
+            printVar(pool.remainingSize, ident);
+
+            for (int i=0;i<tab*2;++i) { std::cout << ' '; }
+            std::cout << "sets\n";
+            ident += tab;
+            for (auto& set: pool.sets) {
+                printVar(set, ident);
+            }
+            ident -= tab;
+        }
+        ident -= tab;
+
+        std::cout << "descripotr.layouts:\n";
+        ident += tab;
+        for (auto& layout: descriptor.layouts) {
+            printVar(layout.layout, ident);
+            printVar(layout.samplerBinding, ident);
+            printVar(layout.samplerCount, ident);
+            printVar(layout.uboBinding, ident);
+            printVar(layout.uboCount, ident);
+        }
+        ident -= tab;
+
+        std::cout << "Camera:\n";
+        ident += tab;
+        printVar(camera.buffer.getBuffer(), ident);
+        printVar(camera.descriptor, ident);
+        ident -= tab;
+    }
 };
 
 extern Core apiCore;
