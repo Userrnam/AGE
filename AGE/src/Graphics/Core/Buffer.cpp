@@ -2,8 +2,9 @@
 
 #include "Core.hpp"
 #include "utils.hpp"
+#include "TransitionImageLayout.hpp"
 
-#include <iostream>
+// #include <iostream>
 
 namespace age::core {
 
@@ -46,6 +47,48 @@ void Buffer::copyTo(Buffer& buffer, VkDeviceSize size, VkDeviceSize srcOffset, V
 	copyRegion.dstOffset = dstOffset;
 	copyRegion.srcOffset = srcOffset;
 	vkCmdCopyBuffer(commandBuffer, m_buffer, buffer.m_buffer, 1, &copyRegion);
+
+	endSingleTimeCommands(commandBuffer);
+}
+
+// FIXME: add support to load mipmaped images
+void Buffer::copyTo(Image& image, VkDeviceSize srcOffset) {
+	TransitionInfo transitionInfo;
+	transitionInfo.image = image.getImage();
+    transitionInfo.mipLevel = image.getMipLevel();
+	transitionInfo.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	transitionInfo.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    transitionInfo.srcAccessMask = 0;
+	transitionInfo.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+	transitionInfo.srcStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+	transitionInfo.dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+	transitionImageLayout(transitionInfo);
+
+	VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+
+	VkBufferImageCopy region = {};
+	region.bufferOffset = srcOffset;
+	region.bufferImageHeight = 0;
+	region.bufferRowLength = 0;
+	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	region.imageSubresource.mipLevel = 0;
+	region.imageSubresource.baseArrayLayer = 0;
+	region.imageSubresource.layerCount = 1;
+	region.imageOffset = { 0, 0, 0 };
+	region.imageExtent = {
+		image.getWidth(),
+		image.getHeight(),
+		1
+	};
+
+	vkCmdCopyBufferToImage(
+		commandBuffer,
+		m_buffer,
+		image.getImage(),
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		1,
+		&region
+	);
 
 	endSingleTimeCommands(commandBuffer);
 }

@@ -9,8 +9,11 @@
 #include "Utils/utils.hpp"
 #include "Graphics/Rectangle.hpp"
 #include "Graphics/Core/Command.hpp"
+#include "Graphics/Texture.hpp"
 
 class Application : public age::Application {
+    age::Texture tex;
+
     double counter = 0;
     std::vector<age::Rectangle> rects;
     glm::vec2 winSize;
@@ -23,6 +26,8 @@ class Application : public age::Application {
     }
 
     void onCreate() override {
+        tex.create(age::getResourcePath("mountains.png"));
+
         winSize = getWindowSize();
         float size = winSize.y / 24.;
         float pos = winSize.x / 20.;
@@ -39,6 +44,7 @@ class Application : public age::Application {
     }
 
     void onDelete() override {
+        tex.destroy();
         for (auto& r : rects) {
             r.destroy();
         }
@@ -57,8 +63,7 @@ class Application : public age::Application {
 };
 
 int main(int argc, char* argv[]) {
-    std::cout << argv[0] << "\n";
-    // age::setResourcePath("/Users/antonkondratuk/Desktop/Vulkan/AGE/AGE/src/Graphics/Shaders/");
+    age::setResourcePath("/Users/antonkondratuk/Desktop/Vulkan/AGE/AGE/test/Resources/");
 
     age::core::CoreConfig config;
     config.window.width = 800;

@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <cstring>
 
+#include "Image.hpp"
+
 namespace age::core {
 
 struct BufferCreateInfo {
@@ -25,6 +27,7 @@ public:
     void create(BufferCreateInfo& info);
 
     void copyTo(Buffer& buffer, VkDeviceSize size, VkDeviceSize srcOffset=0, VkDeviceSize dstOffset=0);
+    void copyTo(Image& image, VkDeviceSize srcOffset=0);
     void loadData(const void* data, VkDeviceSize size);
 };
 

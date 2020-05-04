@@ -6,8 +6,8 @@
 
 namespace age {
 
-void Shader::create(const std::string& filename, bool relative) {
-    auto code = readFile(filename, relative);
+void Shader::create(const std::string& filename) {
+    auto code = readFile(filename);
 
     VkShaderModuleCreateInfo createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

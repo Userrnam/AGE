@@ -7,6 +7,6 @@ namespace age {
 
 void setResourcePath(const std::string& path);
 std::string getResourcePath(const std::string& resource);
-std::vector<char> readFile(const std::string& filename, bool relative=true);
+std::vector<char> readFile(const std::string& filename);
 
 } // namespace age
