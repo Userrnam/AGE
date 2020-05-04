@@ -74,6 +74,7 @@ target_link_libraries(age graphics)
 # build test
 add_executable(tst test/src/main.cpp)
 target_link_libraries(tst age)
+target_compile_definitions(tst PRIVATE RESOURCE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/test/Resources/" CMAKE_DEFINITION)
 # end build test
 
 # dependencies

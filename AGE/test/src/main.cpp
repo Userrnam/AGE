@@ -4,12 +4,17 @@
 
 #include <glm/glm.hpp>
 #include <iostream>
+#include <string>
 
 #include "Graphics/Core/coreAPI.hpp"
 #include "Utils/utils.hpp"
 #include "Graphics/Rectangle.hpp"
 #include "Graphics/Core/Command.hpp"
 #include "Graphics/Texture.hpp"
+
+#ifndef CMAKE_DEFINITION
+#define RESOURCE_PATH ""
+#endif
 
 class Application : public age::Application {
     age::Texture tex;
@@ -63,7 +68,10 @@ class Application : public age::Application {
 };
 
 int main(int argc, char* argv[]) {
-    age::setResourcePath("/Users/antonkondratuk/Desktop/Vulkan/AGE/AGE/test/Resources/");
+    std::string path = std::string(argv[0]);
+    std::cout << path << std::endl;
+
+    age::setResourcePath(RESOURCE_PATH);
 
     age::core::CoreConfig config;
     config.window.width = 800;
