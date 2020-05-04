@@ -1,9 +1,10 @@
 #pragma once 
 
 #include <memory>
-#include <string>
+#include <cstring>
 #include <list>
 #include <map>
+#include <algorithm>
 
 namespace age::res {
     
@@ -63,6 +64,15 @@ namespace age::res {
         void setExtra(std::shared_ptr<IResourceExtraData> extra) { m_extra = extra; }
     };
 
+    class DefaultResourceLoader : public IResourceLoader {
+    public:
+        virtual bool vUseRawFile() { return true; }
+        virtual bool vDiscardRawBufferAfterLoad() { return true; }
+        virtual uint32_t vGetLoadedResourceSize(char* rawBuffer, uint32_t rawSize) { return rawSize; }
+        virtual bool vLoadResource(char* rawBuffer, uint32_t rawSize, std::shared_ptr<ResHandle> handle) { return true; }
+        virtual std::string vGetPattern() { return "*"; }
+    };
+
     typedef std::list<std::shared_ptr<ResHandle>> ResHandleList;
     typedef std::map<std::string, std::shared_ptr<ResHandle>> ResHandleMap;
     typedef std::list<std::shared_ptr<IResourceLoader>> ResourceLoaders;
@@ -103,5 +113,7 @@ namespace age::res {
 
         void Flush();
     };
+
+    bool wildcardMatch(const char *pat, const char *str);
 
 } // namespace age::res
