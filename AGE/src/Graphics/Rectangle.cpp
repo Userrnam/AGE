@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 #include "Rectangle.hpp"
 #include "DescriptorManager.hpp"
@@ -40,11 +41,18 @@ struct Vertex {
 	}
 };
 
+// static std::vector<Vertex> verticies = {
+//     { { -1.0,  1.0 } },
+//     { {  1.0,  1.0 } },
+//     { {  1.0, -1.0 } },
+//     { { -1.0, -1.0 } },
+// };
+
 static std::vector<Vertex> verticies = {
-    { { -1.0,  1.0 } },
-    { {  1.0,  1.0 } },
-    { {  1.0, -1.0 } },
-    { { -1.0, -1.0 } },
+    { { 0.0, 1.0 } },
+    { { 1.0, 1.0 } },
+    { { 1.0, 0.0 } },
+    { { 0.0, 0.0 } },
 };
 
 static std::vector<uint16_t> indicies = { 0, 1, 2, 2, 3, 0 };
@@ -127,58 +135,11 @@ void Rectangle::setColor(const glm::vec4& color) {
     m_color = color;
 }
 
-void Rectangle::setSize(const glm::vec2& size) {
-    m_size = size;
-}
-
-void Rectangle::setPosition(const glm::vec2& pos) {
-    m_pos = pos;
-}
-
-// void Rectangle::setRotation(const float rotation) {
-//     m_rotation = rotation;
-// }
-
-void Rectangle::setOrigin(const glm::vec2& origin) {
-    m_origin = origin;
-}
-
 // FIXME
 void Rectangle::upload() {
     RectangleUniform uniform;
     uniform.color = m_color;
-
-    glm::vec2 extent = {
-        static_cast<float>(core::apiCore.swapchain.extent.width), 
-        static_cast<float>(core::apiCore.swapchain.extent.height),
-    };
-    glm::vec2 extentInversed = {
-        1.0 / extent.x,
-        1.0 / extent.y,
-    };
-
-    glm::vec2 scale;
-    scale.x = m_size.x * extentInversed.x;
-    scale.y = m_size.y * extentInversed.y;
-
-    // glm::vec2 origin;
-    // origin.x = -(2 * m_origin.x * extentInversed.x - 1);
-    // origin.y = -(2 * m_origin.y * extentInversed.y - 1);
-
-    glm::vec2 pos;
-    pos.x = 2 * (m_pos.x + m_origin.x) * extentInversed.x - 1;
-    pos.y = 2 * (m_pos.y + m_origin.y) * extentInversed.y - 1;
-
-    // uniform.transform = glm::scale(glm::mat4(1.0f), {scale.x, scale.y, 0.0});
-
-    // uniform.transform = glm::rotate(glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0)), m_rotation, glm::vec3(0, 0, 1));
-
-    uniform.transform = {
-        scale.x * cos(m_rotation), scale.y * sin(m_rotation), 0, 0,
-        -scale.x * sin(m_rotation), scale.y * cos(m_rotation), 0, 0,
-        pos.x, pos.y, 1, 0,
-        0, 0, 0, 1,
-    };
+    uniform.transform = getTransform();
 
     m_uboBuffer.loadData(&uniform, sizeof(uniform));
 }

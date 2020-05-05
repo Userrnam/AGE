@@ -89,6 +89,11 @@ struct Core {
     } camera;
 
     struct {
+        VkDescriptorSet descriptor;
+        Buffer buffer;
+    } staticCamera;
+
+    struct {
         std::vector<VkCommandBuffer> data;
         VkCommandBuffer* active = nullptr;
         uint32_t size = 0;

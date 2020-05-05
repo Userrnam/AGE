@@ -5,6 +5,7 @@
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "coreAPI.hpp"
 #include "VulkanDebug.hpp"
@@ -432,15 +433,20 @@ void createCamera() {
 	bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 	bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 	apiCore.camera.buffer.create(bufferInfo);
+	// apiCore.staticCamera.buffer.create(bufferInfo);
 
-	glm::mat4 identity = {
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1,
-	};
+	glm::mat4 identity = glm::mat4(1.0f);
+	glm::mat4 proj = glm::ortho(
+		0.0f, static_cast<float>(apiCore.swapchain.extent.width),
+		static_cast<float>(apiCore.swapchain.extent.height), 0.0f,
+		0.0f, 1.0f
+	);
 
-	apiCore.camera.buffer.loadData(&identity, sizeof(identity));
+	proj[2][2] = 2.0f;
+
+	proj = proj;
+
+	apiCore.camera.buffer.loadData(&proj, sizeof(proj));
 
 	UniformBuffer ubo;
 	ubo.buffer = apiCore.camera.buffer.getBuffer();
@@ -451,6 +457,10 @@ void createCamera() {
 	descriptorInfo.ubosBinding = 0;
 
 	apiCore.camera.descriptor = getDescriptor(descriptorInfo).sets.back();
+
+	// descriptorInfo.ubos.pop_back();
+	// ubo.buffer = apiCore.staticCamera.buffer.getBuffer();
+	// apiCore.staticCamera.descriptor = getDescriptor(descriptorInfo).sets.back();
 }
 
 void setClearColor(const Color& color) {

@@ -11,6 +11,7 @@
 #include "Graphics/Rectangle.hpp"
 #include "Graphics/Core/Command.hpp"
 #include "Graphics/Texture.hpp"
+#include "Graphics/Viewport.hpp"
 
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""
@@ -18,52 +19,36 @@
 
 class Application : public age::Application {
     age::Texture tex;
+    age::Rectangle rect;
+    glm::vec2 winSize;
 
     double counter = 0;
-    std::vector<age::Rectangle> rects;
-    glm::vec2 winSize;
 
     void draw(int i) override {
         age::core::cmd::clear(i);
-        for (auto& r : rects) {
-            r.draw(i);
-        }
+        rect.draw(i);
     }
 
     void onCreate() override {
-        tex.create(age::getResourcePath("mountains.png"));
-
         winSize = getWindowSize();
-        float size = winSize.y / 24.;
-        float pos = winSize.x / 20.;
-        for (int i = 0; i < 10; ++i) {
-            age::Rectangle r;
-            r.create();
-            r.setSize({ size * i, size * i });
-            r.setColor({ 0.05 * i, 0.05 * i, 0.05*i, 1.0});
-            r.setPosition({i * pos, i * pos});
-            r.upload();
-
-            rects.push_back(r);
-        }
+        tex.create(age::getResourcePath("mountains.png"));
+        rect.create();
+        rect.setColor({1,0,0,1});
+        rect.setScale({ winSize.x / 4, winSize.x / 2 });
+        rect.setPosition({ winSize.x / 2, winSize.y / 2 });
+        // rect.setOrigin({ winSize.x / 8, winSize.x / 4 });
+        rect.upload();
     }
 
     void onDelete() override {
         tex.destroy();
-        for (auto& r : rects) {
-            r.destroy();
-        }
+        rect.destroy();
     }
 
     void onUpdate(float elapsedTime) override {
         counter += 2*elapsedTime;
-
-        for (auto& r : rects) {
-            auto pos = r.getPosition();
-            auto size = r.getSize();
-            r.setPosition({ winSize.x/2 + 100 * (sin(counter + pos.x / size.x / 5)), pos.y });
-            r.upload();
-        }
+        rect.setRotation(counter);
+        rect.upload();
     }
 };
 
