@@ -94,7 +94,7 @@ void Texture::create(const std::string& filename, const TextureCreateInfo& creat
     }
 }
 
-void Texture::destroy() {
+Texture::~Texture() {
     m_image.destroy();
     vkDestroySampler(core::apiCore.device, m_sampler, nullptr);
 }

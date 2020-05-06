@@ -21,15 +21,15 @@ struct TextureCreateInfo {
 };
 
 class Texture {
-    VkSampler m_sampler;
+    VkSampler m_sampler = VK_NULL_HANDLE;
     core::Image m_image;
 public:
+    ~Texture();
     // FIXME
     VkSampler getSampler() const { return m_sampler; }
     const core::Image& getImage() const { return m_image; }
 
     void create(const std::string& filename, const TextureCreateInfo& createInfo = TextureCreateInfo());
-    void destroy();
 };
 
 } // namespace age

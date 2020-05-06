@@ -22,11 +22,12 @@ class Rectangle : public Object, public Transformable {
 
     void preCreate(const View& view, ObjectCreateInfo& objectCreateInfo);
 public:
+    ~Rectangle();
+
     void create(const Rectangle& sample);
     void create(const Rectangle& sample, const Texture& texture);
     void create(const View& view);
     void create(const View& view, const Texture& texture);
-    void destroy();
 
     glm::vec4 getColor() const { return m_color; }
     void setColor(const glm::vec4& color);

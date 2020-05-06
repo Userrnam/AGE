@@ -206,7 +206,7 @@ void Rectangle::create(const View& view, const Texture& texture) {
     }
 }
 
-void Rectangle::destroy() {
+Rectangle::~Rectangle() {
     m_uboBuffer.destroy();
     if (m_isOwner) {
         m_vertex.buffer.destroy();

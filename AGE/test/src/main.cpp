@@ -21,8 +21,10 @@
 class Application : public age::Application {
     age::View dynamicView;
     age::Texture tex;
+    age::Texture emptyTex;
     age::Rectangle rect;
     age::Rectangle background;
+    age::Rectangle emptyRect;
 
     glm::vec2 winSize;
     glm::vec2 rectSize;
@@ -69,12 +71,7 @@ class Application : public age::Application {
     }
 
     void onDelete() override {
-        tex.destroy();
-        background.destroy();
-        rect.destroy();
-        for (auto& r : inheritedRects) {
-            r.destroy();
-        }
+        
     }
 
     void onUpdate(float elapsedTime) override {
