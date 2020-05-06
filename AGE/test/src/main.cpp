@@ -44,9 +44,9 @@ class Application : public age::Application {
     void onCreate() override {
         winSize = getWindowSize();
         tex.create(age::getResourcePath("mountains.png"));
-        rect.create(dynamicView);
+        rect.create(dynamicView, true);
 
-        rect.setColor({1,0,0,1});
+        rect.setColor({1,0,0,0.5});
         rect.setScale({ winSize.x / 4, winSize.x / 2 });
         rect.setPosition({ winSize.x / 2, winSize.y / 2 });
         rect.setOrigin({ 0.5, 0.5 });
@@ -54,7 +54,7 @@ class Application : public age::Application {
 
         rectSize = rect.getScale();
 
-        inheritedRects.resize(100);
+        inheritedRects.resize(1);
         for (auto& r : inheritedRects) {
             r.create(rect);
             r.setColor({0,1,1,1});
@@ -77,7 +77,6 @@ class Application : public age::Application {
     void onUpdate(float elapsedTime) override {
         counter += elapsedTime;
 
-
         rect.setRotation(counter);
         rect.setScale(rectSize.x * (1 + cos(counter))/2, rectSize.y * (1 + cos(counter))/2);
         rect.upload();
@@ -87,7 +86,7 @@ class Application : public age::Application {
         dynamicView.upload();
 
         for (auto& r : inheritedRects) {
-            r.setColor({ 1 + cos(counter)/2, 1+sin(counter)/2, 0, 1 });
+            r.setColor({ 1 + cos(counter)/2, 1+sin(counter)/2, 0, 0.5 });
             r.upload();
         }
 

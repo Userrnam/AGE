@@ -15,6 +15,7 @@ struct ObjectCreateInfo {
     Viewport viewport;
     bool depthTest = false;
     bool multisampling = false;
+    bool colorBlending = false;
     float minSampleShading = 0.0f;
     std::vector<Shader> shaders;
     core::Descriptor descriptor;

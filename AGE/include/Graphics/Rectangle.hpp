@@ -26,14 +26,14 @@ public:
 
     void create(const Rectangle& sample);
     void create(const Rectangle& sample, const Texture& texture);
-    void create(const View& view);
-    void create(const View& view, const Texture& texture);
+    void create(const View& view, bool colorBlending = false);
+    void create(const View& view, const Texture& texture, bool colorBlending = false);
 
     glm::vec4 getColor() const { return m_color; }
     void setColor(const glm::vec4& color);
-    void setColor(float r, float g, float b, float a) { m_color.r = r; m_color.g = g; m_color.b = b; m_color.a = a; }
+    void setColor(float r, float g, float b, float a);
 
-    void setUniform(const RectangleUniform& uniform);
+    void uploadUniform(const RectangleUniform& uniform);
     void upload();
 };
 

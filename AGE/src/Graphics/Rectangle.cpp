@@ -174,8 +174,9 @@ void Rectangle::create(const Rectangle& sample, const Texture& texture) {
     m_descriptorSets[1] = descriptor.sets[0];
 }
 
-void Rectangle::create(const View& view) {
+void Rectangle::create(const View& view, bool colorBlending) {
     ObjectCreateInfo createInfo;
+    createInfo.colorBlending = colorBlending;
     preCreate(view, createInfo);
 
     auto d = getDescriptor(m_uboBuffer.getBuffer());
@@ -190,8 +191,9 @@ void Rectangle::create(const View& view) {
     }
 }
 
-void Rectangle::create(const View& view, const Texture& texture) {
+void Rectangle::create(const View& view, const Texture& texture, bool colorBlending) {
     ObjectCreateInfo createInfo;
+    createInfo.colorBlending = colorBlending;
     preCreate(view, createInfo);
 
     auto d = getTDescriptor(m_uboBuffer.getBuffer(), texture);
@@ -215,12 +217,19 @@ Rectangle::~Rectangle() {
     }
 }
 
-void Rectangle::setUniform(const RectangleUniform& uniform) {
+void Rectangle::uploadUniform(const RectangleUniform& uniform) {
     m_uboBuffer.loadData(&uniform, sizeof(uniform));
 }
 
 void Rectangle::setColor(const glm::vec4& color) {
     m_color = color;
+}
+
+void Rectangle::setColor(float r, float g, float b, float a) {
+    m_color.r = r;
+    m_color.g = g;
+    m_color.b = b;
+    m_color.a = a;
 }
 
 // FIXME

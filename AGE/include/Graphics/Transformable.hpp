@@ -9,6 +9,8 @@ class Transformable {
     glm::vec2 m_position = {};
     glm::vec2 m_origin = {};
     float m_rotation = 0;
+    glm::mat4 m_transform;
+    bool m_needUpdate = true;
 protected:
     glm::mat4 getTransform();
 public:
@@ -17,18 +19,18 @@ public:
     glm::vec2 getOrigin() const { return m_origin; }
     float getRotation() const { return m_rotation; }
 
-    void setScale(const glm::vec2& scale) { m_scale = scale; }
-    void setPosition(const glm::vec2& position) { m_position = position; }
-    void setOrigin(const glm::vec2& origin) { m_origin = origin; }
-    void setRotation(float rotation) { m_rotation = rotation; }
+    void setScale(const glm::vec2& scale);
+    void setPosition(const glm::vec2& position);
+    void setOrigin(const glm::vec2& origin);
+    void setRotation(float rotation);
 
-    void move(const glm::vec2& direction) { m_position += direction; }
-    void rotate(float angle) { m_rotation += angle; }
+    void move(const glm::vec2& direction);
+    void rotate(float angle);
 
-    void setScale(float scaleX, float scaleY) { m_scale.x = scaleX; m_scale.y = scaleY; }
-    void setPosition(float x, float y) { m_position.x = x; m_position.y = y; }
-    void setOrigin(float x, float y) { m_origin.x = x; m_origin.y = y; }
-    void move(float x, float y) { m_position.x += x; m_position.y += y; }
+    void setScale(float scaleX, float scaleY);
+    void setPosition(float x, float y);
+    void setOrigin(float x, float y);
+    void move(float x, float y);
 };
 
 } // namespace age
