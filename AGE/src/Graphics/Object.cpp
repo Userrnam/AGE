@@ -3,7 +3,6 @@
 #include "Core/Core.hpp"
 #include "Core/RenderPassManager.hpp"
 #include "PipelineLayoutManager.hpp"
-#include "Viewport.hpp"
 
 namespace age {
 
@@ -15,7 +14,16 @@ void Object::createObject(const ObjectCreateInfo& info) {
     m_index.type = info.index.type;
     m_vertex.buffer = info.vertex.buffer;
     m_descriptorSets = info.descriptor.sets;
-    m_renderPass = core::requestRenderPass(core::RENDER_PASS_DEPTH_BIT);
+
+    core::RenderPassConfig renderPassConfig = 0;
+    if (info.depthTest) {
+        renderPassConfig = core::RENDER_PASS_DEPTH_BIT | core::RENDER_PASS_MULTISAMPLING_BIT;
+    }
+    if (info.multisampling) {
+        renderPassConfig |= core::RENDER_PASS_MULTISAMPLING_BIT;
+    }
+
+    m_renderPass = core::requestRenderPass(renderPassConfig);
 
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
     shaderStages.resize(info.shaders.size());
@@ -51,10 +59,10 @@ void Object::createObject(const ObjectCreateInfo& info) {
     }
 
     VkViewport viewport = {};
-    viewport.x = currentViewport.x;
-    viewport.y = currentViewport.y;
-    viewport.width = currentViewport.width;
-    viewport.height = currentViewport.height;
+    viewport.x = info.viewport.x;
+    viewport.y = info.viewport.y;
+    viewport.width = info.viewport.width;
+    viewport.height = info.viewport.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
@@ -76,8 +84,7 @@ void Object::createObject(const ObjectCreateInfo& info) {
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizer.lineWidth = 1.0f;
     rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-    rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
-    // rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterizer.depthBiasEnable = VK_FALSE;
     rasterizer.depthBiasConstantFactor = 0.0f;
     rasterizer.depthBiasClamp = 0.0f;
@@ -85,10 +92,14 @@ void Object::createObject(const ObjectCreateInfo& info) {
 
     VkPipelineMultisampleStateCreateInfo multisampling = {};
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-    multisampling.rasterizationSamples = core::apiCore.multisampling.sampleCount;
-    if (info.minSampleShading) {
-        multisampling.sampleShadingEnable = VK_TRUE;
-        multisampling.minSampleShading = 0.2f;
+    if (info.multisampling) {
+        multisampling.rasterizationSamples = core::apiCore.multisampling.sampleCount;
+        if (info.minSampleShading) {
+            multisampling.sampleShadingEnable = VK_TRUE;
+            multisampling.minSampleShading = 0.2f;
+        }
+    } else {
+        multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
     }
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment = {};

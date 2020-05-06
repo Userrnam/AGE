@@ -20,7 +20,7 @@ void createCommandPools();
 void createSyncObjects();
 void allocateCommandBuffers();
 
-void createCamera();
+// void createCamera();
 
 void setClearColor(const Color& color);
 

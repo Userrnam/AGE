@@ -3,6 +3,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
+#include "Viewport.hpp"
 #include "Shader.hpp"
 #include "Core/Descriptor.hpp"
 #include "Core/RenderPassRef.hpp"
@@ -11,7 +12,9 @@
 namespace age {
 
 struct ObjectCreateInfo {
-    bool depthTest;
+    Viewport viewport;
+    bool depthTest = false;
+    bool multisampling = false;
     float minSampleShading = 0.0f;
     std::vector<Shader> shaders;
     core::Descriptor descriptor;

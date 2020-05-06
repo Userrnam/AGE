@@ -83,15 +83,15 @@ struct Core {
 
     std::vector<PipelineLayoutRef> pipelineLayouts;
 
-    struct {
-        VkDescriptorSet descriptor;
-        Buffer buffer;
-    } camera;
+    // struct {
+    //     VkDescriptorSet descriptor;
+    //     Buffer buffer;
+    // } camera;
 
-    struct {
-        VkDescriptorSet descriptor;
-        Buffer buffer;
-    } staticCamera;
+    // struct {
+    //     VkDescriptorSet descriptor;
+    //     Buffer buffer;
+    // } staticCamera;
 
     struct {
         std::vector<VkCommandBuffer> data;
@@ -135,12 +135,6 @@ struct Core {
             printVar(layout.uboBinding, ident);
             printVar(layout.uboCount, ident);
         }
-        ident -= tab;
-
-        std::cout << "Camera:\n";
-        ident += tab;
-        printVar(camera.buffer.getBuffer(), ident);
-        printVar(camera.descriptor, ident);
         ident -= tab;
     }
 };

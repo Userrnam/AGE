@@ -1,12 +1,15 @@
 #pragma once
 
 #include "Graphics/Core/CoreLayer.hpp"
+#include "Graphics/View.hpp"
 #include <glm/glm.hpp>
 
 namespace age {
 
 class Application : public core::CoreLayer {
 protected:
+    View defaultView;
+
     void updateCommandBuffers();
     glm::vec2 getWindowSize();
 
@@ -17,7 +20,6 @@ protected:
     virtual void onDelete() {}
 
 public:
-    Application();
     void create();
     void run();
 };

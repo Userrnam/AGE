@@ -5,8 +5,15 @@
 #include "Object.hpp"
 #include "Core/Buffer.hpp"
 #include "Transformable.hpp"
+#include "View.hpp"
 
 namespace age {
+
+/*
+
+Rectangles origin must be in range 0-1
+
+*/
 
 struct RectangleUniform {
     glm::mat4 transform;
@@ -16,8 +23,10 @@ struct RectangleUniform {
 class Rectangle : public Object, public Transformable {
     core::Buffer m_uboBuffer;
     glm::vec4 m_color = {};
+    bool m_isOwner;
 public:
-    void create(bool cameraAccess = true);
+    void create(const Rectangle& sample);
+    void create(const View& view);
     void destroy();
 
     glm::vec4 getColor() const { return m_color; }

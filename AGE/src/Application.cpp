@@ -10,9 +10,6 @@
 
 namespace age {
 
-Application::Application() {
-    setDefaultViewport();
-}
 
 void Application::updateCommandBuffers() {
     // update active commandBuffer

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <cstdint>
+#include <string>
 
 #define MAKE_VERSION(major, minor, patch) \
     (((major) << 22) | ((minor) << 12) | (patch))
@@ -28,13 +29,13 @@ struct CoreConfig {
     } features;
 
     struct {
-        char* name = nullptr;
+        std::string name;
         uint32_t version = MAKE_VERSION(1, 0, 0);
     } appInfo;
 
     struct {
         bool resizable = false;
-        const char* title = "AGE";
+        std::string title;
         int width = 0;
         int height = 0;
     } window;

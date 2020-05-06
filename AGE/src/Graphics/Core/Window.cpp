@@ -41,7 +41,7 @@ void create() {
         height = coreConfig.window.height;
     }
 
-    apiCore.window.handle = glfwCreateWindow(width, height, coreConfig.window.title, nullptr, nullptr);
+    apiCore.window.handle = glfwCreateWindow(width, height, coreConfig.window.title.c_str(), nullptr, nullptr);
 
     if (fullScreen) {
         glfwSetWindowMonitor(apiCore.window.handle, monitor, 0, 0, width, height, mode->refreshRate);

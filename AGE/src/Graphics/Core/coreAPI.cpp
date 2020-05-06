@@ -41,7 +41,7 @@ void init() {
 
 	VkApplicationInfo appInfo = {};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = coreConfig.appInfo.name;
+	appInfo.pApplicationName = coreConfig.appInfo.name.c_str();
 	appInfo.applicationVersion = coreConfig.appInfo.version;
 	appInfo.pEngineName = "ASA";
 	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -365,7 +365,7 @@ void createMultisamplingResources() {
 	info.mipLevel = 1;
 	info.numberOfSamples = apiCore.multisampling.sampleCount;
 	info.tiling = VK_IMAGE_TILING_OPTIMAL;
-	info.imageUsage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT;
+	info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT;
 	info.memoryProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 	info.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
 
@@ -425,43 +425,43 @@ void allocateCommandBuffers() {
 	}
 }
 
-void createCamera() {
-	VkDeviceSize bufferSize = sizeof(glm::mat4);
+// void createCamera() {
+// 	VkDeviceSize bufferSize = sizeof(glm::mat4);
 
-	BufferCreateInfo bufferInfo;
-	bufferInfo.size = bufferSize;
-	bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-	bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-	apiCore.camera.buffer.create(bufferInfo);
-	// apiCore.staticCamera.buffer.create(bufferInfo);
+// 	BufferCreateInfo bufferInfo;
+// 	bufferInfo.size = bufferSize;
+// 	bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+// 	bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+// 	apiCore.camera.buffer.create(bufferInfo);
+// 	// apiCore.staticCamera.buffer.create(bufferInfo);
 
-	glm::mat4 identity = glm::mat4(1.0f);
-	glm::mat4 proj = glm::ortho(
-		0.0f, static_cast<float>(apiCore.swapchain.extent.width),
-		static_cast<float>(apiCore.swapchain.extent.height), 0.0f,
-		0.0f, 1.0f
-	);
+// 	glm::mat4 identity = glm::mat4(1.0f);
+// 	glm::mat4 proj = glm::ortho(
+// 		0.0f, static_cast<float>(apiCore.swapchain.extent.width),
+// 		static_cast<float>(apiCore.swapchain.extent.height), 0.0f,
+// 		0.0f, 1.0f
+// 	);
 
-	proj[2][2] = 2.0f;
+// 	proj[2][2] = 2.0f;
 
-	proj = proj;
+// 	proj = proj;
 
-	apiCore.camera.buffer.loadData(&proj, sizeof(proj));
+// 	apiCore.camera.buffer.loadData(&proj, sizeof(proj));
 
-	UniformBuffer ubo;
-	ubo.buffer = apiCore.camera.buffer.getBuffer();
-	ubo.size = sizeof(glm::mat4);
+// 	UniformBuffer ubo;
+// 	ubo.buffer = apiCore.camera.buffer.getBuffer();
+// 	ubo.size = sizeof(glm::mat4);
 
-	DescriptorInfo descriptorInfo;
-	descriptorInfo.ubos.push_back(ubo);
-	descriptorInfo.ubosBinding = 0;
+// 	DescriptorInfo descriptorInfo;
+// 	descriptorInfo.ubos.push_back(ubo);
+// 	descriptorInfo.ubosBinding = 0;
 
-	apiCore.camera.descriptor = getDescriptor(descriptorInfo).sets.back();
+// 	apiCore.camera.descriptor = getDescriptor(descriptorInfo).sets.back();
 
-	// descriptorInfo.ubos.pop_back();
-	// ubo.buffer = apiCore.staticCamera.buffer.getBuffer();
-	// apiCore.staticCamera.descriptor = getDescriptor(descriptorInfo).sets.back();
-}
+// 	// descriptorInfo.ubos.pop_back();
+// 	// ubo.buffer = apiCore.staticCamera.buffer.getBuffer();
+// 	// apiCore.staticCamera.descriptor = getDescriptor(descriptorInfo).sets.back();
+// }
 
 void setClearColor(const Color& color) {
 	apiCore.swapchain.clearColor.float32[0] = color.r;

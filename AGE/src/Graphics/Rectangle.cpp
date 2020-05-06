@@ -41,18 +41,11 @@ struct Vertex {
 	}
 };
 
-// static std::vector<Vertex> verticies = {
-//     { { -1.0,  1.0 } },
-//     { {  1.0,  1.0 } },
-//     { {  1.0, -1.0 } },
-//     { { -1.0, -1.0 } },
-// };
-
 static std::vector<Vertex> verticies = {
-    { { 0.0, 1.0 } },
-    { { 1.0, 1.0 } },
-    { { 1.0, 0.0 } },
     { { 0.0, 0.0 } },
+    { { 1.0, 0.0 } },
+    { { 1.0, 1.0 } },
+    { { 0.0, 1.0 } },
 };
 
 static std::vector<uint16_t> indicies = { 0, 1, 2, 2, 3, 0 };
@@ -74,36 +67,53 @@ std::vector<Shader> createShaders() {
     return out;
 };
 
-core::Descriptor getDescriptor(bool cameraAccess, VkBuffer buffer) {
-    std::vector<core::Sampler> samplers;
-
+core::Descriptor getDescriptor(VkBuffer buffer) {
     core::DescriptorInfo descriptorInfo;
     descriptorInfo.ubos.resize(1);
     descriptorInfo.ubos[0].buffer = buffer;
     descriptorInfo.ubos[0].size = sizeof(RectangleUniform);
     descriptorInfo.ubosBinding = 0;
 
-    auto descriptor = core::getDescriptor(descriptorInfo);
-
-    if (cameraAccess) {
-        descriptor.sets.insert(descriptor.sets.begin(), core::apiCore.camera.descriptor);
-        descriptor.layouts.insert(descriptor.layouts.begin(), core::apiCore.descriptor.layouts[0].layout);
-    }
-
-    return descriptor;
+    return core::getDescriptor(descriptorInfo);;
 }
 
-void Rectangle::create(bool cameraAccess) {
+void Rectangle::create(const Rectangle& sample) {
+    m_isOwner = false;
+
+    m_renderPass = sample.m_renderPass;
+    m_vertex = sample.m_vertex;
+    m_index = sample.m_index;
+    m_pipeline = sample.m_pipeline;
+    m_pipelineLayout = sample.m_pipelineLayout;
+    m_descriptorSets = sample.m_descriptorSets;
+
     core::BufferCreateInfo bufferInfo = {};
     bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
     bufferInfo.size = sizeof(RectangleUniform);
     bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+    m_uboBuffer.create(bufferInfo);
 
+    auto descriptor = getDescriptor(m_uboBuffer.getBuffer());
+    // replace ubo descriptor
+    m_descriptorSets[0] = descriptor.sets[0];
+}
+
+void Rectangle::create(const View& view) {
+    m_isOwner = true;
+
+    core::BufferCreateInfo bufferInfo = {};
+    bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    bufferInfo.size = sizeof(RectangleUniform);
+    bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     m_uboBuffer.create(bufferInfo);
 
     ObjectCreateInfo createInfo;
     createInfo.depthTest = false;
-    createInfo.descriptor = getDescriptor(cameraAccess, m_uboBuffer.getBuffer());
+    createInfo.descriptor = getDescriptor(m_uboBuffer.getBuffer());
+    // append camera descriptor
+    createInfo.descriptor.sets.push_back(view.camera.m_descriptor.set);
+    createInfo.descriptor.layouts.push_back(view.camera.m_descriptor.layout);
+
     createInfo.index.buffer = core::createDeviceLocalBuffer(indicies.data(), indicies.size() * sizeof(indicies[0]), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
     createInfo.index.count = indicies.size();
     createInfo.index.type = VK_INDEX_TYPE_UINT16;
@@ -112,6 +122,7 @@ void Rectangle::create(bool cameraAccess) {
     createInfo.vertex.attributeDescriptions = Vertex::getAttributeDescriptions();
     createInfo.vertex.bindingDescription = Vertex::getBindingDescription();
     createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+    createInfo.viewport = view.viewport;
 
     createObject(createInfo);
 
@@ -122,9 +133,11 @@ void Rectangle::create(bool cameraAccess) {
 
 void Rectangle::destroy() {
     m_uboBuffer.destroy();
-    m_vertex.buffer.destroy();
-    m_index.buffer.destroy();
-    vkDestroyPipeline(core::apiCore.device, m_pipeline, nullptr);
+    if (m_isOwner) {
+        m_vertex.buffer.destroy();
+        m_index.buffer.destroy();
+        vkDestroyPipeline(core::apiCore.device, m_pipeline, nullptr);
+    }
 }
 
 void Rectangle::setUniform(const RectangleUniform& uniform) {

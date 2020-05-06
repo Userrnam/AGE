@@ -5,9 +5,12 @@
 
 namespace age::core {
 
-enum RenderPassConfig {
-    RENDER_PASS_DEPTH_BIT,
-    RENDER_PASS_MULTISAMPLING_BIT
+typedef uint32_t RenderPassConfig;
+
+enum RenderPassConfigBits {
+    RENDER_PASS_NO_CONFIG = 0,
+    RENDER_PASS_DEPTH_BIT = 1,
+    RENDER_PASS_MULTISAMPLING_BIT = 2
 };
 
 struct RenderPassRef {
