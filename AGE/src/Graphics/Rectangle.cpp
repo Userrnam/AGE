@@ -67,6 +67,23 @@ std::vector<Shader> createShaders() {
     return out;
 };
 
+std::vector<Shader> createTShaders() {
+    std::vector<Shader> out;
+    out.resize(2);
+
+    // vertex shader
+    out[0].create(SHADER_PATH "rectangleT.vert.spv");
+    out[0].entry = "main";
+    out[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
+
+    // fragment shader
+    out[1].create(SHADER_PATH "rectangleT.frag.spv");
+    out[1].entry = "main";
+    out[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    return out;
+};
+
 core::Descriptor getDescriptor(VkBuffer buffer) {
     core::DescriptorInfo descriptorInfo;
     descriptorInfo.ubos.resize(1);
@@ -75,6 +92,44 @@ core::Descriptor getDescriptor(VkBuffer buffer) {
     descriptorInfo.ubosBinding = 0;
 
     return core::getDescriptor(descriptorInfo);;
+}
+
+core::Descriptor getTDescriptor(VkBuffer buffer, const Texture& texture) {
+    core::DescriptorInfo descriptorInfo;
+    descriptorInfo.ubos.resize(1);
+    descriptorInfo.ubos[0].buffer = buffer;
+    descriptorInfo.ubos[0].size = sizeof(RectangleUniform);
+    descriptorInfo.ubosBinding = 0;
+
+    descriptorInfo.samplers.resize(1);
+    descriptorInfo.samplers[0].sampler = texture.getSampler();
+    descriptorInfo.samplers[0].view = texture.getImage().getView();
+    descriptorInfo.samplersBinding = 1;
+
+    return core::getDescriptor(descriptorInfo);;
+}
+
+void Rectangle::preCreate(const View& view, ObjectCreateInfo& createInfo) {
+    m_isOwner = true;
+
+    core::BufferCreateInfo bufferInfo = {};
+    bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    bufferInfo.size = sizeof(RectangleUniform);
+    bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+    m_uboBuffer.create(bufferInfo);
+
+    createInfo.depthTest = false;
+    createInfo.descriptor.sets.push_back(view.camera.m_descriptor.set);
+    createInfo.descriptor.layouts.push_back(view.camera.m_descriptor.layout);
+
+    createInfo.index.buffer = core::createDeviceLocalBuffer(indicies.data(), indicies.size() * sizeof(indicies[0]), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+    createInfo.index.count = indicies.size();
+    createInfo.index.type = VK_INDEX_TYPE_UINT16;
+    createInfo.minSampleShading = 0.0f;
+    createInfo.vertex.attributeDescriptions = Vertex::getAttributeDescriptions();
+    createInfo.vertex.bindingDescription = Vertex::getBindingDescription();
+    createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+    createInfo.viewport = view.viewport;
 }
 
 void Rectangle::create(const Rectangle& sample) {
@@ -95,11 +150,18 @@ void Rectangle::create(const Rectangle& sample) {
 
     auto descriptor = getDescriptor(m_uboBuffer.getBuffer());
     // replace ubo descriptor
-    m_descriptorSets[0] = descriptor.sets[0];
+    m_descriptorSets[1] = descriptor.sets[0];
 }
 
-void Rectangle::create(const View& view) {
-    m_isOwner = true;
+void Rectangle::create(const Rectangle& sample, const Texture& texture) {
+    m_isOwner = false;
+
+    m_renderPass = sample.m_renderPass;
+    m_vertex = sample.m_vertex;
+    m_index = sample.m_index;
+    m_pipeline = sample.m_pipeline;
+    m_pipelineLayout = sample.m_pipelineLayout;
+    m_descriptorSets = sample.m_descriptorSets;
 
     core::BufferCreateInfo bufferInfo = {};
     bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
@@ -107,22 +169,35 @@ void Rectangle::create(const View& view) {
     bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     m_uboBuffer.create(bufferInfo);
 
-    ObjectCreateInfo createInfo;
-    createInfo.depthTest = false;
-    createInfo.descriptor = getDescriptor(m_uboBuffer.getBuffer());
-    // append camera descriptor
-    createInfo.descriptor.sets.push_back(view.camera.m_descriptor.set);
-    createInfo.descriptor.layouts.push_back(view.camera.m_descriptor.layout);
+    auto descriptor = getTDescriptor(m_uboBuffer.getBuffer(), texture);
+    // replace ubo descriptor
+    m_descriptorSets[1] = descriptor.sets[0];
+}
 
-    createInfo.index.buffer = core::createDeviceLocalBuffer(indicies.data(), indicies.size() * sizeof(indicies[0]), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-    createInfo.index.count = indicies.size();
-    createInfo.index.type = VK_INDEX_TYPE_UINT16;
-    createInfo.minSampleShading = 0.0f;
+void Rectangle::create(const View& view) {
+    ObjectCreateInfo createInfo;
+    preCreate(view, createInfo);
+
+    auto d = getDescriptor(m_uboBuffer.getBuffer());
+    createInfo.descriptor.sets.push_back(d.sets[0]);
+    createInfo.descriptor.layouts.push_back(d.layouts[0]);
     createInfo.shaders = createShaders();
-    createInfo.vertex.attributeDescriptions = Vertex::getAttributeDescriptions();
-    createInfo.vertex.bindingDescription = Vertex::getBindingDescription();
-    createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-    createInfo.viewport = view.viewport;
+
+    createObject(createInfo);
+
+    for (auto& shader : createInfo.shaders) {
+        shader.destroy();
+    }
+}
+
+void Rectangle::create(const View& view, const Texture& texture) {
+    ObjectCreateInfo createInfo;
+    preCreate(view, createInfo);
+
+    auto d = getTDescriptor(m_uboBuffer.getBuffer(), texture);
+    createInfo.descriptor.sets.push_back(d.sets[0]);
+    createInfo.descriptor.layouts.push_back(d.layouts[0]);
+    createInfo.shaders = createTShaders();
 
     createObject(createInfo);
 

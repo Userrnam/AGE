@@ -24,6 +24,10 @@ class Texture {
     VkSampler m_sampler;
     core::Image m_image;
 public:
+    // FIXME
+    VkSampler getSampler() const { return m_sampler; }
+    const core::Image& getImage() const { return m_image; }
+
     void create(const std::string& filename, const TextureCreateInfo& createInfo = TextureCreateInfo());
     void destroy();
 };

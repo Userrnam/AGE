@@ -4,6 +4,7 @@
 #include "External/stb_image.h"
 #include "Core/Buffer.hpp"
 #include "Core/Core.hpp"
+#include "Core/TransitionImageLayout.hpp"
 
 namespace age {
 
@@ -37,7 +38,7 @@ void Texture::create(const std::string& filename, const TextureCreateInfo& creat
     imageCreateInfo.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
     imageCreateInfo.extent.width = static_cast<uint32_t>(texWidth);
     imageCreateInfo.extent.height = static_cast<uint32_t>(texHeight);
-    imageCreateInfo.format = core::apiCore.swapchain.format;
+    imageCreateInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
     imageCreateInfo.imageUsage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
     imageCreateInfo.memoryProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
     imageCreateInfo.mipLevel = mipLevel;
@@ -76,6 +77,17 @@ void Texture::create(const std::string& filename, const TextureCreateInfo& creat
     samplerInfo.minLod = 0.0f;
     samplerInfo.maxLod = static_cast<float>(m_image.getMipLevel());
     samplerInfo.mipLodBias = 0.0f;
+
+	core::TransitionInfo transitionInfo;
+	transitionInfo.image = m_image.getImage();
+    transitionInfo.mipLevel = m_image.getMipLevel();
+	transitionInfo.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	transitionInfo.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    transitionInfo.srcAccessMask = 0;
+	transitionInfo.dstAccessMask = 0;
+	transitionInfo.srcStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+	transitionInfo.dstStage = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
+	transitionImageLayout(transitionInfo);
 
     if (vkCreateSampler(core::apiCore.device, &samplerInfo, nullptr, &m_sampler) != VK_SUCCESS) {
         throw std::runtime_error("failed to create sampler");
