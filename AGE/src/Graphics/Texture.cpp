@@ -8,6 +8,48 @@
 
 namespace age {
 
+void Texture::create(const TextureCreateInfo& createInfo) {
+        // create sampler
+    VkSamplerCreateInfo samplerInfo = {};
+    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    samplerInfo.magFilter = createInfo.sampler.magFilter;
+    samplerInfo.minFilter = createInfo.sampler.minFilter;
+    samplerInfo.addressModeU = createInfo.sampler.addressModeU;
+    samplerInfo.addressModeW = createInfo.sampler.addressModeW;
+
+    if (createInfo.sampler.maxAnistropy > 0.0f) {
+        samplerInfo.anisotropyEnable = createInfo.sampler.maxAnistropy;
+        samplerInfo.maxAnisotropy = createInfo.sampler.maxAnistropy;
+    }
+
+    samplerInfo.borderColor = VK_BORDER_COLOR_INT_TRANSPARENT_BLACK;
+    samplerInfo.unnormalizedCoordinates = VK_FALSE;
+
+    // ??
+    // samplerInfo.compareEnable = VK_TRUE;
+    // samplerInfo.compareOp = VK_COMPARE_OP_LESS;
+
+    samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    samplerInfo.minLod = 0.0f;
+    samplerInfo.maxLod = static_cast<float>(m_image.getMipLevel());
+    samplerInfo.mipLodBias = 0.0f;
+
+	core::TransitionInfo transitionInfo;
+	transitionInfo.image = m_image.getImage();
+    transitionInfo.mipLevel = m_image.getMipLevel();
+	transitionInfo.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	transitionInfo.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    transitionInfo.srcAccessMask = 0;
+	transitionInfo.dstAccessMask = 0;
+	transitionInfo.srcStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+	transitionInfo.dstStage = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
+	transitionImageLayout(transitionInfo);
+
+    if (vkCreateSampler(core::apiCore.device, &samplerInfo, nullptr, &m_sampler) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create sampler");
+    }
+}
+
 void Texture::create(const std::string& filename, const TextureCreateInfo& createInfo) {
     int texWidth, texHeight, texChannels;
     stbi_uc* pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -49,52 +91,16 @@ void Texture::create(const std::string& filename, const TextureCreateInfo& creat
     stagingBuffer.copyTo(m_image);
     stagingBuffer.destroy();
 
+    // FIXME: image should be loaded mipmaped
     if (createInfo.mipLevel > 1) {
         m_image.generateMipmaps();
     }
 
     // create sampler
-    VkSamplerCreateInfo samplerInfo = {};
-    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-    samplerInfo.magFilter = createInfo.sampler.magFilter;
-    samplerInfo.minFilter = createInfo.sampler.minFilter;
-    samplerInfo.addressModeU = createInfo.sampler.addressModeU;
-    samplerInfo.addressModeW = createInfo.sampler.addressModeW;
-
-    if (createInfo.sampler.maxAnistropy > 0.0f) {
-        samplerInfo.anisotropyEnable = createInfo.sampler.maxAnistropy;
-        samplerInfo.maxAnisotropy = createInfo.sampler.maxAnistropy;
-    }
-
-    samplerInfo.borderColor = VK_BORDER_COLOR_INT_TRANSPARENT_BLACK;
-    samplerInfo.unnormalizedCoordinates = VK_FALSE;
-
-    // ??
-    // samplerInfo.compareEnable = VK_TRUE;
-    // samplerInfo.compareOp = VK_COMPARE_OP_LESS;
-
-    samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-    samplerInfo.minLod = 0.0f;
-    samplerInfo.maxLod = static_cast<float>(m_image.getMipLevel());
-    samplerInfo.mipLodBias = 0.0f;
-
-	core::TransitionInfo transitionInfo;
-	transitionInfo.image = m_image.getImage();
-    transitionInfo.mipLevel = m_image.getMipLevel();
-	transitionInfo.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-	transitionInfo.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    transitionInfo.srcAccessMask = 0;
-	transitionInfo.dstAccessMask = 0;
-	transitionInfo.srcStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-	transitionInfo.dstStage = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
-	transitionImageLayout(transitionInfo);
-
-    if (vkCreateSampler(core::apiCore.device, &samplerInfo, nullptr, &m_sampler) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create sampler");
-    }
+    this->create(createInfo);
 }
 
-Texture::~Texture() {
+void Texture::destroy() {
     m_image.destroy();
     vkDestroySampler(core::apiCore.device, m_sampler, nullptr);
 }

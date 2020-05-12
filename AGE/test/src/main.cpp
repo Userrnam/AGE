@@ -13,6 +13,8 @@
 #include "Graphics/Texture.hpp"
 #include "Graphics/Viewport.hpp"
 #include "Graphics/View.hpp"
+#include "Graphics/Font.hpp"
+#include "Graphics/Text.hpp"
 
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""
@@ -35,25 +37,36 @@ class Application : public age::Application {
     age::TexturedRectangleFactory trFactory;
     std::vector<age::TexturedRectangleInstance> trInstances;
 
+    age::Font font;
+    age::Text text;
+
     double counter = 0;
 
     void draw(int i) override {
+        age::core::cmd::clear(i);
         background.draw(i);
         rect.draw(i);
         rFactory.draw(i);
         trFactory.draw(i);
+        text.draw(i);
     }
 
     void onCreate() override {
+        age::core::setClearColor({1, 0, 0, 1});
         winSize = getWindowSize();
         tex.create(age::getResourcePath("mountains.png"));
+
+        // font.load(age::getResourcePath("BraveSt.ttf"), 100);
+        font.load(age::getResourcePath("Courier.dfont"), 100);
+        text.create(defaultView, font);
+        text.setText("hello");
 
         trFactory.create(defaultView, 1, tex);
         trInstances.resize(1);
         for (auto& tr : trInstances) {
             trFactory.addChild(tr);
             tr.setPosition(0,0);
-            tr.setScale(winSize.x/2, winSize.y / 2);
+            tr.setScale(2400, 100);
             glm::vec2 texCoords[] = {
                 {0, 1},
                 {1, 1},
@@ -76,10 +89,10 @@ class Application : public age::Application {
             r.setScale(100, 100);
             r.setRotation(static_cast<float>(i) * 0.001);
             r.updateTransform();
-            i+=100;
+            i += 100;
         }
         rFactory.upload();
-        
+
         rect.create(dynamicView, true);
 
         rect.setColor({1,0,0,0.5});
@@ -98,6 +111,9 @@ class Application : public age::Application {
     }
 
     void onDelete() override {
+        font.destroy();
+        text.destroy();
+        tex.destroy();
         background.destroy();
         rect.destroy();
         rFactory.destroy();
@@ -128,6 +144,7 @@ class Application : public age::Application {
 
 int main(int argc, char* argv[]) {
     age::setResourcePath(RESOURCE_PATH);
+    age::initFreeType();
 
     age::core::CoreConfig config;
     config.window.width = 948;
