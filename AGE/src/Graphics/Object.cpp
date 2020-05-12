@@ -14,6 +14,7 @@ void Object::createObject(const ObjectCreateInfo& info) {
     m_index.type = info.index.type;
     m_vertex.buffer = info.vertex.buffer;
     m_descriptorSets = info.descriptor.sets;
+    m_instanceCount = info.instanceCount;
 
     core::RenderPassConfig renderPassConfig = 0;
     if (info.depthTest) {
@@ -28,11 +29,25 @@ void Object::createObject(const ObjectCreateInfo& info) {
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
     shaderStages.resize(info.shaders.size());
 
+    std::vector<VkSpecializationInfo> specializationInfos;
+    uint32_t specIndex = 0;
+    specializationInfos.resize(info.shaders.size());
     for (size_t i = 0; i < info.shaders.size(); ++i) {
         shaderStages[i].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         shaderStages[i].module = info.shaders[i].getShaderModule();
         shaderStages[i].pName = info.shaders[i].entry.c_str();
         shaderStages[i].stage = info.shaders[i].stage;
+
+        if (info.shaders[i].specialization.data.size() != 0) {
+            specializationInfos[specIndex].dataSize = info.shaders[i].specialization.data.size() * sizeof(uint8_t);
+            specializationInfos[specIndex].mapEntryCount = info.shaders[i].specialization.entries.size();
+            specializationInfos[specIndex].pData = info.shaders[i].specialization.data.data();
+            specializationInfos[specIndex].pMapEntries = info.shaders[i].specialization.entries.data();
+
+            shaderStages[i].pSpecializationInfo = &specializationInfos[specIndex];
+
+            specIndex++;
+        }
     }
 
     VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo = {};
@@ -165,7 +180,7 @@ void Object::draw(int i) {
         vkCmdBindIndexBuffer(core::apiCore.commandBuffers.active[i], indexBuffer, 0, m_index.type);
         vkCmdBindDescriptorSets(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, 
         m_pipelineLayout, 0, m_descriptorSets.size(), m_descriptorSets.data(), 0, nullptr);
-        vkCmdDrawIndexed(core::apiCore.commandBuffers.active[i], m_index.count, 1, 0, 0, 0);
+        vkCmdDrawIndexed(core::apiCore.commandBuffers.active[i], m_index.count, m_instanceCount, 0, 0, 0);
     vkCmdEndRenderPass(core::apiCore.commandBuffers.active[i]);
 }
 

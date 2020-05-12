@@ -82,15 +82,6 @@ void present() {
         throw std::runtime_error("failed to acquire swap chain image");
     }
 
-    // check if previous frame is using this image
-    if (apiCore.sync.imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
-        vkWaitForFences(apiCore.device, 1, &apiCore.sync.imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
-    }
-    // mark the image as now being in use by this frame
-    apiCore.sync.imagesInFlight[imageIndex] = apiCore.sync.inFlightFence;
-
-    // updateUniformBuffer(imageIndex);
-
     VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     VkSemaphore waitSemaphores[] = { apiCore.sync.imageAvailableSemaphore };

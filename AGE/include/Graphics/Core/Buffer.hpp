@@ -28,7 +28,7 @@ public:
 
     void copyTo(Buffer& buffer, VkDeviceSize size, VkDeviceSize srcOffset=0, VkDeviceSize dstOffset=0);
     void copyTo(Image& image, VkDeviceSize srcOffset=0);
-    void loadData(const void* data, VkDeviceSize size);
+    void loadData(const void* data, VkDeviceSize size, VkDeviceSize offset=0);
 };
 
 Buffer createDeviceLocalBuffer(void* data, VkDeviceSize size, VkBufferUsageFlags usage);

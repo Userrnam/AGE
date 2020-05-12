@@ -29,21 +29,57 @@ class Application : public age::Application {
     glm::vec2 winSize;
     glm::vec2 rectSize;
 
-    std::vector<age::Rectangle> inheritedRects;
+    age::RectangleFactory rFactory;
+    std::vector<age::RectangleInstance> rInstances;
+
+    age::TexturedRectangleFactory trFactory;
+    std::vector<age::TexturedRectangleInstance> trInstances;
 
     double counter = 0;
 
     void draw(int i) override {
         background.draw(i);
         rect.draw(i);
-        for (auto& r : inheritedRects) {
-            r.draw(i);
-        }
+        rFactory.draw(i);
+        trFactory.draw(i);
     }
 
     void onCreate() override {
         winSize = getWindowSize();
         tex.create(age::getResourcePath("mountains.png"));
+
+        trFactory.create(defaultView, 1, tex);
+        trInstances.resize(1);
+        for (auto& tr : trInstances) {
+            trFactory.addChild(tr);
+            tr.setPosition(0,0);
+            tr.setScale(winSize.x/2, winSize.y / 2);
+            glm::vec2 texCoords[] = {
+                {0, 1},
+                {1, 1},
+                {1, 0},
+                {0, 0},
+            };
+            tr.setTexCoords(texCoords);
+            tr.updateTransform();
+        }
+        trFactory.upload();
+
+        rFactory.create(defaultView, 1000);
+        // add children
+        rInstances.resize(1000);
+        int i = 0;
+        for (auto& r : rInstances) {
+            rFactory.addChild(r);
+            r.setColor(1, 0, 0, 1);
+            r.setPosition(i, 0);
+            r.setScale(100, 100);
+            r.setRotation(static_cast<float>(i) * 0.001);
+            r.updateTransform();
+            i+=100;
+        }
+        rFactory.upload();
+        
         rect.create(dynamicView, true);
 
         rect.setColor({1,0,0,0.5});
@@ -54,15 +90,6 @@ class Application : public age::Application {
 
         rectSize = rect.getScale();
 
-        inheritedRects.resize(1);
-        for (auto& r : inheritedRects) {
-            r.create(rect);
-            r.setColor({0,1,1,1});
-            r.setScale({ winSize.x / 8, winSize.x / 8 });
-            r.setPosition({ winSize.x / 4, winSize.x / 4 });
-            r.upload();
-        }
-
         background.create(defaultView, tex);
         background.setScale(winSize);
         background.setPosition(0, 0);
@@ -71,7 +98,10 @@ class Application : public age::Application {
     }
 
     void onDelete() override {
-        
+        background.destroy();
+        rect.destroy();
+        rFactory.destroy();
+        trFactory.destroy();
     }
 
     void onUpdate(float elapsedTime) override {
@@ -85,10 +115,12 @@ class Application : public age::Application {
         dynamicView.setScale((1 + sin(counter))/2, (1 + sin(counter))/2);
         dynamicView.upload();
 
-        for (auto& r : inheritedRects) {
-            r.setColor({ 1 + cos(counter)/2, 1+sin(counter)/2, 0, 0.5 });
-            r.upload();
+        for (auto& r : rInstances) {
+            r.setColor(1+cos(counter*2)/2, 1+sin(counter*2)/2, 0.7, 0.5);
+            r.rotate(0.01);
+            r.updateTransform();
         }
+        rFactory.upload();
 
         // std::cout << "fps: " << 1. / elapsedTime << '\n';
     }

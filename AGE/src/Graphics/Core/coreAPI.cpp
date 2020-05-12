@@ -392,7 +392,7 @@ void createCommandPools() {
 }
 
 void createSyncObjects() {
-	apiCore.sync.imagesInFlight.resize(apiCore.swapchain.images.size(), VK_NULL_HANDLE);
+	// apiCore.sync.imagesInFlight.resize(apiCore.swapchain.images.size(), VK_NULL_HANDLE);
 
 	VkSemaphoreCreateInfo semaphoreInfo = {};
 	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;

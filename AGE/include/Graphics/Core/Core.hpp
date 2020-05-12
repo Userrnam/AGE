@@ -78,20 +78,10 @@ struct Core {
         VkSemaphore imageAvailableSemaphore;
         VkSemaphore renderFinishedSemaphore;
         VkFence inFlightFence;
-        std::vector<VkFence> imagesInFlight;
+        // std::vector<VkFence> imagesInFlight;
     } sync;
 
     std::vector<PipelineLayoutRef> pipelineLayouts;
-
-    // struct {
-    //     VkDescriptorSet descriptor;
-    //     Buffer buffer;
-    // } camera;
-
-    // struct {
-    //     VkDescriptorSet descriptor;
-    //     Buffer buffer;
-    // } staticCamera;
 
     struct {
         std::vector<VkCommandBuffer> data;

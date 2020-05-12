@@ -29,6 +29,7 @@ struct ObjectCreateInfo {
         VkIndexType type;
         core::Buffer buffer;
     } index;
+    uint32_t instanceCount = 1;
 };
 
 class Object {
@@ -45,6 +46,8 @@ protected:
         VkIndexType type;
         core::Buffer buffer;
     } m_index;
+
+    uint32_t m_instanceCount;
     void createObject(const ObjectCreateInfo& createInfo);
 public:
     void draw(int i);

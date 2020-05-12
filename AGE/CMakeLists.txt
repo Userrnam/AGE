@@ -18,16 +18,16 @@ file(GLOB shader_sources
 )
 
 foreach(shader_source ${shader_sources})
-    file(RELATIVE_PATH r_path ${CMAKE_CURRENT_LIST_DIR}/src/Graphics ${shader_source})
-    list(APPEND shader_outs ${CMAKE_CURRENT_BINARY_DIR}/${r_path}.spv)
-    message(${CMAKE_CURRENT_BINARY_DIR}/${r_path}.spv)
+    file(RELATIVE_PATH r_path "${CMAKE_CURRENT_LIST_DIR}/src/Graphics" "${shader_source}")
+    list(APPEND shader_outs "${CMAKE_CURRENT_BINARY_DIR}/${r_path}.spv")
+    message("${CMAKE_CURRENT_BINARY_DIR}/${r_path}.spv")
 endforeach(shader_source ${shader_sources})
 
 foreach(shader_source ${shader_sources})
-    file(RELATIVE_PATH r_path ${CMAKE_CURRENT_LIST_DIR}/src/Graphics ${shader_source})
-    file(RELATIVE_PATH r_base ${PROJECT_SOURCE_DIR} ${shader_source})
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${r_path}.spv
-        COMMAND glslc ${shader_source} -o ${CMAKE_CURRENT_BINARY_DIR}/${r_path}.spv
+    file(RELATIVE_PATH r_path "${CMAKE_CURRENT_LIST_DIR}/src/Graphics" "${shader_source}")
+    file(RELATIVE_PATH r_base "${PROJECT_SOURCE_DIR}" "${shader_source}")
+    add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${r_path}.spv"
+        COMMAND glslc ${shader_source} -o "${CMAKE_CURRENT_BINARY_DIR}/${r_path}.spv"
         DEPENDS ${shader_source}
         COMMENT "Building shader ${r_base}.spv"
     )

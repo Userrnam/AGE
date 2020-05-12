@@ -93,9 +93,9 @@ void Buffer::copyTo(Image& image, VkDeviceSize srcOffset) {
 	endSingleTimeCommands(commandBuffer);
 }
 
-void Buffer::loadData(const void* data, VkDeviceSize size) {
+void Buffer::loadData(const void* data, VkDeviceSize size, VkDeviceSize offset) {
 	void* mapped;
-	vkMapMemory(apiCore.device, m_memory, 0, size, 0, &mapped);
+	vkMapMemory(apiCore.device, m_memory, offset, size, 0, &mapped);
 		memcpy(mapped, data, static_cast<size_t>(size));
 	vkUnmapMemory(apiCore.device, m_memory);
 }

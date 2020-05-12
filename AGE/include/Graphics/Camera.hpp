@@ -9,7 +9,6 @@
 namespace age {
 
 class View;
-class Rectangle;
 
 class Camera : public Transformable {
     struct {
@@ -18,7 +17,11 @@ class Camera : public Transformable {
     } m_descriptor;
     core::Buffer m_buffer;
     glm::mat4 m_projection = glm::mat4(1.0f);
-    friend Rectangle;
+
+    // FIXME
+    friend class Rectangle;
+    friend class RectangleFactory;
+    friend class TexturedRectangleFactory;
 public:
     Camera();
     ~Camera();

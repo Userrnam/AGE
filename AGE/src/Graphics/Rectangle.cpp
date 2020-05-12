@@ -50,34 +50,70 @@ static std::vector<Vertex> verticies = {
 
 static std::vector<uint16_t> indicies = { 0, 1, 2, 2, 3, 0 };
 
-std::vector<Shader> createShaders() {
+std::vector<Shader> createCShaders() {
     std::vector<Shader> out;
     out.resize(2);
 
     // vertex shader
-    out[0].create(SHADER_PATH "rectangle.vert.spv");
+    out[0].create(SHADER_PATH "rectangleC.vert.spv");
     out[0].entry = "main";
     out[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
 
     // fragment shader
-    out[1].create(SHADER_PATH "rectangle.frag.spv");
+    out[1].create(SHADER_PATH "rectangleC.frag.spv");
     out[1].entry = "main";
     out[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     return out;
 };
 
-std::vector<Shader> createTShaders() {
+std::vector<Shader> createFactoryShaders(uint32_t count) {
     std::vector<Shader> out;
     out.resize(2);
 
     // vertex shader
-    out[0].create(SHADER_PATH "rectangleT.vert.spv");
+    out[0].create(SHADER_PATH "factoryRectangleC.vert.spv");
+    out[0].entry = "main";
+    out[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
+    out[0].specialization.add<uint32_t>(count);
+
+    // fragment shader
+    out[1].create(SHADER_PATH "rectangleC.frag.spv");
+    out[1].entry = "main";
+    out[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    return out;
+};
+
+std::vector<Shader> createTexturedFactoryShaders(uint32_t count) {
+    std::vector<Shader> out;
+    out.resize(2);
+
+    // vertex shader
+    out[0].create(SHADER_PATH "factoryRectangleT.vert.spv");
+    out[0].entry = "main";
+    out[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
+    out[0].specialization.add<uint32_t>(count);
+
+    // fragment shader
+    out[1].create(SHADER_PATH "rectangleT.frag.spv");
+    out[1].entry = "main";
+    out[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    return out;
+};
+
+std::vector<Shader> createCTShaders() {
+    std::vector<Shader> out;
+    out.resize(2);
+
+    // vertex shader
+    out[0].create(SHADER_PATH "rectangleCT.vert.spv");
     out[0].entry = "main";
     out[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
 
     // fragment shader
-    out[1].create(SHADER_PATH "rectangleT.frag.spv");
+    out[1].create(SHADER_PATH "rectangleCT.frag.spv");
     out[1].entry = "main";
     out[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
 
@@ -94,11 +130,11 @@ core::Descriptor getDescriptor(VkBuffer buffer) {
     return core::getDescriptor(descriptorInfo);;
 }
 
-core::Descriptor getTDescriptor(VkBuffer buffer, const Texture& texture) {
+core::Descriptor getTDescriptor(VkBuffer buffer, uint32_t size, const Texture& texture) {
     core::DescriptorInfo descriptorInfo;
     descriptorInfo.ubos.resize(1);
     descriptorInfo.ubos[0].buffer = buffer;
-    descriptorInfo.ubos[0].size = sizeof(RectangleUniform);
+    descriptorInfo.ubos[0].size = size;
     descriptorInfo.ubosBinding = 0;
 
     descriptorInfo.samplers.resize(1);
@@ -141,6 +177,7 @@ void Rectangle::create(const Rectangle& sample) {
     m_pipeline = sample.m_pipeline;
     m_pipelineLayout = sample.m_pipelineLayout;
     m_descriptorSets = sample.m_descriptorSets;
+    m_instanceCount = sample.m_instanceCount;
 
     core::BufferCreateInfo bufferInfo = {};
     bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
@@ -169,7 +206,7 @@ void Rectangle::create(const Rectangle& sample, const Texture& texture) {
     bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     m_uboBuffer.create(bufferInfo);
 
-    auto descriptor = getTDescriptor(m_uboBuffer.getBuffer(), texture);
+    auto descriptor = getTDescriptor(m_uboBuffer.getBuffer(), sizeof(RectangleUniform), texture);
     // replace ubo descriptor
     m_descriptorSets[1] = descriptor.sets[0];
 }
@@ -182,7 +219,7 @@ void Rectangle::create(const View& view, bool colorBlending) {
     auto d = getDescriptor(m_uboBuffer.getBuffer());
     createInfo.descriptor.sets.push_back(d.sets[0]);
     createInfo.descriptor.layouts.push_back(d.layouts[0]);
-    createInfo.shaders = createShaders();
+    createInfo.shaders = createCShaders();
 
     createObject(createInfo);
 
@@ -196,10 +233,10 @@ void Rectangle::create(const View& view, const Texture& texture, bool colorBlend
     createInfo.colorBlending = colorBlending;
     preCreate(view, createInfo);
 
-    auto d = getTDescriptor(m_uboBuffer.getBuffer(), texture);
+    auto d = getTDescriptor(m_uboBuffer.getBuffer(), sizeof(RectangleUniform), texture);
     createInfo.descriptor.sets.push_back(d.sets[0]);
     createInfo.descriptor.layouts.push_back(d.layouts[0]);
-    createInfo.shaders = createTShaders();
+    createInfo.shaders = createCTShaders();
 
     createObject(createInfo);
 
@@ -208,7 +245,7 @@ void Rectangle::create(const View& view, const Texture& texture, bool colorBlend
     }
 }
 
-Rectangle::~Rectangle() {
+void Rectangle::destroy() {
     m_uboBuffer.destroy();
     if (m_isOwner) {
         m_vertex.buffer.destroy();
@@ -239,6 +276,169 @@ void Rectangle::upload() {
     uniform.transform = getTransform();
 
     m_uboBuffer.loadData(&uniform, sizeof(uniform));
+}
+
+void RectangleFactory::addChild(RectangleInstance& instance) {
+    if (m_instanceCount >= m_count) {
+        throw std::runtime_error("RectangleFactory::addChild: attempt to fit " + std::to_string(m_instanceCount+1) +
+        " children in a factory with size " + std::to_string(m_count));
+    }
+
+    instance.m_factoryOffset = m_instanceCount * sizeof(RectangleUniform);
+    instance.m_uniform = &m_ubos[m_instanceCount];
+    instance.m_uboBuffer = &m_uboBuffer;
+    m_totalSize += sizeof(RectangleUniform);
+
+    m_instanceCount++;
+}
+
+void RectangleFactory::create(const View& view, uint32_t count, bool colorBlending) {
+    m_count = count;
+    m_ubos.resize(count);
+
+    ObjectCreateInfo createInfo;
+    createInfo.colorBlending = colorBlending;
+
+    core::BufferCreateInfo bufferInfo = {};
+    bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    bufferInfo.size = sizeof(RectangleUniform) * count;
+    bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+    m_uboBuffer.create(bufferInfo);
+
+    createInfo.depthTest = false;
+    createInfo.descriptor.sets.push_back(view.camera.m_descriptor.set);
+    createInfo.descriptor.layouts.push_back(view.camera.m_descriptor.layout);
+
+    createInfo.index.buffer = core::createDeviceLocalBuffer(indicies.data(), indicies.size() * sizeof(indicies[0]), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+    createInfo.index.count = indicies.size();
+    createInfo.index.type = VK_INDEX_TYPE_UINT16;
+    createInfo.minSampleShading = 0.0f;
+    createInfo.vertex.attributeDescriptions = Vertex::getAttributeDescriptions();
+    createInfo.vertex.bindingDescription = Vertex::getBindingDescription();
+    createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+    createInfo.viewport = view.viewport;
+    createInfo.instanceCount = 0;
+
+    auto d = getDescriptor(m_uboBuffer.getBuffer());
+    createInfo.descriptor.sets.push_back(d.sets[0]);
+    createInfo.descriptor.layouts.push_back(d.layouts[0]);
+    createInfo.shaders = createFactoryShaders(count);
+
+    createObject(createInfo);
+
+    for (auto& shader : createInfo.shaders) {
+        shader.destroy();
+    }
+}
+
+void RectangleFactory::destroy() {
+    m_uboBuffer.destroy();
+    m_vertex.buffer.destroy();
+    m_index.buffer.destroy();
+    vkDestroyPipeline(core::apiCore.device, m_pipeline, nullptr);
+}
+
+void RectangleFactory::upload() {
+    m_uboBuffer.loadData(m_ubos.data(), m_totalSize);
+}
+
+void TexturedRectangleFactory::addChild(TexturedRectangleInstance& instance) {
+    if (m_instanceCount >= m_count) {
+        throw std::runtime_error("RectangleFactory::addChild: attempt to fit " + std::to_string(m_instanceCount+1) +
+        " children in a factory with size " + std::to_string(m_count));
+    }
+
+    instance.m_factoryOffset = m_instanceCount * sizeof(TexturedRectangleUniform);
+    instance.m_uniform = &m_ubos[m_instanceCount];
+    instance.m_uboBuffer = &m_uboBuffer;
+    m_totalSize += sizeof(TexturedRectangleUniform);
+
+    m_instanceCount++;
+}
+
+void TexturedRectangleFactory::create(const View& view, uint32_t count, Texture& texture, bool colorBlending) {
+    m_count = count;
+    m_ubos.resize(count);
+
+    ObjectCreateInfo createInfo;
+    createInfo.colorBlending = colorBlending;
+
+    core::BufferCreateInfo bufferInfo = {};
+    bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    bufferInfo.size = sizeof(TexturedRectangleUniform) * count;
+    bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+    m_uboBuffer.create(bufferInfo);
+
+    createInfo.depthTest = false;
+    createInfo.descriptor.sets.push_back(view.camera.m_descriptor.set);
+    createInfo.descriptor.layouts.push_back(view.camera.m_descriptor.layout);
+
+    createInfo.index.buffer = core::createDeviceLocalBuffer(indicies.data(), indicies.size() * sizeof(indicies[0]), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+    createInfo.index.count = indicies.size();
+    createInfo.index.type = VK_INDEX_TYPE_UINT16;
+    createInfo.minSampleShading = 0.0f;
+    createInfo.vertex.attributeDescriptions = Vertex::getAttributeDescriptions();
+    createInfo.vertex.bindingDescription = Vertex::getBindingDescription();
+    createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+    createInfo.viewport = view.viewport;
+    createInfo.instanceCount = 0;
+
+    auto d = getTDescriptor(m_uboBuffer.getBuffer(), sizeof(TexturedRectangleUniform), texture);
+    createInfo.descriptor.sets.push_back(d.sets[0]);
+    createInfo.descriptor.layouts.push_back(d.layouts[0]);
+    createInfo.shaders = createTexturedFactoryShaders(count);
+
+    createObject(createInfo);
+
+    for (auto& shader : createInfo.shaders) {
+        shader.destroy();
+    }
+}
+
+void TexturedRectangleFactory::destroy() {
+    m_uboBuffer.destroy();
+    m_vertex.buffer.destroy();
+    m_index.buffer.destroy();
+    vkDestroyPipeline(core::apiCore.device, m_pipeline, nullptr);
+}
+
+void TexturedRectangleFactory::upload() {
+    m_uboBuffer.loadData(m_ubos.data(), m_totalSize);
+}
+
+void RectangleInstance::setColor(const glm::vec4& color) {
+    m_uniform->color = color;
+}
+
+void RectangleInstance::setColor(float r, float g, float b, float a) {
+    m_uniform->color.r = r;
+    m_uniform->color.g = g;
+    m_uniform->color.b = b;
+    m_uniform->color.a = a;
+}
+
+void RectangleInstance::updateTransform() {
+    m_uniform->transform = getTransform();
+}
+
+// FIXME
+void RectangleInstance::upload() {
+    m_uboBuffer->loadData(m_uniform, sizeof(RectangleUniform), m_factoryOffset);
+}
+
+void TexturedRectangleInstance::setTexCoords(glm::vec2 coords[4]) {
+    for (size_t i = 0; i < 4; ++i) {
+        m_uniform->texCoords[i] = coords[i];
+    }
+}
+
+void TexturedRectangleInstance::updateTransform() {
+    m_uniform->transform = getTransform();
+}
+
+// FIXME
+void TexturedRectangleInstance::upload() {
+    m_uboBuffer->loadData(m_uniform, sizeof(TexturedRectangleUniform), m_factoryOffset);
 }
 
 } // namespace age

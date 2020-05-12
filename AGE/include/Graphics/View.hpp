@@ -6,14 +6,14 @@
 
 namespace age {
 
-class Rectangle;
-
 class View {
     Camera camera;
     Viewport viewport;
 
-    friend Camera;
-    friend Rectangle; // FIXME
+    friend class Camera;
+    friend class Rectangle; // FIXME
+    friend class RectangleFactory;
+    friend class TexturedRectangleFactory;
 public:
     View();
 
