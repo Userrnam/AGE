@@ -15,7 +15,7 @@ class Text : Transformable {
     TexturedRectangleFactory m_charBoxes;
     std::vector<TexturedRectangleInstance> m_trInstances;
 public:
-    void create(const View& view, Font& font, uint32_t maxSize = 128);
+    void create(View& view, Font& font, uint32_t maxSize = 128);
     void setText(const std::string& text);
     void draw(int i);
     void destroy();

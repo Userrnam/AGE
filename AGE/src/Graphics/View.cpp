@@ -6,15 +6,15 @@
 namespace age {
 
 View::View() {
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = static_cast<float>(core::apiCore.swapchain.extent.width);
-    viewport.height = static_cast<float>(core::apiCore.swapchain.extent.height);
+    m_viewport.x = 0.0f;
+    m_viewport.y = 0.0f;
+    m_viewport.width = static_cast<float>(core::apiCore.swapchain.extent.width);
+    m_viewport.height = static_cast<float>(core::apiCore.swapchain.extent.height);
 
-    camera.setOrthoganalProjection(*this);
-    camera.setOrigin({ viewport.width / 2, viewport.height / 2 });
-    camera.setPosition({ viewport.width / 2, viewport.height / 2 });
-    camera.upload();
+    m_camera.setOrthoganalProjection(*this);
+    m_camera.setOrigin({ m_viewport.width / 2, m_viewport.height / 2 });
+    m_camera.setPosition({ m_viewport.width / 2, m_viewport.height / 2 });
+    m_camera.upload();
 }
 
 } // namespace age

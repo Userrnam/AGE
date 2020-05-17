@@ -18,11 +18,13 @@ class Buffer {
 protected:
     VkBuffer m_buffer = VK_NULL_HANDLE;
     VkDeviceMemory m_memory = VK_NULL_HANDLE;
+    VkDeviceSize m_size = VK_NULL_HANDLE;
 public:
     void destroy();
 
-    VkBuffer getBuffer() const { return std::move(m_buffer); }
-    VkDeviceMemory getMemory() const { return std::move(m_memory); }
+    VkBuffer getBuffer() const { return m_buffer; }
+    VkDeviceMemory getMemory() const { return m_memory; }
+    VkDeviceSize getSize() const { return m_size; }
 
     void create(BufferCreateInfo& info);
 

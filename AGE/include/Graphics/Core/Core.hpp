@@ -5,7 +5,6 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 
-#include "DescriptorManager.hpp"
 #include "Image.hpp"
 #include "Buffer.hpp"
 #include "RenderPassManager.hpp"

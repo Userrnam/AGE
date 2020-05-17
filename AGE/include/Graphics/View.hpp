@@ -7,26 +7,22 @@
 namespace age {
 
 class View {
-    Camera camera;
-    Viewport viewport;
-
-    friend class Camera;
-    friend class Rectangle; // FIXME
-    friend class RectangleFactory;
-    friend class TexturedRectangleFactory;
+    Camera m_camera;
+    Viewport m_viewport;
 public:
     View();
 
-    void move(const glm::vec2& direction) { camera.move(direction); }
-    void setScale(const glm::vec2& scale) { camera.setScale(scale); }
-    void setRotation(float rotation) { camera.setRotation(rotation); }
+    void move(const glm::vec2& direction) { m_camera.move(direction); }
+    void setScale(const glm::vec2& scale) { m_camera.setScale(scale); }
+    void setRotation(float rotation) { m_camera.setRotation(rotation); }
 
-    void move(float x, float y) { camera.move(x, y); }
-    void setScale(float scaleX, float scaleY) { camera.setScale(scaleX, scaleY); }
+    void move(float x, float y) { m_camera.move(x, y); }
+    void setScale(float scaleX, float scaleY) { m_camera.setScale(scaleX, scaleY); }
 
-    void upload() { camera.upload(); }
+    void upload() { m_camera.upload(); }
 
-    Camera& getCamera() { return camera; }
+    Camera& getCamera() { return m_camera; }
+    Viewport getViewport() { return m_viewport; }
 };
 
 } // namespace age

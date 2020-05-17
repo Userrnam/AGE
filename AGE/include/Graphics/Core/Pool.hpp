@@ -10,7 +10,8 @@ struct Pool {
     VkDescriptorSetLayout layout;
     std::vector<VkDescriptorSet> sets;
     uint32_t remainingSize;
+    std::vector<uint32_t> freeIndicies;
 };
-    
+
 } // namespace age::core
 

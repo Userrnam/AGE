@@ -25,14 +25,14 @@ class Rectangle : public Object, public Transformable {
     glm::vec4 m_color = {};
     bool m_isOwner;
 
-    void preCreate(const View& view, ObjectCreateInfo& objectCreateInfo);
+    void preCreate(View& view, ObjectCreateInfo& objectCreateInfo);
 public:
     void destroy();
 
     void create(const Rectangle& sample);
-    void create(const Rectangle& sample, const Texture& texture);
-    void create(const View& view, bool colorBlending = false);
-    void create(const View& view, const Texture& texture, bool colorBlending = false);
+    void create(const Rectangle& sample, Texture& texture);
+    void create(View& view, bool colorBlending = false);
+    void create(View& view, Texture& texture, bool colorBlending = false);
 
     glm::vec4 getColor() const { return m_color; }
     void setColor(const glm::vec4& color);
@@ -57,7 +57,7 @@ class RectangleFactory : public Object {
     uint32_t m_count = 0;   // max rectangle count
 public:
     void destroy();
-    void create(const View& view, uint32_t count, bool colorBlending = false);
+    void create(View& view, uint32_t count, bool colorBlending = false);
     void addChild(RectangleInstance& instance);
     void upload();
 };
@@ -69,7 +69,7 @@ class TexturedRectangleFactory : public Object {
     uint32_t m_count = 0;     // max rectangle count
 public:
     void destroy();
-    void create(const View& view, uint32_t count, Texture& texture, bool colorBlending = false);
+    void create(View& view, uint32_t count, Texture& texture, bool colorBlending = false);
     void addChild(TexturedRectangleInstance& instance);
     void upload();
 };

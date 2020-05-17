@@ -6,15 +6,8 @@
 #include <iostream>
 #include <string>
 
-#include "Graphics/Core/coreAPI.hpp"
 #include "Utils/utils.hpp"
-#include "Graphics/Rectangle.hpp"
-#include "Graphics/Core/Command.hpp"
-#include "Graphics/Texture.hpp"
-#include "Graphics/Viewport.hpp"
-#include "Graphics/View.hpp"
-#include "Graphics/Font.hpp"
-#include "Graphics/Text.hpp"
+#include "Graphics.hpp"
 
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""
@@ -43,7 +36,6 @@ class Application : public age::Application {
     double counter = 0;
 
     void draw(int i) override {
-        age::core::cmd::clear(i);
         background.draw(i);
         rect.draw(i);
         rFactory.draw(i);
@@ -66,7 +58,7 @@ class Application : public age::Application {
         for (auto& tr : trInstances) {
             trFactory.addChild(tr);
             tr.setPosition(0,0);
-            tr.setScale(2400, 100);
+            tr.setScale(200, 100);
             glm::vec2 texCoords[] = {
                 {0, 1},
                 {1, 1},
@@ -78,9 +70,9 @@ class Application : public age::Application {
         }
         trFactory.upload();
 
-        rFactory.create(defaultView, 1000);
+        rFactory.create(defaultView, 100);
         // add children
-        rInstances.resize(1000);
+        rInstances.resize(100);
         int i = 0;
         for (auto& r : rInstances) {
             rFactory.addChild(r);

@@ -43,11 +43,6 @@ struct CoreConfig {
     struct {
         SampleCount sampleCount = SAMPLE_COUNT_1;
     } multisampling;
-    
-// FIXME
-    struct {
-        bool compute = false;
-    } queue;
 };
 
 } // namespace age::core

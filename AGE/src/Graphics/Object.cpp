@@ -13,8 +13,17 @@ void Object::createObject(const ObjectCreateInfo& info) {
     m_index.count = info.index.count;
     m_index.type = info.index.type;
     m_vertex.buffer = info.vertex.buffer;
-    m_descriptorSets = info.descriptor.sets;
     m_instanceCount = info.instanceCount;
+
+    std::vector<VkDescriptorSetLayout> layouts;
+    layouts.reserve(info.descriptors.size());
+    m_setPools.reserve(info.descriptors.size());
+    m_descriptorSets.reserve(info.descriptors.size());
+    for (auto& d : info.descriptors) {
+        m_descriptorSets.push_back(d.m_set);
+        m_setPools.push_back(d.m_pool);
+        layouts.push_back(d.m_layout);
+    }
 
     core::RenderPassConfig renderPassConfig = 0;
     if (info.depthTest) {
@@ -136,7 +145,7 @@ void Object::createObject(const ObjectCreateInfo& info) {
     colorBlending.attachmentCount = 1;
     colorBlending.pAttachments = &colorBlendAttachment;
 
-    m_pipelineLayout = core::requestPipelineLayout(info.descriptor.layouts);
+    m_pipelineLayout = core::requestPipelineLayout(layouts);
 
     VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
     pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

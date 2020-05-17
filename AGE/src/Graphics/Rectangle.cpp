@@ -5,7 +5,6 @@
 #include <iostream>
 
 #include "Rectangle.hpp"
-#include "DescriptorManager.hpp"
 #include "Core/Core.hpp"
 #include "Shader.hpp"
 
@@ -120,32 +119,31 @@ std::vector<Shader> createCTShaders() {
     return out;
 };
 
-core::Descriptor getDescriptor(VkBuffer buffer) {
-    core::DescriptorInfo descriptorInfo;
+Descriptor getDescriptor(core::Buffer& buffer) {
+    DescriptorInfo descriptorInfo;
     descriptorInfo.ubos.resize(1);
-    descriptorInfo.ubos[0].buffer = buffer;
-    descriptorInfo.ubos[0].size = sizeof(RectangleUniform);
-    descriptorInfo.ubosBinding = 0;
+    descriptorInfo.ubos[0] = &buffer;
 
-    return core::getDescriptor(descriptorInfo);;
+    Descriptor descriptor;
+    descriptor.get(descriptorInfo);
+    return descriptor;
 }
 
-core::Descriptor getTDescriptor(VkBuffer buffer, uint32_t size, const Texture& texture) {
-    core::DescriptorInfo descriptorInfo;
+Descriptor getTDescriptor(core::Buffer& buffer, uint32_t size, Texture& texture) {
+    DescriptorInfo descriptorInfo;
     descriptorInfo.ubos.resize(1);
-    descriptorInfo.ubos[0].buffer = buffer;
-    descriptorInfo.ubos[0].size = size;
-    descriptorInfo.ubosBinding = 0;
+    descriptorInfo.ubos[0] = &buffer;
 
-    descriptorInfo.samplers.resize(1);
-    descriptorInfo.samplers[0].sampler = texture.getSampler();
-    descriptorInfo.samplers[0].view = texture.getImage().getView();
-    descriptorInfo.samplersBinding = 1;
+    descriptorInfo.textures.resize(1);
+    descriptorInfo.textures[0] = &texture;
 
-    return core::getDescriptor(descriptorInfo);;
+    Descriptor descriptor;
+    descriptor.get(descriptorInfo);
+
+    return descriptor;
 }
 
-void Rectangle::preCreate(const View& view, ObjectCreateInfo& createInfo) {
+void Rectangle::preCreate(View& view, ObjectCreateInfo& createInfo) {
     m_isOwner = true;
 
     core::BufferCreateInfo bufferInfo = {};
@@ -155,8 +153,8 @@ void Rectangle::preCreate(const View& view, ObjectCreateInfo& createInfo) {
     m_uboBuffer.create(bufferInfo);
 
     createInfo.depthTest = false;
-    createInfo.descriptor.sets.push_back(view.camera.m_descriptor.set);
-    createInfo.descriptor.layouts.push_back(view.camera.m_descriptor.layout);
+
+    createInfo.descriptors.push_back(view.getCamera().getDescriptor());
 
     createInfo.index.buffer = core::createDeviceLocalBuffer(indicies.data(), indicies.size() * sizeof(indicies[0]), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
     createInfo.index.count = indicies.size();
@@ -165,7 +163,7 @@ void Rectangle::preCreate(const View& view, ObjectCreateInfo& createInfo) {
     createInfo.vertex.attributeDescriptions = Vertex::getAttributeDescriptions();
     createInfo.vertex.bindingDescription = Vertex::getBindingDescription();
     createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-    createInfo.viewport = view.viewport;
+    createInfo.viewport = view.getViewport();
 }
 
 void Rectangle::create(const Rectangle& sample) {
@@ -185,12 +183,12 @@ void Rectangle::create(const Rectangle& sample) {
     bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     m_uboBuffer.create(bufferInfo);
 
-    auto descriptor = getDescriptor(m_uboBuffer.getBuffer());
+    auto descriptor = getDescriptor(m_uboBuffer);
     // replace ubo descriptor
-    m_descriptorSets[1] = descriptor.sets[0];
+    m_descriptorSets[1] = descriptor.getSet();
 }
 
-void Rectangle::create(const Rectangle& sample, const Texture& texture) {
+void Rectangle::create(const Rectangle& sample, Texture& texture) {
     m_isOwner = false;
 
     m_renderPass = sample.m_renderPass;
@@ -206,19 +204,17 @@ void Rectangle::create(const Rectangle& sample, const Texture& texture) {
     bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     m_uboBuffer.create(bufferInfo);
 
-    auto descriptor = getTDescriptor(m_uboBuffer.getBuffer(), sizeof(RectangleUniform), texture);
+    auto descriptor = getTDescriptor(m_uboBuffer, sizeof(RectangleUniform), texture);
     // replace ubo descriptor
-    m_descriptorSets[1] = descriptor.sets[0];
+    m_descriptorSets[1] = descriptor.getSet();
 }
 
-void Rectangle::create(const View& view, bool colorBlending) {
+void Rectangle::create(View& view, bool colorBlending) {
     ObjectCreateInfo createInfo;
     createInfo.colorBlending = colorBlending;
     preCreate(view, createInfo);
 
-    auto d = getDescriptor(m_uboBuffer.getBuffer());
-    createInfo.descriptor.sets.push_back(d.sets[0]);
-    createInfo.descriptor.layouts.push_back(d.layouts[0]);
+    createInfo.descriptors.push_back(getDescriptor(m_uboBuffer));
     createInfo.shaders = createCShaders();
 
     createObject(createInfo);
@@ -228,14 +224,12 @@ void Rectangle::create(const View& view, bool colorBlending) {
     }
 }
 
-void Rectangle::create(const View& view, const Texture& texture, bool colorBlending) {
+void Rectangle::create(View& view, Texture& texture, bool colorBlending) {
     ObjectCreateInfo createInfo;
     createInfo.colorBlending = colorBlending;
     preCreate(view, createInfo);
 
-    auto d = getTDescriptor(m_uboBuffer.getBuffer(), sizeof(RectangleUniform), texture);
-    createInfo.descriptor.sets.push_back(d.sets[0]);
-    createInfo.descriptor.layouts.push_back(d.layouts[0]);
+    createInfo.descriptors.push_back(getTDescriptor(m_uboBuffer, sizeof(RectangleUniform), texture));
     createInfo.shaders = createCTShaders();
 
     createObject(createInfo);
@@ -247,6 +241,7 @@ void Rectangle::create(const View& view, const Texture& texture, bool colorBlend
 
 void Rectangle::destroy() {
     m_uboBuffer.destroy();
+    freeDescriptor(m_setPools[1], m_descriptorSets[1]);
     if (m_isOwner) {
         m_vertex.buffer.destroy();
         m_index.buffer.destroy();
@@ -292,7 +287,7 @@ void RectangleFactory::addChild(RectangleInstance& instance) {
     m_instanceCount++;
 }
 
-void RectangleFactory::create(const View& view, uint32_t count, bool colorBlending) {
+void RectangleFactory::create(View& view, uint32_t count, bool colorBlending) {
     m_count = count;
     m_ubos.resize(count);
 
@@ -306,8 +301,9 @@ void RectangleFactory::create(const View& view, uint32_t count, bool colorBlendi
     m_uboBuffer.create(bufferInfo);
 
     createInfo.depthTest = false;
-    createInfo.descriptor.sets.push_back(view.camera.m_descriptor.set);
-    createInfo.descriptor.layouts.push_back(view.camera.m_descriptor.layout);
+    // createInfo.descriptor.sets.push_back(view.getCamera().m_descriptor.set);
+    // createInfo.descriptor.layouts.push_back(view.getCamera().m_descriptor.layout);
+    createInfo.descriptors.push_back(view.getCamera().getDescriptor());
 
     createInfo.index.buffer = core::createDeviceLocalBuffer(indicies.data(), indicies.size() * sizeof(indicies[0]), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
     createInfo.index.count = indicies.size();
@@ -316,12 +312,10 @@ void RectangleFactory::create(const View& view, uint32_t count, bool colorBlendi
     createInfo.vertex.attributeDescriptions = Vertex::getAttributeDescriptions();
     createInfo.vertex.bindingDescription = Vertex::getBindingDescription();
     createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-    createInfo.viewport = view.viewport;
+    createInfo.viewport = view.getViewport();
     createInfo.instanceCount = 0;
 
-    auto d = getDescriptor(m_uboBuffer.getBuffer());
-    createInfo.descriptor.sets.push_back(d.sets[0]);
-    createInfo.descriptor.layouts.push_back(d.layouts[0]);
+    createInfo.descriptors.push_back(getDescriptor(m_uboBuffer));
     createInfo.shaders = createFactoryShaders(count);
 
     createObject(createInfo);
@@ -333,6 +327,7 @@ void RectangleFactory::create(const View& view, uint32_t count, bool colorBlendi
 
 void RectangleFactory::destroy() {
     m_uboBuffer.destroy();
+    freeDescriptor(m_setPools[1], m_descriptorSets[1]);
     m_vertex.buffer.destroy();
     m_index.buffer.destroy();
     vkDestroyPipeline(core::apiCore.device, m_pipeline, nullptr);
@@ -356,7 +351,7 @@ void TexturedRectangleFactory::addChild(TexturedRectangleInstance& instance) {
     m_instanceCount++;
 }
 
-void TexturedRectangleFactory::create(const View& view, uint32_t count, Texture& texture, bool colorBlending) {
+void TexturedRectangleFactory::create(View& view, uint32_t count, Texture& texture, bool colorBlending) {
     m_count = count;
     m_ubos.resize(count);
 
@@ -370,8 +365,9 @@ void TexturedRectangleFactory::create(const View& view, uint32_t count, Texture&
     m_uboBuffer.create(bufferInfo);
 
     createInfo.depthTest = false;
-    createInfo.descriptor.sets.push_back(view.camera.m_descriptor.set);
-    createInfo.descriptor.layouts.push_back(view.camera.m_descriptor.layout);
+    // createInfo.descriptor.sets.push_back(view.getCamera().m_descriptor.set);
+    // createInfo.descriptor.layouts.push_back(view.getCamera().m_descriptor.layout);
+    createInfo.descriptors.push_back(view.getCamera().getDescriptor());
 
     createInfo.index.buffer = core::createDeviceLocalBuffer(indicies.data(), indicies.size() * sizeof(indicies[0]), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
     createInfo.index.count = indicies.size();
@@ -380,12 +376,12 @@ void TexturedRectangleFactory::create(const View& view, uint32_t count, Texture&
     createInfo.vertex.attributeDescriptions = Vertex::getAttributeDescriptions();
     createInfo.vertex.bindingDescription = Vertex::getBindingDescription();
     createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-    createInfo.viewport = view.viewport;
+    createInfo.viewport = view.getViewport();
     createInfo.instanceCount = 0;
 
-    auto d = getTDescriptor(m_uboBuffer.getBuffer(), sizeof(TexturedRectangleUniform), texture);
-    createInfo.descriptor.sets.push_back(d.sets[0]);
-    createInfo.descriptor.layouts.push_back(d.layouts[0]);
+    createInfo.descriptors.push_back(getTDescriptor(m_uboBuffer, sizeof(TexturedRectangleUniform), texture));
+    // createInfo.descriptor.sets.push_back(d.getSet());
+    // createInfo.descriptor.layouts.push_back(d.getLayout());
     createInfo.shaders = createTexturedFactoryShaders(count);
 
     createObject(createInfo);
@@ -397,6 +393,7 @@ void TexturedRectangleFactory::create(const View& view, uint32_t count, Texture&
 
 void TexturedRectangleFactory::destroy() {
     m_uboBuffer.destroy();
+    freeDescriptor(m_setPools[1], m_descriptorSets[1]);
     m_vertex.buffer.destroy();
     m_index.buffer.destroy();
     vkDestroyPipeline(core::apiCore.device, m_pipeline, nullptr);

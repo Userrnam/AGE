@@ -14,6 +14,8 @@ void Buffer::destroy() {
 }
 
 void Buffer::create(BufferCreateInfo& info) {
+	m_size = info.size;
+
     VkBufferCreateInfo bufferInfo = {};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 	bufferInfo.size = info.size;

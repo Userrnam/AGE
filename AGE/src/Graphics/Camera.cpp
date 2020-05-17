@@ -4,7 +4,6 @@
 #include "Camera.hpp"
 
 #include "View.hpp"
-#include "Core/DescriptorManager.hpp"
 
 namespace age {
 
@@ -16,15 +15,11 @@ Camera::Camera() {
     m_buffer.create(createInfo);
 
     // create descriptor
-    core::DescriptorInfo descriptorInfo;
-    descriptorInfo.ubosBinding = 0;
+    DescriptorInfo descriptorInfo;
     descriptorInfo.ubos.resize(1);
-    descriptorInfo.ubos[0].buffer = m_buffer.getBuffer();
-    descriptorInfo.ubos[0].size = sizeof(glm::mat4);
+    descriptorInfo.ubos[0] = &m_buffer;
 
-    auto descriptor = core::getDescriptor(descriptorInfo);
-    m_descriptor.set = descriptor.sets[0];
-    m_descriptor.layout = descriptor.layouts[0];
+    m_descriptor.get(descriptorInfo);
 }
 
 Camera::~Camera() {
@@ -33,15 +28,15 @@ Camera::~Camera() {
 
 void Camera::setOrthoganalProjection(View& view, float zNear, float zFar) {
     m_projection = glm::ortho(
-		0.0f, view.viewport.width,
-		view.viewport.height, 0.0f,
+		0.0f, view.getViewport().width,
+		view.getViewport().height, 0.0f,
         zNear, zFar
 	);
 }
 
 void Camera::setPerspectiveProjection(View& view, float angle, float zNear, float zFar) {
     m_projection = glm::perspective(
-        angle, view.viewport.width / view.viewport.height, zNear, zFar
+        angle, view.getViewport().width / view.getViewport().height, zNear, zFar
     );
 }
 

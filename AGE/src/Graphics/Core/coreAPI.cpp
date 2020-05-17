@@ -13,7 +13,7 @@
 #include "utils.hpp"
 #include "QueueFamilyIndicies.hpp"
 #include "SwapchainSupportDetails.hpp"
-#include "DescriptorManager.hpp"
+
 
 namespace age::core {
 
@@ -164,7 +164,7 @@ void createLogicalDevice() {
 	std::vector<VkQueueFamilyProperties> queues = getQueueFamilyProperties(apiCore.physicalDevice);
 
 	bool graphicsQueueFound = false;
-	bool computeQueueFound = false;
+	// bool computeQueueFound = false;
 	bool transferQueueFound = false;
 
 	// try to find queue that supports only transfer or compute
@@ -173,17 +173,18 @@ void createLogicalDevice() {
 		if (!transferQueueFound && queue.queueFlags == VK_QUEUE_TRANSFER_BIT) {
 			transferQueueFound = true;
 			apiCore.queues.transfer.index = index;
-		} else if (coreConfig.queue.compute && !computeQueueFound && queue.queueFlags == VK_QUEUE_COMPUTE_BIT) {
-			computeQueueFound = true;
-			apiCore.queues.compute.index = index;
+		// } else if (coreConfig.queue.compute && !computeQueueFound && queue.queueFlags == VK_QUEUE_COMPUTE_BIT) {
+		// 	computeQueueFound = true;
+		// 	apiCore.queues.compute.index = index;
 		}
 		index++;
 	}
 
 	index = 0;
 	for (auto &queue : queues) {
-		if ( (transferQueueFound && apiCore.queues.transfer.index == index) ||
-			(computeQueueFound && apiCore.queues.compute.index == index) ) {
+		if ( (transferQueueFound && apiCore.queues.transfer.index == index)
+		//  || (computeQueueFound && apiCore.queues.compute.index == index) 
+			) {
 			index++;
 			continue;
 		}
@@ -194,9 +195,9 @@ void createLogicalDevice() {
 				apiCore.queues.graphics.index = index;
 				graphicsQueueFound = true;
 			}
-		} else if (coreConfig.queue.compute && !computeQueueFound && (queue.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
-			apiCore.queues.compute.index = index;
-			computeQueueFound = true;
+		// } else if (coreConfig.queue.compute && !computeQueueFound && (queue.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
+		// 	apiCore.queues.compute.index = index;
+		// 	computeQueueFound = true;
 		} else if (!transferQueueFound && (queue.queueFlags & VK_QUEUE_TRANSFER_BIT)) {
 			apiCore.queues.transfer.index = index;
 			transferQueueFound = true;
@@ -213,9 +214,9 @@ void createLogicalDevice() {
 		apiCore.queues.transfer.index
 	};
 
-	if (computeQueueFound) {
-		queueFamilies.push_back(apiCore.queues.compute.index);
-	}
+	// if (computeQueueFound) {
+	// 	queueFamilies.push_back(apiCore.queues.compute.index);
+	// }
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	float queuePriority = 1.0f;
@@ -257,9 +258,9 @@ void createLogicalDevice() {
 // FIXME
 	vkGetDeviceQueue(apiCore.device, apiCore.queues.graphics.index, 0, &apiCore.queues.graphics.queue);
 	vkGetDeviceQueue(apiCore.device, apiCore.queues.transfer.index, 0, &apiCore.queues.transfer.queue);
-	if (computeQueueFound) {
-		vkGetDeviceQueue(apiCore.device, apiCore.queues.compute.index, 0, &apiCore.queues.compute.queue);
-	}
+	// if (computeQueueFound) {
+	// 	vkGetDeviceQueue(apiCore.device, apiCore.queues.compute.index, 0, &apiCore.queues.compute.queue);
+	// }
 }
 
 // FIXME: choose surface format
