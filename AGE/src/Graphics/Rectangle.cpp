@@ -7,6 +7,8 @@
 #include "Rectangle.hpp"
 #include "Core/Core.hpp"
 #include "Shader.hpp"
+#include "Vertex.hpp"
+#include "Index.hpp"
 
 #ifndef CMAKE_DEFINITION
 #define SHADER_PATH ""
@@ -14,96 +16,35 @@
 
 namespace age {
 
-struct Vertex {
-    glm::vec2 pos;
+typedef glm::vec2 VType;
 
-    static VkVertexInputBindingDescription getBindingDescription() {
-		VkVertexInputBindingDescription bindingDescription = {};
-
-		bindingDescription.binding = 0;
-		bindingDescription.stride = sizeof(Vertex);
-		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-		return bindingDescription;
-	}
-
-    static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions() {
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions = {};
-		attributeDescriptions.resize(1);
-
-		attributeDescriptions[0].binding = 0;
-		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
-		attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-		return attributeDescriptions;
-	}
-};
-
-static std::vector<Vertex> verticies = {
+static std::vector<Vertex<VType>> verticies = {
     { { 0.0, 0.0 } },
     { { 1.0, 0.0 } },
     { { 1.0, 1.0 } },
     { { 0.0, 1.0 } },
 };
 
-static std::vector<uint16_t> indicies = { 0, 1, 2, 2, 3, 0 };
-
-Shaders createCShaders() {
-    Shaders out;
-
-    out.addVertexShader(SHADER_PATH "rectangleC.vert.spv");
-    out.addFragmentShader(SHADER_PATH "rectangleC.frag.spv");
-
-    return out;
+VERTEX_ATTRIBUTES(VType) = {
+    FORMAT_R32G32_SFLOAT
 };
 
-Shaders createFactoryShaders(uint32_t count) {
-    Shaders out;
-    ShaderSpecialization specialization;
-
-    specialization.add<uint32_t>(count);
-    out.addVertexShader(SHADER_PATH "factoryRectangleC.vert.spv", "main", specialization);
-    out.addFragmentShader(SHADER_PATH "rectangleC.frag.spv");
-
-    return out;
-};
-
-Shaders createTexturedFactoryShaders(uint32_t count) {
-    Shaders out;
-
-    out.addVertexShader(SHADER_PATH "factoryRectangleT.vert.spv");
-    out.addFragmentShader(SHADER_PATH "rectangleT.frag.spv");
-
-    return out;
-};
-
-Shaders createCTShaders() {
-    Shaders out;
-
-    out.addVertexShader(SHADER_PATH "rectangleCT.vert.spv");
-    out.addFragmentShader(SHADER_PATH "rectangleCT.frag.spv");
-
-    return out;
-};
+static std::vector<Index16> indicies = { 0, 1, 2, 2, 3, 0 };
 
 Descriptor getDescriptor(core::Buffer& buffer) {
     DescriptorInfo descriptorInfo;
-    descriptorInfo.ubos.resize(1);
-    descriptorInfo.ubos[0] = &buffer;
+    descriptorInfo.ubos.push_back(&buffer);
 
     Descriptor descriptor;
     descriptor.get(descriptorInfo);
+
     return descriptor;
 }
 
 Descriptor getTDescriptor(core::Buffer& buffer, uint32_t size, Texture& texture) {
     DescriptorInfo descriptorInfo;
-    descriptorInfo.ubos.resize(1);
-    descriptorInfo.ubos[0] = &buffer;
-
-    descriptorInfo.textures.resize(1);
-    descriptorInfo.textures[0] = &texture;
+    descriptorInfo.ubos.push_back(&buffer);
+    descriptorInfo.textures.push_back(&texture);
 
     Descriptor descriptor;
     descriptor.get(descriptorInfo);
@@ -128,9 +69,9 @@ void Rectangle::preCreate(View& view, ObjectCreateInfo& createInfo) {
     createInfo.index.count = indicies.size();
     createInfo.index.type = VK_INDEX_TYPE_UINT16;
     createInfo.minSampleShading = 0.0f;
-    createInfo.vertex.attributeDescriptions = Vertex::getAttributeDescriptions();
-    createInfo.vertex.bindingDescription = Vertex::getBindingDescription();
-    createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+    Vertex<VType>::fillAttributes(&createInfo.vertex.attributeDescriptions);
+    Vertex<VType>::fillBinding(&createInfo.vertex.bindingDescription);
+    createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(VType), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
     createInfo.viewport = view.getViewport();
 }
 
@@ -183,7 +124,9 @@ void Rectangle::create(View& view, bool colorBlending) {
     preCreate(view, createInfo);
 
     createInfo.descriptors.push_back(getDescriptor(m_uboBuffer));
-    createInfo.shaders = createCShaders();
+
+    createInfo.shaders.addVertexShader(SHADER_PATH "rectangleC.vert.spv")
+        .addFragmentShader(SHADER_PATH "rectangleC.frag.spv");
 
     createObject(createInfo);
 
@@ -196,7 +139,8 @@ void Rectangle::create(View& view, Texture& texture, bool colorBlending) {
     preCreate(view, createInfo);
 
     createInfo.descriptors.push_back(getTDescriptor(m_uboBuffer, sizeof(RectangleUniform), texture));
-    createInfo.shaders = createCTShaders();
+    createInfo.shaders.addVertexShader(SHADER_PATH "rectangleCT.vert.spv")
+        .addFragmentShader(SHADER_PATH "rectangleCT.frag.spv");
 
     createObject(createInfo);
 
@@ -265,22 +209,24 @@ void RectangleFactory::create(View& view, uint32_t count, bool colorBlending) {
     m_uboBuffer.create(bufferInfo);
 
     createInfo.depthTest = false;
-    // createInfo.descriptor.sets.push_back(view.getCamera().m_descriptor.set);
-    // createInfo.descriptor.layouts.push_back(view.getCamera().m_descriptor.layout);
     createInfo.descriptors.push_back(view.getCamera().getDescriptor());
 
     createInfo.index.buffer = core::createDeviceLocalBuffer(indicies.data(), indicies.size() * sizeof(indicies[0]), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
     createInfo.index.count = indicies.size();
     createInfo.index.type = VK_INDEX_TYPE_UINT16;
     createInfo.minSampleShading = 0.0f;
-    createInfo.vertex.attributeDescriptions = Vertex::getAttributeDescriptions();
-    createInfo.vertex.bindingDescription = Vertex::getBindingDescription();
-    createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+    Vertex<VType>::fillBinding(&createInfo.vertex.bindingDescription);
+    Vertex<VType>::fillAttributes(&createInfo.vertex.attributeDescriptions);
+    createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(VType), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
     createInfo.viewport = view.getViewport();
     createInfo.instanceCount = 0;
 
     createInfo.descriptors.push_back(getDescriptor(m_uboBuffer));
-    createInfo.shaders = createFactoryShaders(count);
+
+    ShaderSpecialization specialization;
+    specialization.add<uint32_t>(count);
+    createInfo.shaders.addVertexShader(SHADER_PATH "factoryRectangleC.vert.spv", "main", specialization)
+        .addFragmentShader(SHADER_PATH "rectangleC.frag.spv");
 
     createObject(createInfo);
 
@@ -327,24 +273,21 @@ void TexturedRectangleFactory::create(View& view, uint32_t count, Texture& textu
     m_uboBuffer.create(bufferInfo);
 
     createInfo.depthTest = false;
-    // createInfo.descriptor.sets.push_back(view.getCamera().m_descriptor.set);
-    // createInfo.descriptor.layouts.push_back(view.getCamera().m_descriptor.layout);
     createInfo.descriptors.push_back(view.getCamera().getDescriptor());
 
     createInfo.index.buffer = core::createDeviceLocalBuffer(indicies.data(), indicies.size() * sizeof(indicies[0]), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
     createInfo.index.count = indicies.size();
     createInfo.index.type = VK_INDEX_TYPE_UINT16;
     createInfo.minSampleShading = 0.0f;
-    createInfo.vertex.attributeDescriptions = Vertex::getAttributeDescriptions();
-    createInfo.vertex.bindingDescription = Vertex::getBindingDescription();
-    createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(Vertex), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+    Vertex<VType>::fillBinding(&createInfo.vertex.bindingDescription);
+    Vertex<VType>::fillAttributes(&createInfo.vertex.attributeDescriptions);
+    createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(VType), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
     createInfo.viewport = view.getViewport();
     createInfo.instanceCount = 0;
 
     createInfo.descriptors.push_back(getTDescriptor(m_uboBuffer, sizeof(TexturedRectangleUniform), texture));
-    // createInfo.descriptor.sets.push_back(d.getSet());
-    // createInfo.descriptor.layouts.push_back(d.getLayout());
-    createInfo.shaders = createTexturedFactoryShaders(count);
+    createInfo.shaders.addVertexShader(SHADER_PATH "factoryRectangleT.vert.spv")
+        .addFragmentShader(SHADER_PATH "rectangleT.frag.spv");
 
     createObject(createInfo);
 

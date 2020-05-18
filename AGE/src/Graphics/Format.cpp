@@ -1,0 +1,152 @@
+#include <vulkan/vulkan.h>
+
+#include "Format.hpp"
+
+#define FORMAT(format) case ( format ): return VK_ ## format
+
+#define FORMAT_SIZE(formatPartial, floatCase, size) \
+    case VK_ ## formatPartial ## _UNORM: \
+    case VK_ ## formatPartial ## _SNORM: \
+    case VK_ ## formatPartial ## _USCALED: \
+    case VK_ ## formatPartial ## _SSCALED: \
+    case VK_ ## formatPartial ## _UINT: \
+    case VK_ ## formatPartial ## _SINT: \
+    case VK_ ## formatPartial ## floatCase: \
+    return size
+
+#define FORMAT_SIZE_BIG(formatPartial, size) \
+    case VK_ ## formatPartial ## _UINT: \
+    case VK_ ## formatPartial ## _SINT: \
+    case VK_ ## formatPartial ## _SFLOAT: \
+    return size
+
+namespace age {
+
+Format getFormat(_Format format) {
+    switch (format) {
+        FORMAT(FORMAT_R8_UNORM); 
+        FORMAT(FORMAT_R8_SNORM); 
+        FORMAT(FORMAT_R8_USCALED); 
+        FORMAT(FORMAT_R8_SSCALED); 
+        FORMAT(FORMAT_R8_UINT); 
+        FORMAT(FORMAT_R8_SINT); 
+        FORMAT(FORMAT_R8_SRGB); 
+        FORMAT(FORMAT_R8G8_UNORM); 
+        FORMAT(FORMAT_R8G8_SNORM); 
+        FORMAT(FORMAT_R8G8_USCALED); 
+        FORMAT(FORMAT_R8G8_SSCALED); 
+        FORMAT(FORMAT_R8G8_UINT); 
+        FORMAT(FORMAT_R8G8_SINT); 
+        FORMAT(FORMAT_R8G8_SRGB); 
+        FORMAT(FORMAT_R8G8B8_UNORM); 
+        FORMAT(FORMAT_R8G8B8_SNORM); 
+        FORMAT(FORMAT_R8G8B8_USCALED); 
+        FORMAT(FORMAT_R8G8B8_SSCALED); 
+        FORMAT(FORMAT_R8G8B8_UINT); 
+        FORMAT(FORMAT_R8G8B8_SINT); 
+        FORMAT(FORMAT_R8G8B8_SRGB); 
+        FORMAT(FORMAT_B8G8R8_UNORM); 
+        FORMAT(FORMAT_B8G8R8_SNORM); 
+        FORMAT(FORMAT_B8G8R8_USCALED); 
+        FORMAT(FORMAT_B8G8R8_SSCALED); 
+        FORMAT(FORMAT_B8G8R8_UINT); 
+        FORMAT(FORMAT_B8G8R8_SINT); 
+        FORMAT(FORMAT_B8G8R8_SRGB); 
+        FORMAT(FORMAT_R8G8B8A8_UNORM); 
+        FORMAT(FORMAT_R8G8B8A8_SNORM); 
+        FORMAT(FORMAT_R8G8B8A8_USCALED); 
+        FORMAT(FORMAT_R8G8B8A8_SSCALED); 
+        FORMAT(FORMAT_R8G8B8A8_UINT); 
+        FORMAT(FORMAT_R8G8B8A8_SINT); 
+        FORMAT(FORMAT_R8G8B8A8_SRGB); 
+        FORMAT(FORMAT_B8G8R8A8_UNORM); 
+        FORMAT(FORMAT_B8G8R8A8_SNORM); 
+        FORMAT(FORMAT_B8G8R8A8_USCALED); 
+        FORMAT(FORMAT_B8G8R8A8_SSCALED); 
+        FORMAT(FORMAT_B8G8R8A8_UINT); 
+        FORMAT(FORMAT_B8G8R8A8_SINT); 
+        FORMAT(FORMAT_B8G8R8A8_SRGB); 
+        FORMAT(FORMAT_R16_UNORM); 
+        FORMAT(FORMAT_R16_SNORM); 
+        FORMAT(FORMAT_R16_USCALED); 
+        FORMAT(FORMAT_R16_SSCALED); 
+        FORMAT(FORMAT_R16_UINT); 
+        FORMAT(FORMAT_R16_SINT); 
+        FORMAT(FORMAT_R16_SFLOAT); 
+        FORMAT(FORMAT_R16G16_UNORM); 
+        FORMAT(FORMAT_R16G16_SNORM); 
+        FORMAT(FORMAT_R16G16_USCALED); 
+        FORMAT(FORMAT_R16G16_SSCALED); 
+        FORMAT(FORMAT_R16G16_UINT); 
+        FORMAT(FORMAT_R16G16_SINT); 
+        FORMAT(FORMAT_R16G16_SFLOAT); 
+        FORMAT(FORMAT_R16G16B16_UNORM); 
+        FORMAT(FORMAT_R16G16B16_SNORM); 
+        FORMAT(FORMAT_R16G16B16_USCALED); 
+        FORMAT(FORMAT_R16G16B16_SSCALED); 
+        FORMAT(FORMAT_R16G16B16_UINT); 
+        FORMAT(FORMAT_R16G16B16_SINT); 
+        FORMAT(FORMAT_R16G16B16_SFLOAT); 
+        FORMAT(FORMAT_R16G16B16A16_UNORM); 
+        FORMAT(FORMAT_R16G16B16A16_SNORM); 
+        FORMAT(FORMAT_R16G16B16A16_USCALED); 
+        FORMAT(FORMAT_R16G16B16A16_SSCALED); 
+        FORMAT(FORMAT_R16G16B16A16_UINT); 
+        FORMAT(FORMAT_R16G16B16A16_SINT); 
+        FORMAT(FORMAT_R16G16B16A16_SFLOAT); 
+        FORMAT(FORMAT_R32_UINT); 
+        FORMAT(FORMAT_R32_SINT); 
+        FORMAT(FORMAT_R32_SFLOAT); 
+        FORMAT(FORMAT_R32G32_UINT); 
+        FORMAT(FORMAT_R32G32_SINT); 
+        FORMAT(FORMAT_R32G32_SFLOAT); 
+        FORMAT(FORMAT_R32G32B32_UINT); 
+        FORMAT(FORMAT_R32G32B32_SINT); 
+        FORMAT(FORMAT_R32G32B32_SFLOAT); 
+        FORMAT(FORMAT_R32G32B32A32_UINT); 
+        FORMAT(FORMAT_R32G32B32A32_SINT); 
+        FORMAT(FORMAT_R32G32B32A32_SFLOAT); 
+        FORMAT(FORMAT_R64_UINT); 
+        FORMAT(FORMAT_R64_SINT); 
+        FORMAT(FORMAT_R64_SFLOAT); 
+        FORMAT(FORMAT_R64G64_UINT); 
+        FORMAT(FORMAT_R64G64_SINT); 
+        FORMAT(FORMAT_R64G64_SFLOAT); 
+        FORMAT(FORMAT_R64G64B64_UINT); 
+        FORMAT(FORMAT_R64G64B64_SINT); 
+        FORMAT(FORMAT_R64G64B64_SFLOAT); 
+        FORMAT(FORMAT_R64G64B64A64_UINT); 
+        FORMAT(FORMAT_R64G64B64A64_SINT); 
+        FORMAT(FORMAT_R64G64B64A64_SFLOAT); 
+    }
+    return VK_FORMAT_UNDEFINED;
+}
+
+uint32_t getFormatSize(Format format) {
+    switch (format) {
+        FORMAT_SIZE(FORMAT_R8, _SRGB, sizeof(uint8_t));
+        FORMAT_SIZE(FORMAT_R8G8, _SRGB, 2 * sizeof(uint8_t));
+        FORMAT_SIZE(FORMAT_R8G8B8, _SRGB, 3 * sizeof(uint8_t));
+        FORMAT_SIZE(FORMAT_B8G8R8, _SRGB, 3 * sizeof(uint8_t));
+        FORMAT_SIZE(FORMAT_R8G8B8A8, _SRGB, 4 * sizeof(uint8_t));
+        FORMAT_SIZE(FORMAT_B8G8R8A8, _SRGB, 4 * sizeof(uint8_t));
+
+        FORMAT_SIZE(FORMAT_R16, _SFLOAT, sizeof(uint16_t));
+        FORMAT_SIZE(FORMAT_R16G16, _SFLOAT, 2 * sizeof(uint16_t));
+        FORMAT_SIZE(FORMAT_R16G16B16, _SFLOAT, 3 * sizeof(uint16_t));
+        FORMAT_SIZE(FORMAT_R16G16B16A16, _SFLOAT, 4 * sizeof(uint16_t));
+
+        FORMAT_SIZE_BIG(FORMAT_R32, sizeof(uint32_t));
+        FORMAT_SIZE_BIG(FORMAT_R32G32, 2 * sizeof(uint32_t));
+        FORMAT_SIZE_BIG(FORMAT_R32G32B32, 3 * sizeof(uint32_t));
+        FORMAT_SIZE_BIG(FORMAT_R32G32B32A32, 4 * sizeof(uint32_t));
+
+        FORMAT_SIZE_BIG(FORMAT_R64, sizeof(uint64_t));
+        FORMAT_SIZE_BIG(FORMAT_R64G64, 2 * sizeof(uint64_t));
+        FORMAT_SIZE_BIG(FORMAT_R64G64B64, 3 * sizeof(uint64_t));
+        FORMAT_SIZE_BIG(FORMAT_R64G64B64A64, 4 * sizeof(uint64_t));
+    }
+    return 0;
+}
+
+} // namespace age
