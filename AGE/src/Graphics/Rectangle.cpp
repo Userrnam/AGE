@@ -49,72 +49,40 @@ static std::vector<Vertex> verticies = {
 
 static std::vector<uint16_t> indicies = { 0, 1, 2, 2, 3, 0 };
 
-std::vector<Shader> createCShaders() {
-    std::vector<Shader> out;
-    out.resize(2);
+Shaders createCShaders() {
+    Shaders out;
 
-    // vertex shader
-    out[0].create(SHADER_PATH "rectangleC.vert.spv");
-    out[0].entry = "main";
-    out[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-
-    // fragment shader
-    out[1].create(SHADER_PATH "rectangleC.frag.spv");
-    out[1].entry = "main";
-    out[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    out.addVertexShader(SHADER_PATH "rectangleC.vert.spv");
+    out.addFragmentShader(SHADER_PATH "rectangleC.frag.spv");
 
     return out;
 };
 
-std::vector<Shader> createFactoryShaders(uint32_t count) {
-    std::vector<Shader> out;
-    out.resize(2);
+Shaders createFactoryShaders(uint32_t count) {
+    Shaders out;
+    ShaderSpecialization specialization;
 
-    // vertex shader
-    out[0].create(SHADER_PATH "factoryRectangleC.vert.spv");
-    out[0].entry = "main";
-    out[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-    out[0].specialization.add<uint32_t>(count);
-
-    // fragment shader
-    out[1].create(SHADER_PATH "rectangleC.frag.spv");
-    out[1].entry = "main";
-    out[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    specialization.add<uint32_t>(count);
+    out.addVertexShader(SHADER_PATH "factoryRectangleC.vert.spv", "main", specialization);
+    out.addFragmentShader(SHADER_PATH "rectangleC.frag.spv");
 
     return out;
 };
 
-std::vector<Shader> createTexturedFactoryShaders(uint32_t count) {
-    std::vector<Shader> out;
-    out.resize(2);
+Shaders createTexturedFactoryShaders(uint32_t count) {
+    Shaders out;
 
-    // vertex shader
-    out[0].create(SHADER_PATH "factoryRectangleT.vert.spv");
-    out[0].entry = "main";
-    out[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-    out[0].specialization.add<uint32_t>(count);
-
-    // fragment shader
-    out[1].create(SHADER_PATH "rectangleT.frag.spv");
-    out[1].entry = "main";
-    out[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    out.addVertexShader(SHADER_PATH "factoryRectangleT.vert.spv");
+    out.addFragmentShader(SHADER_PATH "rectangleT.frag.spv");
 
     return out;
 };
 
-std::vector<Shader> createCTShaders() {
-    std::vector<Shader> out;
-    out.resize(2);
+Shaders createCTShaders() {
+    Shaders out;
 
-    // vertex shader
-    out[0].create(SHADER_PATH "rectangleCT.vert.spv");
-    out[0].entry = "main";
-    out[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-
-    // fragment shader
-    out[1].create(SHADER_PATH "rectangleCT.frag.spv");
-    out[1].entry = "main";
-    out[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    out.addVertexShader(SHADER_PATH "rectangleCT.vert.spv");
+    out.addFragmentShader(SHADER_PATH "rectangleCT.frag.spv");
 
     return out;
 };
@@ -219,9 +187,7 @@ void Rectangle::create(View& view, bool colorBlending) {
 
     createObject(createInfo);
 
-    for (auto& shader : createInfo.shaders) {
-        shader.destroy();
-    }
+    createInfo.shaders.destroy();
 }
 
 void Rectangle::create(View& view, Texture& texture, bool colorBlending) {
@@ -234,9 +200,7 @@ void Rectangle::create(View& view, Texture& texture, bool colorBlending) {
 
     createObject(createInfo);
 
-    for (auto& shader : createInfo.shaders) {
-        shader.destroy();
-    }
+    createInfo.shaders.destroy();
 }
 
 void Rectangle::destroy() {
@@ -320,9 +284,7 @@ void RectangleFactory::create(View& view, uint32_t count, bool colorBlending) {
 
     createObject(createInfo);
 
-    for (auto& shader : createInfo.shaders) {
-        shader.destroy();
-    }
+    createInfo.shaders.destroy();
 }
 
 void RectangleFactory::destroy() {
@@ -386,9 +348,7 @@ void TexturedRectangleFactory::create(View& view, uint32_t count, Texture& textu
 
     createObject(createInfo);
 
-    for (auto& shader : createInfo.shaders) {
-        shader.destroy();
-    }
+    createInfo.shaders.destroy();
 }
 
 void TexturedRectangleFactory::destroy() {

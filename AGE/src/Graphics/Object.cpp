@@ -43,15 +43,15 @@ void Object::createObject(const ObjectCreateInfo& info) {
     specializationInfos.resize(info.shaders.size());
     for (size_t i = 0; i < info.shaders.size(); ++i) {
         shaderStages[i].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStages[i].module = info.shaders[i].getShaderModule();
-        shaderStages[i].pName = info.shaders[i].entry.c_str();
-        shaderStages[i].stage = info.shaders[i].stage;
+        shaderStages[i].module = info.shaders[i].getModule();
+        shaderStages[i].pName = info.shaders[i].getEntry().c_str();
+        shaderStages[i].stage = info.shaders[i].getStage();
 
-        if (info.shaders[i].specialization.data.size() != 0) {
-            specializationInfos[specIndex].dataSize = info.shaders[i].specialization.data.size() * sizeof(uint8_t);
-            specializationInfos[specIndex].mapEntryCount = info.shaders[i].specialization.entries.size();
-            specializationInfos[specIndex].pData = info.shaders[i].specialization.data.data();
-            specializationInfos[specIndex].pMapEntries = info.shaders[i].specialization.entries.data();
+        if (info.shaders[i].getSpecialization().m_data.size() != 0) {
+            specializationInfos[specIndex].dataSize = info.shaders[i].getSpecialization().m_data.size() * sizeof(uint8_t);
+            specializationInfos[specIndex].mapEntryCount = info.shaders[i].getSpecialization().m_entries.size();
+            specializationInfos[specIndex].pData = info.shaders[i].getSpecialization().m_data.data();
+            specializationInfos[specIndex].pMapEntries = info.shaders[i].getSpecialization().m_entries.data();
 
             shaderStages[i].pSpecializationInfo = &specializationInfos[specIndex];
 

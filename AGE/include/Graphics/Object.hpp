@@ -17,6 +17,7 @@ namespace age {
 Descriptors can be changed at runtime
 
 Shader shader;
+Shaders shaders;
 shader.createFragmentShader(path, entry=main);
 shader.createVertexShader(path, entry=main);
 void Drawable.addShader(Shader& shader);
@@ -37,19 +38,19 @@ struct ObjectCreateInfo {
     bool multisampling = false;
     bool colorBlending = false;
     float minSampleShading = 0.0f;
-    std::vector<Shader> shaders;
+    Shaders shaders;
 
     std::vector<Descriptor> descriptors;
 
     struct {
-        VkVertexInputBindingDescription bindingDescription; // ??
-        std::vector<VkVertexInputAttributeDescription> attributeDescriptions; // ??
+        VkVertexInputBindingDescription bindingDescription;
+        std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
         core::Buffer buffer;
     } vertex;
 
     struct {
         uint32_t count;
-        VkIndexType type; // ??
+        VkIndexType type;
         core::Buffer buffer;
     } index;
     uint32_t instanceCount = 1;
@@ -62,9 +63,11 @@ protected:
     VkPipeline m_pipeline;
     std::vector<void*> m_setPools;
     std::vector<VkDescriptorSet> m_descriptorSets;
+
     struct {
         core::Buffer buffer;
     } m_vertex;
+
     struct {
         uint32_t count;
         VkIndexType type;
@@ -72,6 +75,7 @@ protected:
     } m_index;
 
     uint32_t m_instanceCount;
+
     void createObject(const ObjectCreateInfo& createInfo);
 public:
     void draw(int i);
