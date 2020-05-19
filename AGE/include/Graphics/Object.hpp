@@ -38,7 +38,7 @@ struct ObjectCreateInfo {
     bool multisampling = false;
     bool colorBlending = false;
     float minSampleShading = 0.0f;
-    Shaders shaders;
+    std::vector<Shader> shaders;
 
     std::vector<Descriptor> descriptors;
 

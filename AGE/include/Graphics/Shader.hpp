@@ -15,7 +15,7 @@ class ShaderSpecialization {
 public:
 
     template<typename T>
-    void add(T val) {
+    ShaderSpecialization& add(T val) {
         VkSpecializationMapEntry entry;
         entry.constantID = m_index;
         entry.offset = m_data.size() * sizeof(uint8_t);
@@ -28,46 +28,43 @@ public:
         memcpy(m_data.data() + prevSize, &val, sizeof(T));
 
         m_index++;
+
+        return *this;
     }
 };
 
-// if specialization.data.size() != 0 use specialization
-
 class Shaders;
-
-namespace __ {
 
 class Shader {
     VkShaderModule m_shaderModule;
-    std::string m_entry;
+    std::string m_entry = "main";
     VkShaderStageFlagBits m_stage;
     ShaderSpecialization m_specialization;
 
     friend class age::Shaders;
 public:
+    Shader& create(const std::string& filename);
+    void destroy();
 
     VkShaderModule getModule() const { return m_shaderModule; }
     const std::string& getEntry() const { return m_entry; }
     VkShaderStageFlagBits getStage() const { return m_stage; }
     const ShaderSpecialization& getSpecialization() const { return m_specialization; }
 
-    void create(const std::string& filename);
-    void destroy();
-};
+    inline Shader& setStage(VkShaderStageFlagBits stage) {
+        m_stage = stage;
+        return *this;
+    }
 
-}
+    inline Shader& setEntry(const std::string& entry) {
+        m_entry = entry;
+        return *this;
+    }
 
-class Shaders {
-    std::vector<__::Shader> m_shaders;
-public:
-    size_t size() const { return m_shaders.size(); }
-    __::Shader& operator[](size_t i) { return m_shaders[i]; }
-    const __::Shader& operator[](size_t i) const { return m_shaders[i]; }
-
-    Shaders& addVertexShader(const std::string& path, const std::string& entry = "main", const ShaderSpecialization& specialization = {});
-    Shaders& addFragmentShader(const std::string& path, const std::string& entry = "main", const ShaderSpecialization& specialization = {});
-
-    void destroy();
+    inline Shader& setSpecialization(const ShaderSpecialization& specialization) {
+        m_specialization = specialization;
+        return *this;
+    }
 };
 
 } // namespace age

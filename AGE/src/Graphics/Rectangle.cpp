@@ -110,12 +110,18 @@ void Rectangle::create(View& view, bool colorBlending) {
         )
     );
 
-    createInfo.shaders.addVertexShader(SHADER_PATH "rectangleC.vert.spv")
-        .addFragmentShader(SHADER_PATH "rectangleC.frag.spv");
+    createInfo.shaders.push_back(
+        Shader().setStage(VK_SHADER_STAGE_VERTEX_BIT).create(SHADER_PATH "rectangleC.vert.spv")
+    );
+    createInfo.shaders.push_back(
+        Shader().setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(SHADER_PATH "rectangleC.frag.spv")
+    );
 
     createObject(createInfo);
 
-    createInfo.shaders.destroy();
+    for (auto& shader : createInfo.shaders) {
+        shader.destroy();
+    }
 }
 
 void Rectangle::create(View& view, Texture& texture, bool colorBlending) {
@@ -128,12 +134,19 @@ void Rectangle::create(View& view, Texture& texture, bool colorBlending) {
             DescriptorInfo().addBuffer(m_uboBuffer).addTexture(texture)
         )
     );
-    createInfo.shaders.addVertexShader(SHADER_PATH "rectangleCT.vert.spv")
-        .addFragmentShader(SHADER_PATH "rectangleCT.frag.spv");
+
+    createInfo.shaders.push_back(
+        Shader().setStage(VK_SHADER_STAGE_VERTEX_BIT).create(SHADER_PATH "rectangleCT.vert.spv")
+    );
+    createInfo.shaders.push_back(
+        Shader().setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(SHADER_PATH "rectangleCT.frag.spv")
+    );
 
     createObject(createInfo);
 
-    createInfo.shaders.destroy();
+    for (auto& shader : createInfo.shaders) {
+        shader.destroy();
+    }
 }
 
 void Rectangle::destroy() {
@@ -216,14 +229,20 @@ void RectangleFactory::create(View& view, uint32_t count, bool colorBlending) {
         )
     );
 
-    ShaderSpecialization specialization;
-    specialization.add<uint32_t>(count);
-    createInfo.shaders.addVertexShader(SHADER_PATH "factoryRectangleC.vert.spv", "main", specialization)
-        .addFragmentShader(SHADER_PATH "rectangleC.frag.spv");
+    createInfo.shaders.push_back(
+        Shader().setStage(VK_SHADER_STAGE_VERTEX_BIT).setSpecialization(
+            ShaderSpecialization().add<uint32_t>(count)
+        ).create(SHADER_PATH "factoryRectangleC.vert.spv")
+    );
+    createInfo.shaders.push_back(
+        Shader().setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(SHADER_PATH "rectangleC.frag.spv")
+    );
 
     createObject(createInfo);
 
-    createInfo.shaders.destroy();
+    for (auto& shader : createInfo.shaders) {
+        shader.destroy();
+    }
 }
 
 void RectangleFactory::destroy() {
@@ -283,12 +302,19 @@ void TexturedRectangleFactory::create(View& view, uint32_t count, Texture& textu
             DescriptorInfo().addBuffer(m_uboBuffer).addTexture(texture)
         )
     );
-    createInfo.shaders.addVertexShader(SHADER_PATH "factoryRectangleT.vert.spv")
-        .addFragmentShader(SHADER_PATH "rectangleT.frag.spv");
+    
+    createInfo.shaders.push_back(
+        Shader().setStage(VK_SHADER_STAGE_VERTEX_BIT).create(SHADER_PATH "factoryRectangleT.vert.spv")
+    );
+    createInfo.shaders.push_back(
+        Shader().setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(SHADER_PATH "rectangleT.frag.spv")
+    );
 
     createObject(createInfo);
 
-    createInfo.shaders.destroy();
+    for (auto& shader : createInfo.shaders) {
+        shader.destroy();
+    }
 }
 
 void TexturedRectangleFactory::destroy() {
