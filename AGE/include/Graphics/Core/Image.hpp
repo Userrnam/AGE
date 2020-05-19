@@ -4,15 +4,51 @@
 
 namespace age::core {
 
-struct ImageCreateInfo {
-    VkExtent2D extent;
-    uint32_t mipLevel;
-    VkSampleCountFlagBits numberOfSamples;
-    VkFormat format;
-    VkImageTiling tiling;
-    VkImageUsageFlags imageUsage;
-    VkMemoryPropertyFlags memoryProperties;
-    VkImageAspectFlags aspectFlags;
+class ImageCreateInfo {
+    VkExtent2D m_extent;
+    uint32_t m_mipLevel;
+    VkSampleCountFlagBits m_sampleCount;
+    VkFormat m_format;
+    VkImageUsageFlags m_imageUsage;
+    VkMemoryPropertyFlags m_memoryProperties;
+    VkImageAspectFlags m_aspectFlags;
+
+    friend class Image;
+public:
+    inline ImageCreateInfo& setExtent(const VkExtent2D& extent) {
+        m_extent = extent;
+        return *this;
+    }
+
+    inline ImageCreateInfo& setMipLevel(uint32_t mipLevel) {
+        m_mipLevel = mipLevel;
+        return *this;
+    }
+
+    inline ImageCreateInfo& setSampleCount(VkSampleCountFlagBits count) {
+        m_sampleCount = count;
+        return *this;
+    }
+
+    inline ImageCreateInfo& setFormat(VkFormat format) {
+        m_format = format;
+        return *this;
+    }
+
+    inline ImageCreateInfo& setImageUsage(VkImageUsageFlags usage) {
+        m_imageUsage = usage;
+        return *this;
+    }
+
+    inline ImageCreateInfo& setMemoryProperties(VkMemoryPropertyFlags properties) {
+        m_memoryProperties = properties;
+        return *this;
+    }
+
+    inline ImageCreateInfo& setAspectFlags(VkImageAspectFlags aspectFlags) {
+        m_aspectFlags = aspectFlags;
+        return *this;
+    }
 };
 
 class Image {

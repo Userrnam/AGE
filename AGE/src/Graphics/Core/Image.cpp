@@ -6,24 +6,24 @@
 namespace age::core {
 
 void Image::create(ImageCreateInfo& info) {
-	m_extent = info.extent;
-	m_mipLevel = info.mipLevel;
-	m_format = info.format;
+	m_extent = info.m_extent;
+	m_mipLevel = info.m_mipLevel;
+	m_format = info.m_format;
 
 	VkImageCreateInfo imageInfo = {};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	imageInfo.imageType = VK_IMAGE_TYPE_2D;
-	imageInfo.extent.width = info.extent.width;
-	imageInfo.extent.height = info.extent.height;
+	imageInfo.extent.width = m_extent.width;
+	imageInfo.extent.height = m_extent.height;
 	imageInfo.extent.depth = 1;
-	imageInfo.mipLevels = info.mipLevel;
+	imageInfo.mipLevels = info.m_mipLevel;
 	imageInfo.arrayLayers = 1;
-	imageInfo.format = info.format;
-	imageInfo.tiling = info.tiling;
+	imageInfo.format = info.m_format;
+	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	imageInfo.usage = info.imageUsage;
+	imageInfo.usage = info.m_imageUsage;
 	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-	imageInfo.samples = info.numberOfSamples;
+	imageInfo.samples = info.m_sampleCount;
 	imageInfo.flags = 0;
 
 	if (vkCreateImage(apiCore.device, &imageInfo, nullptr, &m_image) != VK_SUCCESS) {
@@ -36,7 +36,7 @@ void Image::create(ImageCreateInfo& info) {
 	VkMemoryAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, info.memoryProperties);
+	allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, info.m_memoryProperties);
 
 	if (vkAllocateMemory(apiCore.device, &allocInfo, nullptr, &m_memory) != VK_SUCCESS) {
 		throw std::runtime_error("failed to allocate image memory");
@@ -46,7 +46,7 @@ void Image::create(ImageCreateInfo& info) {
 
 	VkImageAspectFlags aspectFlags = 0;
 
-	m_imageView = createImageView(m_image, info.format, info.aspectFlags, info.mipLevel);
+	m_imageView = createImageView(m_image, info.m_format, info.m_aspectFlags, info.m_mipLevel);
 }
 
 void Image::destroy() {

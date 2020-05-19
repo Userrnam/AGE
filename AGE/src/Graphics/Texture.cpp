@@ -76,18 +76,16 @@ void Texture::create(const std::string& filename, const TextureCreateInfo& creat
     stagingBuffer.loadData(pixels, imageSize);
     stbi_image_free(pixels);
 
-    core::ImageCreateInfo imageCreateInfo;
-    imageCreateInfo.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-    imageCreateInfo.extent.width = static_cast<uint32_t>(texWidth);
-    imageCreateInfo.extent.height = static_cast<uint32_t>(texHeight);
-    imageCreateInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
-    imageCreateInfo.imageUsage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-    imageCreateInfo.memoryProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-    imageCreateInfo.mipLevel = mipLevel;
-    imageCreateInfo.numberOfSamples = VK_SAMPLE_COUNT_1_BIT;
-    imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-
-    m_image.create(imageCreateInfo);
+    m_image.create(
+        core::ImageCreateInfo()
+            .setAspectFlags(VK_IMAGE_ASPECT_COLOR_BIT)
+            .setExtent({static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight)})
+            .setFormat(VK_FORMAT_R8G8B8A8_SRGB)
+            .setImageUsage(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT)
+            .setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+            .setMipLevel(mipLevel)
+            .setSampleCount(VK_SAMPLE_COUNT_1_BIT)
+    );
     stagingBuffer.copyTo(m_image);
     stagingBuffer.destroy();
 

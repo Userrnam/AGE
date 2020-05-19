@@ -342,17 +342,16 @@ void createSwapchain() {
 }
 
 void createDepthResources() {
-	ImageCreateInfo info = {};
-	info.format = findDepthFormat();
-	info.extent = apiCore.swapchain.extent;
-	info.mipLevel = 1;
-	info.numberOfSamples = apiCore.multisampling.sampleCount;
-	info.tiling = VK_IMAGE_TILING_OPTIMAL;
-	info.imageUsage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-	info.memoryProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-	info.aspectFlags = VK_IMAGE_ASPECT_DEPTH_BIT;
-
-	apiCore.depth.image.create(info);
+	apiCore.depth.image.create(
+		ImageCreateInfo()
+			.setFormat(findDepthFormat())
+			.setExtent(apiCore.swapchain.extent)
+			.setMipLevel(1)
+			.setSampleCount(apiCore.multisampling.sampleCount)
+			.setImageUsage(VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
+			.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+			.setAspectFlags(VK_IMAGE_ASPECT_DEPTH_BIT)
+	);
 }
 
 void createMultisamplingResources() {
@@ -360,17 +359,16 @@ void createMultisamplingResources() {
 		return;
 	}
 
-	ImageCreateInfo info = {};
-	info.format = apiCore.swapchain.format;
-	info.extent = apiCore.swapchain.extent;
-	info.mipLevel = 1;
-	info.numberOfSamples = apiCore.multisampling.sampleCount;
-	info.tiling = VK_IMAGE_TILING_OPTIMAL;
-	info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT;
-	info.memoryProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-	info.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-
-	apiCore.multisampling.image.create(info);
+	apiCore.multisampling.image.create(
+		ImageCreateInfo()
+			.setFormat(apiCore.swapchain.format)
+			.setExtent(apiCore.swapchain.extent)
+			.setMipLevel(1)
+			.setSampleCount(apiCore.multisampling.sampleCount)
+			.setImageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT)
+			.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+			.setAspectFlags(VK_IMAGE_ASPECT_COLOR_BIT)
+	);
 }
 
 // FIXME: add compute
@@ -426,100 +424,11 @@ void allocateCommandBuffers() {
 	}
 }
 
-// void createCamera() {
-// 	VkDeviceSize bufferSize = sizeof(glm::mat4);
-
-// 	BufferCreateInfo bufferInfo;
-// 	bufferInfo.size = bufferSize;
-// 	bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-// 	bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-// 	apiCore.camera.buffer.create(bufferInfo);
-// 	// apiCore.staticCamera.buffer.create(bufferInfo);
-
-// 	glm::mat4 identity = glm::mat4(1.0f);
-// 	glm::mat4 proj = glm::ortho(
-// 		0.0f, static_cast<float>(apiCore.swapchain.extent.width),
-// 		static_cast<float>(apiCore.swapchain.extent.height), 0.0f,
-// 		0.0f, 1.0f
-// 	);
-
-// 	proj[2][2] = 2.0f;
-
-// 	proj = proj;
-
-// 	apiCore.camera.buffer.loadData(&proj, sizeof(proj));
-
-// 	UniformBuffer ubo;
-// 	ubo.buffer = apiCore.camera.buffer.getBuffer();
-// 	ubo.size = sizeof(glm::mat4);
-
-// 	DescriptorInfo descriptorInfo;
-// 	descriptorInfo.ubos.push_back(ubo);
-// 	descriptorInfo.ubosBinding = 0;
-
-// 	apiCore.camera.descriptor = getDescriptor(descriptorInfo).sets.back();
-
-// 	// descriptorInfo.ubos.pop_back();
-// 	// ubo.buffer = apiCore.staticCamera.buffer.getBuffer();
-// 	// apiCore.staticCamera.descriptor = getDescriptor(descriptorInfo).sets.back();
-// }
-
 void setClearColor(const Color& color) {
 	apiCore.swapchain.clearColor.float32[0] = color.r;
 	apiCore.swapchain.clearColor.float32[1] = color.g;
 	apiCore.swapchain.clearColor.float32[2] = color.b;
 	apiCore.swapchain.clearColor.float32[3] = color.a;
-}
-
-void destroy() {
-	// vkDeviceWaitIdle(apiCore.device);
-
-	// apiCore.camera.buffer.destroy();
-
-	// vkFreeCommandBuffers(apiCore.device, apiCore.commandPools.graphicsPool,
-	// 	apiCore.commandBuffers.data.size(), apiCore.commandBuffers.data.data());
-
-	// vkDestroySemaphore(apiCore.device, apiCore.sync.renderFinishedSemaphore, nullptr);
-	// vkDestroySemaphore(apiCore.device, apiCore.sync.imageAvailableSemaphore, nullptr);
-	// vkDestroyFence(apiCore.device, apiCore.sync.inFlightFence, nullptr);
-
-	// for (auto dl : apiCore.descriptor.layouts) {
-	// 	vkDestroyDescriptorSetLayout(apiCore.device, dl.layout, nullptr);
-	// }
-
-	// for (auto dp : apiCore.descriptor.pools) {
-	// 	vkDestroyDescriptorPool(apiCore.device, dp.pool, nullptr);
-	// }
-
-	// vkDestroyCommandPool(apiCore.device, apiCore.commandPools.graphicsPool, nullptr);
-	// vkDestroyCommandPool(apiCore.device, apiCore.commandPools.transferPool, nullptr);
-
-	// for (auto pipelineLayoutRef : apiCore.pipelineLayouts) {
-	// 	vkDestroyPipelineLayout(apiCore.device, pipelineLayoutRef.pipelineLayout, nullptr);
-	// }
-
-	// for (auto renderPassRef : apiCore.renderPasses) {
-	// 	renderPassRef.destroy();
-	// }
-
-	// apiCore.multisampling.image.destroy();
-	// apiCore.depth.image.destroy();
-
-	// // destroy swapChain Views
-	// for (auto imageView : apiCore.swapchain.imageViews) {
-	// 	vkDestroyImageView(apiCore.device, imageView, nullptr);
-	// }
-	// vkDestroySwapchainKHR(apiCore.device, apiCore.swapchain.swapchain, nullptr);
-	// vkDestroyDevice(apiCore.device, nullptr);
-
-	// if (apiCore.debug.enable) {
-	// 	destroyDebugUtilsMessengerEXT(apiCore.instance, apiCore.debug.messenger, nullptr);
-	// }
-
-	// vkDestroySurfaceKHR(apiCore.instance, apiCore.window.surface, nullptr);
-	// vkDestroyInstance(apiCore.instance, nullptr);
-	// glfwDestroyWindow(apiCore.window.handle);
-	// glfwTerminate();
 }
 
 } // namespace age::core

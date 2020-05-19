@@ -95,19 +95,17 @@ void Font::load(const std::string& fontPath, unsigned fontSize) {
     buffer.loadData(imageData, maxHeight * totalWidth * sizeof(uint32_t));
     free(imageData);
 
-    core::ImageCreateInfo imageCreateInfo;
-    imageCreateInfo.aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
-    imageCreateInfo.extent.width = static_cast<uint32_t>(textureWidth);
-    imageCreateInfo.extent.height = static_cast<uint32_t>(textureHeight);
-    imageCreateInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
-    imageCreateInfo.imageUsage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-    imageCreateInfo.memoryProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-    imageCreateInfo.mipLevel = 1;
-    imageCreateInfo.numberOfSamples = VK_SAMPLE_COUNT_1_BIT;
-    imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-
     core::Image image;
-    image.create(imageCreateInfo);
+    image.create(
+        core::ImageCreateInfo()
+            .setAspectFlags(VK_IMAGE_ASPECT_COLOR_BIT)
+            .setExtent({static_cast<uint32_t>(textureWidth), static_cast<uint32_t>(textureHeight)})
+            .setFormat(VK_FORMAT_R8G8B8A8_SRGB)
+            .setImageUsage(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT)
+            .setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+            .setMipLevel(1)
+            .setSampleCount(VK_SAMPLE_COUNT_1_BIT)
+    );
     buffer.copyTo(image);
     buffer.destroy();
 

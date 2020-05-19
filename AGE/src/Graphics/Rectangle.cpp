@@ -230,9 +230,12 @@ void RectangleFactory::create(View& view, uint32_t count, bool colorBlending) {
     );
 
     createInfo.shaders.push_back(
-        Shader().setStage(VK_SHADER_STAGE_VERTEX_BIT).setSpecialization(
-            ShaderSpecialization().add<uint32_t>(count)
-        ).create(SHADER_PATH "factoryRectangleC.vert.spv")
+        Shader()
+            .setStage(VK_SHADER_STAGE_VERTEX_BIT)
+            .setSpecialization(
+                ShaderSpecialization().add<uint32_t>(count)
+            )
+            .create(SHADER_PATH "factoryRectangleC.vert.spv")
     );
     createInfo.shaders.push_back(
         Shader().setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(SHADER_PATH "rectangleC.frag.spv")
