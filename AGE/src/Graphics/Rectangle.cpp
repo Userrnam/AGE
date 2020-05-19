@@ -35,23 +35,30 @@ void Rectangle::preCreate(View& view, ObjectCreateInfo& createInfo) {
     m_isOwner = true;
 
     m_uboBuffer.create(
-        core::BufferCreateInfo()
-            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+        core::UniformBufferCreateInfo()
             .setSize(sizeof(RectangleUniform))
-            .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
     );
 
     createInfo.depthTest = false;
 
     createInfo.descriptors.push_back(view.getCamera().getDescriptor());
 
-    createInfo.index.buffer = core::createDeviceLocalBuffer(indicies.data(), indicies.size() * sizeof(indicies[0]), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+    createInfo.index.buffer.create(
+        core::IndexBufferCreateInfo().setSize(indicies.size() * sizeof(indicies[0]))
+    );
+    createInfo.index.buffer.loadDeviceLocal(indicies.data(), indicies.size() * sizeof(indicies[0]));
+
     createInfo.index.count = indicies.size();
     createInfo.index.type = VK_INDEX_TYPE_UINT16;
     createInfo.minSampleShading = 0.0f;
     Vertex<VType>::fillAttributes(&createInfo.vertex.attributeDescriptions);
     Vertex<VType>::fillBinding(&createInfo.vertex.bindingDescription);
-    createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(VType), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+
+    createInfo.vertex.buffer.create(
+        core::VertexBufferCreateInfo().setSize(verticies.size() * sizeof(VType))
+    );
+    createInfo.vertex.buffer.loadDeviceLocal(verticies.data(), verticies.size() * sizeof(VType));
+
     createInfo.viewport = view.getViewport();
 }
 
@@ -67,10 +74,7 @@ void Rectangle::create(const Rectangle& sample) {
     m_instanceCount = sample.m_instanceCount;
 
     m_uboBuffer.create(
-        core::BufferCreateInfo()
-            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-            .setSize(sizeof(RectangleUniform))
-            .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+        core::UniformBufferCreateInfo().setSize(sizeof(RectangleUniform))
     );
 
     // replace ubo descriptor
@@ -90,10 +94,7 @@ void Rectangle::create(const Rectangle& sample, Texture& texture) {
     m_descriptorSets = sample.m_descriptorSets;
 
     m_uboBuffer.create(
-        core::BufferCreateInfo()
-            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-            .setSize(sizeof(RectangleUniform))
-            .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+        core::UniformBufferCreateInfo().setSize(sizeof(RectangleUniform))
     );
 
     // replace ubo descriptor
@@ -163,7 +164,7 @@ void Rectangle::destroy() {
 }
 
 void Rectangle::uploadUniform(const RectangleUniform& uniform) {
-    m_uboBuffer.loadData(&uniform, sizeof(uniform));
+    m_uboBuffer.load(&uniform, sizeof(uniform));
 }
 
 void Rectangle::setColor(const glm::vec4& color) {
@@ -183,7 +184,7 @@ void Rectangle::upload() {
     uniform.color = m_color;
     uniform.transform = getTransform();
 
-    m_uboBuffer.loadData(&uniform, sizeof(uniform));
+    m_uboBuffer.load(&uniform, sizeof(uniform));
 }
 
 void RectangleFactory::addChild(RectangleInstance& instance) {
@@ -208,22 +209,28 @@ void RectangleFactory::create(View& view, uint32_t count, bool colorBlending) {
     createInfo.colorBlending = colorBlending;
 
     m_uboBuffer.create(
-        core::BufferCreateInfo()
-            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-            .setSize(sizeof(RectangleUniform) * count)
-            .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+        core::UniformBufferCreateInfo().setSize(sizeof(RectangleUniform) * count)
     );
 
     createInfo.depthTest = false;
     createInfo.descriptors.push_back(view.getCamera().getDescriptor());
 
-    createInfo.index.buffer = core::createDeviceLocalBuffer(indicies.data(), indicies.size() * sizeof(indicies[0]), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+    createInfo.index.buffer.create(
+        core::IndexBufferCreateInfo().setSize(indicies.size() * sizeof(indicies[0]))
+    );
+    createInfo.index.buffer.loadDeviceLocal(indicies.data(), indicies.size() * sizeof(indicies[0]));
+
     createInfo.index.count = indicies.size();
     createInfo.index.type = VK_INDEX_TYPE_UINT16;
     createInfo.minSampleShading = 0.0f;
     Vertex<VType>::fillBinding(&createInfo.vertex.bindingDescription);
     Vertex<VType>::fillAttributes(&createInfo.vertex.attributeDescriptions);
-    createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(VType), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+
+    createInfo.vertex.buffer.create(
+        core::VertexBufferCreateInfo().setSize(verticies.size() * sizeof(VType))
+    );
+    createInfo.vertex.buffer.loadDeviceLocal(verticies.data(), verticies.size() * sizeof(VType));
+
     createInfo.viewport = view.getViewport();
     createInfo.instanceCount = 0;
 
@@ -261,7 +268,7 @@ void RectangleFactory::destroy() {
 }
 
 void RectangleFactory::upload() {
-    m_uboBuffer.loadData(m_ubos.data(), m_totalSize);
+    m_uboBuffer.load(m_ubos.data(), m_totalSize);
 }
 
 void TexturedRectangleFactory::addChild(TexturedRectangleInstance& instance) {
@@ -286,22 +293,28 @@ void TexturedRectangleFactory::create(View& view, uint32_t count, Texture& textu
     createInfo.colorBlending = colorBlending;
 
     m_uboBuffer.create(
-        core::BufferCreateInfo()
-            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-            .setSize(sizeof(TexturedRectangleUniform) * count)
-            .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+        core::UniformBufferCreateInfo().setSize(sizeof(TexturedRectangleUniform) * count)
     );
 
     createInfo.depthTest = false;
     createInfo.descriptors.push_back(view.getCamera().getDescriptor());
 
-    createInfo.index.buffer = core::createDeviceLocalBuffer(indicies.data(), indicies.size() * sizeof(indicies[0]), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+    createInfo.index.buffer.create(
+        core::IndexBufferCreateInfo().setSize(indicies.size() * sizeof(indicies[0]))
+    );
+    createInfo.index.buffer.loadDeviceLocal(indicies.data(), indicies.size() * sizeof(indicies[0]));
+
     createInfo.index.count = indicies.size();
     createInfo.index.type = VK_INDEX_TYPE_UINT16;
     createInfo.minSampleShading = 0.0f;
     Vertex<VType>::fillBinding(&createInfo.vertex.bindingDescription);
     Vertex<VType>::fillAttributes(&createInfo.vertex.attributeDescriptions);
-    createInfo.vertex.buffer = core::createDeviceLocalBuffer(verticies.data(), verticies.size() * sizeof(VType), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+
+    createInfo.vertex.buffer.create(
+        core::VertexBufferCreateInfo().setSize(verticies.size() * sizeof(VType))
+    );
+    createInfo.vertex.buffer.loadDeviceLocal(verticies.data(), verticies.size() * sizeof(VType));
+
     createInfo.viewport = view.getViewport();
     createInfo.instanceCount = 0;
 
@@ -334,7 +347,7 @@ void TexturedRectangleFactory::destroy() {
 }
 
 void TexturedRectangleFactory::upload() {
-    m_uboBuffer.loadData(m_ubos.data(), m_totalSize);
+    m_uboBuffer.load(m_ubos.data(), m_totalSize);
 }
 
 void RectangleInstance::setColor(const glm::vec4& color) {
@@ -354,7 +367,7 @@ void RectangleInstance::updateTransform() {
 
 // FIXME
 void RectangleInstance::upload() {
-    m_uboBuffer->loadData(m_uniform, sizeof(RectangleUniform), m_factoryOffset);
+    m_uboBuffer->load(m_uniform, sizeof(RectangleUniform), m_factoryOffset);
 }
 
 void TexturedRectangleInstance::setTexCoords(glm::vec2 coords[4]) {
@@ -369,7 +382,7 @@ void TexturedRectangleInstance::updateTransform() {
 
 // FIXME
 void TexturedRectangleInstance::upload() {
-    m_uboBuffer->loadData(m_uniform, sizeof(TexturedRectangleUniform), m_factoryOffset);
+    m_uboBuffer->load(m_uniform, sizeof(TexturedRectangleUniform), m_factoryOffset);
 }
 
 } // namespace age

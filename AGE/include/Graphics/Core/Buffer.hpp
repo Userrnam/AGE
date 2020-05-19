@@ -31,6 +31,60 @@ public:
     }
 };
 
+class VertexBufferCreateInfo {
+    BufferCreateInfo createInfo;
+public:
+    VertexBufferCreateInfo() {
+        createInfo.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        createInfo.setUsage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+    }
+
+    inline VertexBufferCreateInfo& setSize(VkDeviceSize size) {
+        createInfo.setSize(size);
+        return *this;
+    }
+
+    inline operator BufferCreateInfo() {
+        return createInfo;
+    }
+};
+
+class IndexBufferCreateInfo {
+    BufferCreateInfo createInfo;
+public:
+    IndexBufferCreateInfo() {
+        createInfo.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        createInfo.setUsage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+    }
+
+    inline IndexBufferCreateInfo& setSize(VkDeviceSize size) {
+        createInfo.setSize(size);
+        return *this;
+    }
+
+    inline operator BufferCreateInfo() {
+        return createInfo;
+    }
+};
+
+class UniformBufferCreateInfo {
+    BufferCreateInfo createInfo;
+public:
+    UniformBufferCreateInfo() {
+        createInfo.setMemoryProperties(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+        createInfo.setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+    }
+
+    inline UniformBufferCreateInfo& setSize(VkDeviceSize size) {
+        createInfo.setSize(size);
+        return *this;
+    }
+
+    operator BufferCreateInfo() {
+        return createInfo;
+    }
+};
+
 class Buffer {
 protected:
     VkBuffer m_buffer = VK_NULL_HANDLE;
@@ -47,9 +101,8 @@ public:
 
     void copyTo(Buffer& buffer, VkDeviceSize size, VkDeviceSize srcOffset=0, VkDeviceSize dstOffset=0);
     void copyTo(Image& image, VkDeviceSize srcOffset=0);
-    void loadData(const void* data, VkDeviceSize size, VkDeviceSize offset=0);
+    void load(const void* data, VkDeviceSize size, VkDeviceSize offset=0);
+    void loadDeviceLocal(const void* data, VkDeviceSize size, VkDeviceSize offset=0);
 };
-
-Buffer createDeviceLocalBuffer(void* data, VkDeviceSize size, VkBufferUsageFlags usage);
 
 } // namespace age::core

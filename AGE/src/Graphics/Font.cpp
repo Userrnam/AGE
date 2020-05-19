@@ -90,14 +90,14 @@ void Font::load(const std::string& fontPath, unsigned fontSize) {
     // createInfo.size = maxHeight * totalWidth * sizeof(uint32_t);
     // createInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
-    core::Buffer buffer;
-    buffer.create(
+    core::Buffer stagingBuffer;
+    stagingBuffer.create(
         core::BufferCreateInfo()
             .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
             .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
             .setSize(maxHeight * totalWidth * sizeof(uint32_t))
     );
-    buffer.loadData(imageData, maxHeight * totalWidth * sizeof(uint32_t));
+    stagingBuffer.load(imageData, maxHeight * totalWidth * sizeof(uint32_t));
     free(imageData);
 
     core::Image image;
@@ -111,8 +111,8 @@ void Font::load(const std::string& fontPath, unsigned fontSize) {
             .setMipLevel(1)
             .setSampleCount(VK_SAMPLE_COUNT_1_BIT)
     );
-    buffer.copyTo(image);
-    buffer.destroy();
+    stagingBuffer.copyTo(image);
+    stagingBuffer.destroy();
 
     m_atlas.setImage(image);
     m_atlas.create();

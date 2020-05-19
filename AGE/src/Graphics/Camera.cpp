@@ -9,10 +9,7 @@ namespace age {
 
 Camera::Camera() {
     m_buffer.create(
-        core::BufferCreateInfo()
-            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
-            .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
-            .setSize(sizeof(glm::mat4))
+        core::UniformBufferCreateInfo().setSize(sizeof(glm::mat4))
     );
 
     m_descriptor.get(
@@ -40,7 +37,7 @@ void Camera::setPerspectiveProjection(View& view, float angle, float zNear, floa
 
 void Camera::upload() {
     auto mat = m_projection * getTransform();
-    m_buffer.loadData(&mat, sizeof(mat));
+    m_buffer.load(&mat, sizeof(mat));
 }
 
 } // namespace age

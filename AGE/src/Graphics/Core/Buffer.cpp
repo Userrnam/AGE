@@ -94,17 +94,16 @@ void Buffer::copyTo(Image& image, VkDeviceSize srcOffset) {
 	endSingleTimeCommands(commandBuffer);
 }
 
-void Buffer::loadData(const void* data, VkDeviceSize size, VkDeviceSize offset) {
+void Buffer::load(const void* data, VkDeviceSize size, VkDeviceSize offset) {
 	void* mapped;
 	vkMapMemory(apiCore.device, m_memory, offset, size, 0, &mapped);
 		memcpy(mapped, data, static_cast<size_t>(size));
 	vkUnmapMemory(apiCore.device, m_memory);
 }
 
-Buffer createDeviceLocalBuffer(void* data, VkDeviceSize size, VkBufferUsageFlags usage) {
-	Buffer out;
+void Buffer::loadDeviceLocal(const void* data, VkDeviceSize size, VkDeviceSize offset) {
 	Buffer stagingBuffer;
-
+	
 	stagingBuffer.create(
 		BufferCreateInfo()
 			.setMemoryProperties(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
@@ -112,24 +111,11 @@ Buffer createDeviceLocalBuffer(void* data, VkDeviceSize size, VkBufferUsageFlags
 			.setSize(size)
 	);
 
-	void* mapped;
-	vkMapMemory(apiCore.device, stagingBuffer.getMemory(), 0, size, 0, &mapped);
-		memcpy(mapped, data, (size_t)size);
-	vkUnmapMemory(apiCore.device, stagingBuffer.getMemory());
+	stagingBuffer.load(data, size);
 
-	out.create(
-		BufferCreateInfo()
-			.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
-			.setUsage(VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage)
-			.setSize(size)
-	);
-
- // for some reason this throws in debugger
-	stagingBuffer.copyTo(out, size);
+	stagingBuffer.copyTo(*this, size, offset);
 
 	stagingBuffer.destroy();
-
-	return out;
 }
 
 } // namespace age::core

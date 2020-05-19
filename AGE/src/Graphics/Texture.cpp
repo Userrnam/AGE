@@ -73,7 +73,7 @@ void Texture::create(const std::string& filename, const TextureCreateInfo& creat
             .setSize(imageSize)
             .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
     );
-    stagingBuffer.loadData(pixels, imageSize);
+    stagingBuffer.load(pixels, imageSize);
     stbi_image_free(pixels);
 
     m_image.create(
