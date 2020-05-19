@@ -85,13 +85,18 @@ void Font::load(const std::string& fontPath, unsigned fontSize) {
     }
     delete [] pixels;
 
-    core::BufferCreateInfo createInfo;
-    createInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-    createInfo.size = maxHeight * totalWidth * sizeof(uint32_t);
-    createInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+    // core::BufferCreateInfo createInfo;
+    // createInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    // createInfo.size = maxHeight * totalWidth * sizeof(uint32_t);
+    // createInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
     core::Buffer buffer;
-    buffer.create(createInfo);
+    buffer.create(
+        core::BufferCreateInfo()
+            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+            .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
+            .setSize(maxHeight * totalWidth * sizeof(uint32_t))
+    );
     buffer.loadData(imageData, maxHeight * totalWidth * sizeof(uint32_t));
     free(imageData);
 

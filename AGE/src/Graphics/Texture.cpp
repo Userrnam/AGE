@@ -66,13 +66,13 @@ void Texture::create(const std::string& filename, const TextureCreateInfo& creat
         mipLevel = createInfo.mipLevel;
     }
 
-    core::BufferCreateInfo bufferCreateInfo;
-    bufferCreateInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-    bufferCreateInfo.size = imageSize;
-    bufferCreateInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-
     core::Buffer stagingBuffer;
-    stagingBuffer.create(bufferCreateInfo);
+    stagingBuffer.create(
+        core::BufferCreateInfo()
+            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+            .setSize(imageSize)
+            .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
+    );
     stagingBuffer.loadData(pixels, imageSize);
     stbi_image_free(pixels);
 

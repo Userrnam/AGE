@@ -8,10 +8,27 @@
 
 namespace age::core {
 
-struct BufferCreateInfo {
-    VkDeviceSize size;
-    VkBufferUsageFlags usage;
-    VkMemoryPropertyFlags memoryProperties;
+class BufferCreateInfo {
+    VkDeviceSize m_size;
+    VkBufferUsageFlags m_usage;
+    VkMemoryPropertyFlags m_memoryProperties;
+
+    friend class Buffer;
+public:
+    inline BufferCreateInfo& setSize(VkDeviceSize size) {
+        m_size = size;
+        return *this;
+    }
+
+    inline BufferCreateInfo& setUsage(VkBufferUsageFlags usage) {
+        m_usage = usage;
+        return *this;
+    }
+
+    inline BufferCreateInfo& setMemoryProperties(VkMemoryPropertyFlags properties) {
+        m_memoryProperties = properties;
+        return *this;
+    }
 };
 
 class Buffer {
@@ -26,7 +43,7 @@ public:
     VkDeviceMemory getMemory() const { return m_memory; }
     VkDeviceSize getSize() const { return m_size; }
 
-    void create(BufferCreateInfo& info);
+    void create(const BufferCreateInfo& info);
 
     void copyTo(Buffer& buffer, VkDeviceSize size, VkDeviceSize srcOffset=0, VkDeviceSize dstOffset=0);
     void copyTo(Image& image, VkDeviceSize srcOffset=0);

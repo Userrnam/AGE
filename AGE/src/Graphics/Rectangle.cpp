@@ -34,11 +34,12 @@ static std::vector<Index16> indicies = { 0, 1, 2, 2, 3, 0 };
 void Rectangle::preCreate(View& view, ObjectCreateInfo& createInfo) {
     m_isOwner = true;
 
-    core::BufferCreateInfo bufferInfo = {};
-    bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-    bufferInfo.size = sizeof(RectangleUniform);
-    bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-    m_uboBuffer.create(bufferInfo);
+    m_uboBuffer.create(
+        core::BufferCreateInfo()
+            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+            .setSize(sizeof(RectangleUniform))
+            .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+    );
 
     createInfo.depthTest = false;
 
@@ -65,11 +66,12 @@ void Rectangle::create(const Rectangle& sample) {
     m_descriptorSets = sample.m_descriptorSets;
     m_instanceCount = sample.m_instanceCount;
 
-    core::BufferCreateInfo bufferInfo = {};
-    bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-    bufferInfo.size = sizeof(RectangleUniform);
-    bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-    m_uboBuffer.create(bufferInfo);
+    m_uboBuffer.create(
+        core::BufferCreateInfo()
+            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+            .setSize(sizeof(RectangleUniform))
+            .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+    );
 
     // replace ubo descriptor
     m_descriptorSets[1] = Descriptor().get(
@@ -87,11 +89,12 @@ void Rectangle::create(const Rectangle& sample, Texture& texture) {
     m_pipelineLayout = sample.m_pipelineLayout;
     m_descriptorSets = sample.m_descriptorSets;
 
-    core::BufferCreateInfo bufferInfo = {};
-    bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-    bufferInfo.size = sizeof(RectangleUniform);
-    bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-    m_uboBuffer.create(bufferInfo);
+    m_uboBuffer.create(
+        core::BufferCreateInfo()
+            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+            .setSize(sizeof(RectangleUniform))
+            .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+    );
 
     // replace ubo descriptor
     m_descriptorSets[1] = Descriptor().get(
@@ -204,11 +207,12 @@ void RectangleFactory::create(View& view, uint32_t count, bool colorBlending) {
     ObjectCreateInfo createInfo;
     createInfo.colorBlending = colorBlending;
 
-    core::BufferCreateInfo bufferInfo = {};
-    bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-    bufferInfo.size = sizeof(RectangleUniform) * count;
-    bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-    m_uboBuffer.create(bufferInfo);
+    m_uboBuffer.create(
+        core::BufferCreateInfo()
+            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+            .setSize(sizeof(RectangleUniform) * count)
+            .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+    );
 
     createInfo.depthTest = false;
     createInfo.descriptors.push_back(view.getCamera().getDescriptor());
@@ -281,11 +285,12 @@ void TexturedRectangleFactory::create(View& view, uint32_t count, Texture& textu
     ObjectCreateInfo createInfo;
     createInfo.colorBlending = colorBlending;
 
-    core::BufferCreateInfo bufferInfo = {};
-    bufferInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-    bufferInfo.size = sizeof(TexturedRectangleUniform) * count;
-    bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-    m_uboBuffer.create(bufferInfo);
+    m_uboBuffer.create(
+        core::BufferCreateInfo()
+            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+            .setSize(sizeof(TexturedRectangleUniform) * count)
+            .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+    );
 
     createInfo.depthTest = false;
     createInfo.descriptors.push_back(view.getCamera().getDescriptor());

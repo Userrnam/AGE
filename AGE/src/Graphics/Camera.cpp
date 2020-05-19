@@ -8,11 +8,12 @@
 namespace age {
 
 Camera::Camera() {
-    core::BufferCreateInfo createInfo;
-    createInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-    createInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-    createInfo.size = sizeof(glm::mat4);
-    m_buffer.create(createInfo);
+    m_buffer.create(
+        core::BufferCreateInfo()
+            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
+            .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+            .setSize(sizeof(glm::mat4))
+    );
 
     m_descriptor.get(
         DescriptorInfo().addBuffer(m_buffer)

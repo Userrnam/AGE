@@ -4,8 +4,6 @@
 #include "utils.hpp"
 #include "TransitionImageLayout.hpp"
 
-// #include <iostream>
-
 namespace age::core {
 
 void Buffer::destroy() {
@@ -13,13 +11,13 @@ void Buffer::destroy() {
     vkFreeMemory(apiCore.device, m_memory, nullptr);
 }
 
-void Buffer::create(BufferCreateInfo& info) {
-	m_size = info.size;
+void Buffer::create(const BufferCreateInfo& info) {
+	m_size = info.m_size;
 
     VkBufferCreateInfo bufferInfo = {};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size = info.size;
-	bufferInfo.usage = info.usage;
+	bufferInfo.size = info.m_size;
+	bufferInfo.usage = info.m_usage;
 	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
 	if (vkCreateBuffer(apiCore.device, &bufferInfo, nullptr, &m_buffer) != VK_SUCCESS) {
@@ -32,7 +30,8 @@ void Buffer::create(BufferCreateInfo& info) {
 	VkMemoryAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, info.memoryProperties);
+	// TODO: store memory type indicies in core or smth to reduce host - device calls
+	allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, info.m_memoryProperties);
 
 	if (vkAllocateMemory(apiCore.device, &allocInfo, nullptr, &m_memory) != VK_SUCCESS) {
 		throw std::runtime_error("failed to allocate vertex buffer memory");
@@ -106,20 +105,24 @@ Buffer createDeviceLocalBuffer(void* data, VkDeviceSize size, VkBufferUsageFlags
 	Buffer out;
 	Buffer stagingBuffer;
 
-	BufferCreateInfo createInfo;
-	createInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-	createInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-	createInfo.size = size;
-	stagingBuffer.create(createInfo);
+	stagingBuffer.create(
+		BufferCreateInfo()
+			.setMemoryProperties(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
+			.setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
+			.setSize(size)
+	);
 
 	void* mapped;
 	vkMapMemory(apiCore.device, stagingBuffer.getMemory(), 0, size, 0, &mapped);
 		memcpy(mapped, data, (size_t)size);
 	vkUnmapMemory(apiCore.device, stagingBuffer.getMemory());
 
-	createInfo.memoryProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-	createInfo.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage;
-	out.create(createInfo);
+	out.create(
+		BufferCreateInfo()
+			.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
+			.setUsage(VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage)
+			.setSize(size)
+	);
 
  // for some reason this throws in debugger
 	stagingBuffer.copyTo(out, size);
