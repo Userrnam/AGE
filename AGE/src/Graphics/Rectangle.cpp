@@ -31,27 +31,6 @@ VERTEX_ATTRIBUTES(VType) = {
 
 static std::vector<Index16> indicies = { 0, 1, 2, 2, 3, 0 };
 
-Descriptor getDescriptor(core::Buffer& buffer) {
-    DescriptorInfo descriptorInfo;
-    descriptorInfo.ubos.push_back(&buffer);
-
-    Descriptor descriptor;
-    descriptor.get(descriptorInfo);
-
-    return descriptor;
-}
-
-Descriptor getTDescriptor(core::Buffer& buffer, uint32_t size, Texture& texture) {
-    DescriptorInfo descriptorInfo;
-    descriptorInfo.ubos.push_back(&buffer);
-    descriptorInfo.textures.push_back(&texture);
-
-    Descriptor descriptor;
-    descriptor.get(descriptorInfo);
-
-    return descriptor;
-}
-
 void Rectangle::preCreate(View& view, ObjectCreateInfo& createInfo) {
     m_isOwner = true;
 
@@ -92,9 +71,10 @@ void Rectangle::create(const Rectangle& sample) {
     bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     m_uboBuffer.create(bufferInfo);
 
-    auto descriptor = getDescriptor(m_uboBuffer);
     // replace ubo descriptor
-    m_descriptorSets[1] = descriptor.getSet();
+    m_descriptorSets[1] = Descriptor().get(
+        DescriptorInfo().addBuffer(m_uboBuffer)
+    ).getSet();
 }
 
 void Rectangle::create(const Rectangle& sample, Texture& texture) {
@@ -113,9 +93,10 @@ void Rectangle::create(const Rectangle& sample, Texture& texture) {
     bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     m_uboBuffer.create(bufferInfo);
 
-    auto descriptor = getTDescriptor(m_uboBuffer, sizeof(RectangleUniform), texture);
     // replace ubo descriptor
-    m_descriptorSets[1] = descriptor.getSet();
+    m_descriptorSets[1] = Descriptor().get(
+        DescriptorInfo().addBuffer(m_uboBuffer).addTexture(texture)
+    ).getSet();
 }
 
 void Rectangle::create(View& view, bool colorBlending) {
@@ -123,7 +104,11 @@ void Rectangle::create(View& view, bool colorBlending) {
     createInfo.colorBlending = colorBlending;
     preCreate(view, createInfo);
 
-    createInfo.descriptors.push_back(getDescriptor(m_uboBuffer));
+    createInfo.descriptors.push_back(
+        Descriptor().get(
+            DescriptorInfo().addBuffer(m_uboBuffer)
+        )
+    );
 
     createInfo.shaders.addVertexShader(SHADER_PATH "rectangleC.vert.spv")
         .addFragmentShader(SHADER_PATH "rectangleC.frag.spv");
@@ -138,7 +123,11 @@ void Rectangle::create(View& view, Texture& texture, bool colorBlending) {
     createInfo.colorBlending = colorBlending;
     preCreate(view, createInfo);
 
-    createInfo.descriptors.push_back(getTDescriptor(m_uboBuffer, sizeof(RectangleUniform), texture));
+    createInfo.descriptors.push_back(
+        Descriptor().get(
+            DescriptorInfo().addBuffer(m_uboBuffer).addTexture(texture)
+        )
+    );
     createInfo.shaders.addVertexShader(SHADER_PATH "rectangleCT.vert.spv")
         .addFragmentShader(SHADER_PATH "rectangleCT.frag.spv");
 
@@ -221,7 +210,11 @@ void RectangleFactory::create(View& view, uint32_t count, bool colorBlending) {
     createInfo.viewport = view.getViewport();
     createInfo.instanceCount = 0;
 
-    createInfo.descriptors.push_back(getDescriptor(m_uboBuffer));
+    createInfo.descriptors.push_back(
+        Descriptor().get(
+            DescriptorInfo().addBuffer(m_uboBuffer)
+        )
+    );
 
     ShaderSpecialization specialization;
     specialization.add<uint32_t>(count);
@@ -285,7 +278,11 @@ void TexturedRectangleFactory::create(View& view, uint32_t count, Texture& textu
     createInfo.viewport = view.getViewport();
     createInfo.instanceCount = 0;
 
-    createInfo.descriptors.push_back(getTDescriptor(m_uboBuffer, sizeof(TexturedRectangleUniform), texture));
+    createInfo.descriptors.push_back(
+        Descriptor().get(
+            DescriptorInfo().addBuffer(m_uboBuffer).addTexture(texture)
+        )
+    );
     createInfo.shaders.addVertexShader(SHADER_PATH "factoryRectangleT.vert.spv")
         .addFragmentShader(SHADER_PATH "rectangleT.frag.spv");
 

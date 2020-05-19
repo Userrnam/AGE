@@ -7,20 +7,20 @@ namespace age {
 VkDescriptorSetLayout createDescriptorSetLayout(const DescriptorInfo& info) {
 	std::vector<VkDescriptorSetLayoutBinding> bindings;
 
-	if (info.ubos.size() > 0) {
+	if (info.m_ubos.size() > 0) {
 		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
 		uboLayoutBinding.binding = 0;
-		uboLayoutBinding.descriptorCount = info.ubos.size();
+		uboLayoutBinding.descriptorCount = info.m_ubos.size();
 		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 		uboLayoutBinding.pImmutableSamplers = nullptr;
 		bindings.push_back(uboLayoutBinding);
 	}
 
-	if (info.textures.size() > 0) {
+	if (info.m_textures.size() > 0) {
 		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
 		samplerLayoutBinding.binding = 1;
-		samplerLayoutBinding.descriptorCount = info.textures.size();
+		samplerLayoutBinding.descriptorCount = info.m_textures.size();
 		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 		samplerLayoutBinding.pImmutableSamplers = nullptr;
@@ -40,9 +40,9 @@ VkDescriptorSetLayout createDescriptorSetLayout(const DescriptorInfo& info) {
 	DescriptorLayout dl;
 	dl.layout = descriptorSetLayout;
 	dl.uboBinding = 0;
-	dl.uboCount = info.ubos.size();
+	dl.uboCount = info.m_ubos.size();
 	dl.samplerBinding = 1;
-	dl.samplerCount = info.textures.size();
+	dl.samplerCount = info.m_textures.size();
 
 	core::apiCore.descriptor.layouts.push_back(dl);
 
@@ -51,7 +51,7 @@ VkDescriptorSetLayout createDescriptorSetLayout(const DescriptorInfo& info) {
 
 VkDescriptorSetLayout requestDescriptorSetLayout(const DescriptorInfo& info) {
     for (auto& layout : core::apiCore.descriptor.layouts) {
-        if (layout.samplerCount == info.textures.size() && layout.uboCount == info.ubos.size()) {
+        if (layout.samplerCount == info.m_textures.size() && layout.uboCount == info.m_ubos.size()) {
             return layout.layout;
         }
     }
@@ -115,9 +115,9 @@ VkDescriptorSet Descriptor::requestDescriptorSet(const DescriptorInfo& info) {
 }
 
 VkDescriptorSet Descriptor::createDescriptorSets(const DescriptorInfo& info) {
-    std::vector<VkDescriptorSetLayout> layouts(info.setCount, m_layout);
+    std::vector<VkDescriptorSetLayout> layouts(info.m_setCount, m_layout);
 
-	auto& pool = createDescriptorPool(info.ubos.size(), info.textures.size(), info.setCount);
+	auto& pool = createDescriptorPool(info.m_ubos.size(), info.m_textures.size(), info.m_setCount);
 	pool.layout = m_layout;
 
 	VkDescriptorSetAllocateInfo allocInfo = {};
@@ -135,12 +135,12 @@ VkDescriptorSet Descriptor::createDescriptorSets(const DescriptorInfo& info) {
 	return pool.sets[pool.remainingSize];
 }
 
-void Descriptor::get(DescriptorInfo& info) {
+Descriptor& Descriptor::get(const DescriptorInfo& info) {
 	m_layout = requestDescriptorSetLayout(info);
 	m_set = requestDescriptorSet(info);
 
 	std::vector<VkDescriptorBufferInfo> bufferInfos;
-	for (auto& ubo : info.ubos) {
+	for (auto& ubo : info.m_ubos) {
 		VkDescriptorBufferInfo bufferInfo = {};
 		bufferInfo.buffer = ubo->getBuffer();
 		bufferInfo.range = ubo->getSize();
@@ -148,7 +148,7 @@ void Descriptor::get(DescriptorInfo& info) {
 	}
 
 	std::vector<VkDescriptorImageInfo> imageInfos;
-	for (auto& sampler : info.textures) {
+	for (auto& sampler : info.m_textures) {
 		VkDescriptorImageInfo imageInfo = {};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		imageInfo.imageView = sampler->getImage().getView();
@@ -157,14 +157,14 @@ void Descriptor::get(DescriptorInfo& info) {
 	}
 
 	std::vector<VkWriteDescriptorSet> descriptorWrites = {};
-	if (info.ubos.size() != 0 && info.textures.size() != 0) {
+	if (info.m_ubos.size() != 0 && info.m_textures.size() != 0) {
 		descriptorWrites.resize(2);
 	} else {
 		descriptorWrites.resize(1);
 	}
 
 	uint32_t i = 0;
-	if (info.ubos.size() != 0) {
+	if (info.m_ubos.size() != 0) {
 		descriptorWrites[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrites[i].dstSet = m_set;
 		descriptorWrites[i].dstBinding = 0;
@@ -175,7 +175,7 @@ void Descriptor::get(DescriptorInfo& info) {
 		i++;
 	}
 
-	if (info.textures.size() != 0) {
+	if (info.m_textures.size() != 0) {
 		descriptorWrites[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrites[i].dstSet = m_set;
 		descriptorWrites[i].dstBinding = 1;
@@ -186,6 +186,8 @@ void Descriptor::get(DescriptorInfo& info) {
 	}
 
 	vkUpdateDescriptorSets(core::apiCore.device, descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
+
+	return *this;
 }
 
 void freeDescriptor(void* pool, void* descriptor) {

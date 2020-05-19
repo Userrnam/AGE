@@ -14,12 +14,9 @@ Camera::Camera() {
     createInfo.size = sizeof(glm::mat4);
     m_buffer.create(createInfo);
 
-    // create descriptor
-    DescriptorInfo descriptorInfo;
-    descriptorInfo.ubos.resize(1);
-    descriptorInfo.ubos[0] = &m_buffer;
-
-    m_descriptor.get(descriptorInfo);
+    m_descriptor.get(
+        DescriptorInfo().addBuffer(m_buffer)
+    );
 }
 
 Camera::~Camera() {
