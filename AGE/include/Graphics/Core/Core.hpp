@@ -37,7 +37,7 @@ struct Core {
     } window;
 
     struct {
-        // graphics also used for present
+        Queue present;
         Queue graphics;
         Queue transfer;
         Queue compute;

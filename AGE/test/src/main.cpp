@@ -70,9 +70,9 @@ class Application : public age::Application {
         }
         trFactory.upload();
 
-        rFactory.create(defaultView, 100);
+        rFactory.create(defaultView, 500);
         // add children
-        rInstances.resize(100);
+        rInstances.resize(500);
         int i = 0;
         for (auto& r : rInstances) {
             rFactory.addChild(r);
@@ -130,7 +130,7 @@ class Application : public age::Application {
         }
         rFactory.upload();
 
-        // std::cout << "fps: " << 1. / elapsedTime << '\n';
+        std::cout << "fps: " << 1. / elapsedTime << '\n';
     }
 };
 

@@ -7,7 +7,6 @@
 
 namespace age::core {
 
-void debugEnable(bool);
 void setCoreConfig(const CoreConfig& config);
 void init();
 void pickPhysicalDevice();

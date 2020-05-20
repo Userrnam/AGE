@@ -24,12 +24,9 @@ const std::vector<const char*> validationLayers = {
 Core apiCore;
 CoreConfig coreConfig;
 
-void debugEnable(bool b) {
-	apiCore.debug.enable = b;
-}
-
 void setCoreConfig(const CoreConfig& config) {
 	coreConfig = config;
+	apiCore.debug.enable = config.debugEnable;
 }
 
 void init() {
@@ -71,7 +68,9 @@ void init() {
 		throw std::runtime_error("failed to create instance");
 	}
 
-	setupDebugMessenger(apiCore.instance, &apiCore.debug.messenger);
+	if (apiCore.debug.enable) {
+		setupDebugMessenger(apiCore.instance, &apiCore.debug.messenger);
+	}
 }
 
 void pickPhysicalDevice() {
@@ -158,48 +157,67 @@ void pickPhysicalDevice() {
 }
 
 // FIXME: add queue choice
-// Default: 0 computeQueues, 1 graphicsQueue | presentQueue, 1 transferQueue
+// Default: 1 graphicsQueue, 1 presentQueue, 1 transferQueue
 void createLogicalDevice() {
 	std::vector<VkQueueFamilyProperties> queues = getQueueFamilyProperties(apiCore.physicalDevice);
 
 	bool graphicsQueueFound = false;
-	// bool computeQueueFound = false;
+	bool presentQueueFound = false;
 	bool transferQueueFound = false;
 
-	// try to find queue that supports only transfer or compute
+	uint32_t presentQueueIndex = 0;
+
+	// try to find queue that supports only transfer
 	uint32_t index = 0;
 	for (auto& queue : queues) {
 		if (!transferQueueFound && queue.queueFlags == VK_QUEUE_TRANSFER_BIT) {
 			transferQueueFound = true;
 			apiCore.queues.transfer.index = index;
-		// } else if (coreConfig.queue.compute && !computeQueueFound && queue.queueFlags == VK_QUEUE_COMPUTE_BIT) {
-		// 	computeQueueFound = true;
-		// 	apiCore.queues.compute.index = index;
 		}
 		index++;
 	}
 
 	index = 0;
 	for (auto &queue : queues) {
-		if ( (transferQueueFound && apiCore.queues.transfer.index == index)
-		//  || (computeQueueFound && apiCore.queues.compute.index == index) 
-			) {
+		// skip transfer only queue
+		if (transferQueueFound && apiCore.queues.transfer.index == index) {
 			index++;
 			continue;
 		}
 		if (!graphicsQueueFound && (queue.queueFlags & VK_QUEUE_GRAPHICS_BIT)) {
-			VkBool32 presentSupport = false;
-			vkGetPhysicalDeviceSurfaceSupportKHR(apiCore.physicalDevice, index, apiCore.window.surface, &presentSupport);
-			if (presentSupport) {
-				apiCore.queues.graphics.index = index;
-				graphicsQueueFound = true;
+			apiCore.queues.graphics.index = index;
+			graphicsQueueFound = true;
+			if (!presentQueueFound && (queue.queueCount > 1)) {
+				VkBool32 presentSupport = false;
+				vkGetPhysicalDeviceSurfaceSupportKHR(apiCore.physicalDevice, index, apiCore.window.surface, &presentSupport);
+
+				if (presentSupport) {
+					apiCore.queues.present.index = index;
+					presentQueueFound = true;
+					presentQueueIndex = 1;
+				}
 			}
-		// } else if (coreConfig.queue.compute && !computeQueueFound && (queue.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
-		// 	apiCore.queues.compute.index = index;
-		// 	computeQueueFound = true;
 		} else if (!transferQueueFound && (queue.queueFlags & VK_QUEUE_TRANSFER_BIT)) {
 			apiCore.queues.transfer.index = index;
 			transferQueueFound = true;
+			if (!presentQueueFound && (queue.queueCount > 1)) {
+				VkBool32 presentSupport = false;
+				vkGetPhysicalDeviceSurfaceSupportKHR(apiCore.physicalDevice, index, apiCore.window.surface, &presentSupport);
+
+				if (presentSupport) {
+					apiCore.queues.present.index = index;
+					presentQueueFound = true;
+					presentQueueIndex = 1;
+				}
+			}
+		} else if (!presentQueueFound) {
+			VkBool32 presentSupport = false;
+			vkGetPhysicalDeviceSurfaceSupportKHR(apiCore.physicalDevice, index, apiCore.window.surface, &presentSupport);
+			if (presentSupport) {
+				apiCore.queues.present.index = index;
+				presentQueueFound = true;
+				presentQueueIndex = 0;
+			}
 		}
 		index++;
 	}
@@ -210,12 +228,9 @@ void createLogicalDevice() {
 	
 	std::vector<uint32_t> queueFamilies = {
 		apiCore.queues.graphics.index,
-		apiCore.queues.transfer.index
+		apiCore.queues.transfer.index,
+		apiCore.queues.present.index
 	};
-
-	// if (computeQueueFound) {
-	// 	queueFamilies.push_back(apiCore.queues.compute.index);
-	// }
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	float queuePriority = 1.0f;
@@ -254,12 +269,9 @@ void createLogicalDevice() {
 		throw std::runtime_error("failed to create logical device");
 	}
 
-// FIXME
 	vkGetDeviceQueue(apiCore.device, apiCore.queues.graphics.index, 0, &apiCore.queues.graphics.queue);
 	vkGetDeviceQueue(apiCore.device, apiCore.queues.transfer.index, 0, &apiCore.queues.transfer.queue);
-	// if (computeQueueFound) {
-	// 	vkGetDeviceQueue(apiCore.device, apiCore.queues.compute.index, 0, &apiCore.queues.compute.queue);
-	// }
+	vkGetDeviceQueue(apiCore.device, apiCore.queues.present.index, presentQueueIndex, &apiCore.queues.present.queue);
 }
 
 // FIXME: choose surface format

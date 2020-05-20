@@ -62,6 +62,7 @@ void Application::run() {
         float elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
         startTime = currentTime;
         onUpdate(elapsedTime);
+        core::window::render();
         core::window::present();
     }
 

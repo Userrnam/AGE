@@ -30,6 +30,8 @@ struct CoreConfig {
     struct {
         VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
     } multisampling;
+
+    bool debugEnable = true;
 };
 
 } // namespace age::core
