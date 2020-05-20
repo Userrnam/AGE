@@ -26,7 +26,7 @@ static std::vector<Vertex<VType>> verticies = {
 };
 
 VERTEX_ATTRIBUTES(VType) = {
-    FORMAT_R32G32_SFLOAT
+    VK_FORMAT_R32G32_SFLOAT
 };
 
 static std::vector<Index16> indicies = { 0, 1, 2, 2, 3, 0 };

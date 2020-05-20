@@ -147,13 +147,12 @@ void pickPhysicalDevice() {
 	}
 
 	// set multisampling
-	// FIXME: typecast
 	VkSampleCountFlagBits maxSamples = getMaxSampleCount();
-	if (coreConfig.multisampling.sampleCount > (SampleCount)maxSamples) {
+	if (coreConfig.multisampling.sampleCount > maxSamples) {
 		std::cout << "warning: sample count reduced to " << maxSamples << std::endl;
-		coreConfig.multisampling.sampleCount = (SampleCount)maxSamples;
+		coreConfig.multisampling.sampleCount = maxSamples;
 	}
-	apiCore.multisampling.sampleCount = (VkSampleCountFlagBits)coreConfig.multisampling.sampleCount;
+	apiCore.multisampling.sampleCount = coreConfig.multisampling.sampleCount;
 
 	apiCore.depth.format = findDepthFormat();
 }

@@ -53,6 +53,6 @@ public:
     Descriptor& get(const DescriptorInfo& info);
 };
 
-void freeDescriptor(void* pool, void* descriptor);
+void freeDescriptor(void* pool, VkDescriptorSet descriptor);
 
 } // namespace age

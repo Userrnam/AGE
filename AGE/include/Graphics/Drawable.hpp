@@ -87,8 +87,8 @@ public:
 
     template<class T>
     inline DrawableCreateInfo& setVertexProperties() {
-        Vertex<T>::fillBinding(&m_vertex.bindingDescription);
-        Vertex<T>::fillAttributes(&m_vertex.attributeDescriptions);
+        Vertex<T>::fillBinding(m_vertex.bindingDescription);
+        Vertex<T>::fillAttributes(m_vertex.attributeDescriptions);
         return *this;
     }
 
@@ -98,8 +98,8 @@ public:
             VertexBufferCreateInfo().setSize(verticies.size() * sizeof(T))
         );
         m_vertex.buffer.loadDeviceLocal(verticies.data(), verticies.size() * sizeof(T));
-        Vertex<T>::fillBinding(&m_vertex.bindingDescription);
-        Vertex<T>::fillAttributes(&m_vertex.attributeDescriptions);
+        Vertex<T>::fillBinding(m_vertex.bindingDescription);
+        Vertex<T>::fillAttributes(m_vertex.attributeDescriptions);
 
         return *this;
     }

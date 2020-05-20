@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <stdint.h>
+#include <vulkan/vulkan.h>
 
 #include "Format.hpp"
 
@@ -11,32 +12,36 @@
 namespace age {
 
 struct VertexAttribute {
-    Format format;
-    VertexAttribute(Format f) : format(f) {}
+    VkFormat format;
+    VertexAttribute(VkFormat f) : format(f) {}
 };
-
-namespace __ {
-
-void fillVertexBindingDescription(uint32_t vertexSize, void* description);
-void fillAttributeDescriptions(std::vector<VertexAttribute>& attributes, void* pDescriptions);
-
-} // namespace __
 
 template <typename T>
 struct Vertex {
     T data;
     static std::vector<VertexAttribute> attributes;
 
-    static inline uint32_t getSize() {
-        return sizeof(T);
+    static inline void fillBinding(VkVertexInputBindingDescription& description) {
+        description.binding = 0;
+        description.stride = sizeof(T);
+        description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
     }
 
-    static inline void fillBinding(void* description) {
-        __::fillVertexBindingDescription(sizeof(T), description);
-    }
+    static inline void fillAttributes(std::vector<VkVertexInputAttributeDescription>& vDescriptions) {
+        vDescriptions.resize(attributes.size());
+        auto descriptions = vDescriptions.data();
 
-    static inline void fillAttributes(void* pDescriptions) {
-        __::fillAttributeDescriptions(attributes, pDescriptions);
+        size_t descriptionIndex = 0;
+        uint32_t offset = 0;
+        for (size_t i = 0; i < attributes.size(); ++i) {
+            descriptions[descriptionIndex].binding = 0;
+            descriptions[descriptionIndex].location = i;
+            descriptions[descriptionIndex].offset = offset;
+            descriptions[descriptionIndex].format = static_cast<VkFormat>(attributes[i].format);
+
+            descriptionIndex += sizeof(VkVertexInputAttributeDescription);
+            offset += getFormatSize(attributes[i].format);
+        }
     }
 };
 

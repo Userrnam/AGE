@@ -1,23 +1,10 @@
 #pragma once
 
 #include <vector>
-#include <cstdint>
 #include <string>
-
-#define MAKE_VERSION(major, minor, patch) \
-    (((major) << 22) | ((minor) << 12) | (patch))
+#include <vulkan/vulkan.h>
 
 namespace age::core {
-
-enum SampleCount {
-    SAMPLE_COUNT_1 = 1,
-    SAMPLE_COUNT_2 = 2,
-    SAMPLE_COUNT_4 = 4,
-    SAMPLE_COUNT_8 = 8,
-    SAMPLE_COUNT_16 = 16,
-    SAMPLE_COUNT_32 = 32,
-    SAMPLE_COUNT_64 = 64
-};
 
 struct CoreConfig {
     std::vector<const char*> deviceExtensions = { "VK_KHR_swapchain" };
@@ -30,7 +17,7 @@ struct CoreConfig {
 
     struct {
         std::string name;
-        uint32_t version = MAKE_VERSION(1, 0, 0);
+        uint32_t version = VK_MAKE_VERSION(1, 0, 0);
     } appInfo;
 
     struct {
@@ -41,7 +28,7 @@ struct CoreConfig {
     } window;
 
     struct {
-        SampleCount sampleCount = SAMPLE_COUNT_1;
+        VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
     } multisampling;
 };
 

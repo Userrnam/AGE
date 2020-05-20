@@ -190,7 +190,7 @@ Descriptor& Descriptor::get(const DescriptorInfo& info) {
 	return *this;
 }
 
-void freeDescriptor(void* pool, void* descriptor) {
+void freeDescriptor(void* pool, VkDescriptorSet descriptor) {
     auto p = reinterpret_cast<core::Pool*>(pool);
     for (size_t i = 0; i < p->sets.size(); ++i) {
         if (p->sets[i] == descriptor) {

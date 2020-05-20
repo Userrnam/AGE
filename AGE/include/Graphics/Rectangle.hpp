@@ -20,6 +20,13 @@ struct TexturedRectangleUniform {
     glm::vec2 texCoords[4];
 };
 
+// Rectangle options : 
+// static | dynamic size & scale
+// with | without texture
+// with static | dynamic texture coordinates,
+// with | without color
+// with static | dynamic color
+
 class Rectangle : public Drawable, public Transformable {
     Buffer m_uboBuffer;
     glm::vec4 m_color = {};

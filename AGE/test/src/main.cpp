@@ -143,7 +143,7 @@ int main(int argc, char* argv[]) {
     config.window.height = 481;
     config.appInfo.name = "test";
     config.window.title = "hello";
-    config.multisampling.sampleCount = age::core::SAMPLE_COUNT_4;
+    config.multisampling.sampleCount = VK_SAMPLE_COUNT_1_BIT;
     age::core::setCoreConfig(config);
     age::core::setClearColor({1, 1, 1, 1});
 
