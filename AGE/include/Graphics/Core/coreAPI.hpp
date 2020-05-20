@@ -19,11 +19,6 @@ void createCommandPools();
 
 void createSyncObjects();
 void allocateCommandBuffers();
-
-// void createCamera();
-
 void setClearColor(const Color& color);
-
-void destroy();
 
 } // namespace age::core

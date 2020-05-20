@@ -4,9 +4,9 @@
 #include <stdexcept>
 #include <cstring>
 
-#include "Image.hpp"
+#include "Core/Image.hpp"
 
-namespace age::core {
+namespace age {
 
 class BufferCreateInfo {
     VkDeviceSize m_size;
@@ -100,9 +100,9 @@ public:
     void create(const BufferCreateInfo& info);
 
     void copyTo(Buffer& buffer, VkDeviceSize size, VkDeviceSize srcOffset=0, VkDeviceSize dstOffset=0);
-    void copyTo(Image& image, VkDeviceSize srcOffset=0);
+    void copyTo(core::Image& image, VkDeviceSize srcOffset=0);
     void load(const void* data, VkDeviceSize size, VkDeviceSize offset=0);
     void loadDeviceLocal(const void* data, VkDeviceSize size, VkDeviceSize offset=0);
 };
 
-} // namespace age::core
+} // namespace age

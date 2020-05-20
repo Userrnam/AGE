@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "Core/Buffer.hpp"
+#include "Buffer.hpp"
 #include "Descriptor.hpp"
 #include "Transformable.hpp"
 
@@ -12,7 +12,7 @@ class View;
 
 class Camera : public Transformable {
     Descriptor m_descriptor;
-    core::Buffer m_buffer;
+    Buffer m_buffer;
     glm::mat4 m_projection = glm::mat4(1.0f);
 
     // FIXME

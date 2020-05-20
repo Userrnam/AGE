@@ -3,7 +3,7 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 
-#include "Core/Buffer.hpp"
+#include "Buffer.hpp"
 #include "Texture.hpp"
 
 namespace age {
@@ -12,7 +12,7 @@ namespace age {
 // samplers - binding 1
 
 class DescriptorInfo {
-    std::vector<core::Buffer*> m_ubos;
+    std::vector<Buffer*> m_ubos;
     std::vector<Texture*> m_textures;
     uint32_t m_setCount = 16;
 
@@ -21,7 +21,7 @@ class DescriptorInfo {
     friend VkDescriptorSetLayout requestDescriptorSetLayout(const DescriptorInfo& info);
 public:
 
-    inline DescriptorInfo& addBuffer(core::Buffer& buffer) {
+    inline DescriptorInfo& addBuffer(Buffer& buffer) {
         m_ubos.push_back(&buffer);
         return *this;
     }
@@ -45,7 +45,7 @@ class Descriptor {
     VkDescriptorSet requestDescriptorSet(const DescriptorInfo& info);
     VkDescriptorSet createDescriptorSets(const DescriptorInfo& info);
 
-    friend class Object;
+    friend class Drawable;
 public:
     VkDescriptorSetLayout getLayout() { return m_layout; }
     VkDescriptorSet getSet() { return m_set; }

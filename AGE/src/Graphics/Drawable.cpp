@@ -1,4 +1,4 @@
-#include "Object.hpp"
+#include "Drawable.hpp"
 
 #include "Core/Core.hpp"
 #include "Core/RenderPassManager.hpp"
@@ -8,50 +8,50 @@ namespace age {
 
 extern Viewport currentViewport;
 
-void Object::createObject(const ObjectCreateInfo& info) {
-    m_index.buffer = info.index.buffer;
-    m_index.count = info.index.count;
-    m_index.type = info.index.type;
-    m_vertex.buffer = info.vertex.buffer;
-    m_instanceCount = info.instanceCount;
+void Drawable::createDrawable(const DrawableCreateInfo& info) {
+    m_index.buffer = info.m_index.buffer;
+    m_index.count = info.m_index.count;
+    m_index.type = info.m_index.type;
+    m_vertex.buffer = info.m_vertex.buffer;
+    m_instanceCount = info.m_instanceCount;
 
     std::vector<VkDescriptorSetLayout> layouts;
-    layouts.reserve(info.descriptors.size());
-    m_setPools.reserve(info.descriptors.size());
-    m_descriptorSets.reserve(info.descriptors.size());
-    for (auto& d : info.descriptors) {
+    layouts.reserve(info.m_descriptors.size());
+    m_setPools.reserve(info.m_descriptors.size());
+    m_descriptorSets.reserve(info.m_descriptors.size());
+    for (auto& d : info.m_descriptors) {
         m_descriptorSets.push_back(d.m_set);
         m_setPools.push_back(d.m_pool);
         layouts.push_back(d.m_layout);
     }
 
     core::RenderPassConfig renderPassConfig = 0;
-    if (info.depthTest) {
+    if (info.m_depthTest) {
         renderPassConfig = core::RENDER_PASS_DEPTH_BIT | core::RENDER_PASS_MULTISAMPLING_BIT;
     }
-    if (info.multisampling) {
+    if (info.m_multisampling) {
         renderPassConfig |= core::RENDER_PASS_MULTISAMPLING_BIT;
     }
 
     m_renderPass = core::requestRenderPass(renderPassConfig);
 
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
-    shaderStages.resize(info.shaders.size());
+    shaderStages.resize(info.m_shaders.size());
 
     std::vector<VkSpecializationInfo> specializationInfos;
     uint32_t specIndex = 0;
-    specializationInfos.resize(info.shaders.size());
-    for (size_t i = 0; i < info.shaders.size(); ++i) {
+    specializationInfos.resize(info.m_shaders.size());
+    for (size_t i = 0; i < info.m_shaders.size(); ++i) {
         shaderStages[i].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStages[i].module = info.shaders[i].getModule();
-        shaderStages[i].pName = info.shaders[i].getEntry().c_str();
-        shaderStages[i].stage = info.shaders[i].getStage();
+        shaderStages[i].module = info.m_shaders[i].getModule();
+        shaderStages[i].pName = info.m_shaders[i].getEntry().c_str();
+        shaderStages[i].stage = info.m_shaders[i].getStage();
 
-        if (info.shaders[i].getSpecialization().m_data.size() != 0) {
-            specializationInfos[specIndex].dataSize = info.shaders[i].getSpecialization().m_data.size() * sizeof(uint8_t);
-            specializationInfos[specIndex].mapEntryCount = info.shaders[i].getSpecialization().m_entries.size();
-            specializationInfos[specIndex].pData = info.shaders[i].getSpecialization().m_data.data();
-            specializationInfos[specIndex].pMapEntries = info.shaders[i].getSpecialization().m_entries.data();
+        if (info.m_shaders[i].getSpecialization().m_data.size() != 0) {
+            specializationInfos[specIndex].dataSize = info.m_shaders[i].getSpecialization().m_data.size() * sizeof(uint8_t);
+            specializationInfos[specIndex].mapEntryCount = info.m_shaders[i].getSpecialization().m_entries.size();
+            specializationInfos[specIndex].pData = info.m_shaders[i].getSpecialization().m_data.data();
+            specializationInfos[specIndex].pMapEntries = info.m_shaders[i].getSpecialization().m_entries.data();
 
             shaderStages[i].pSpecializationInfo = &specializationInfos[specIndex];
 
@@ -62,9 +62,9 @@ void Object::createObject(const ObjectCreateInfo& info) {
     VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo = {};
     vertexInputCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputCreateInfo.vertexBindingDescriptionCount = 1;
-    vertexInputCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(info.vertex.attributeDescriptions.size());
-    vertexInputCreateInfo.pVertexBindingDescriptions = &info.vertex.bindingDescription;
-    vertexInputCreateInfo.pVertexAttributeDescriptions = info.vertex.attributeDescriptions.data();
+    vertexInputCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(info.m_vertex.attributeDescriptions.size());
+    vertexInputCreateInfo.pVertexBindingDescriptions = &info.m_vertex.bindingDescription;
+    vertexInputCreateInfo.pVertexAttributeDescriptions = info.m_vertex.attributeDescriptions.data();
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -73,7 +73,7 @@ void Object::createObject(const ObjectCreateInfo& info) {
 
     VkPipelineDepthStencilStateCreateInfo depthStencil = {};
     depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-    if (info.depthTest) {
+    if (info.m_depthTest) {
         depthStencil.depthTestEnable = VK_TRUE;
         depthStencil.depthWriteEnable = VK_TRUE;
         depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
@@ -83,10 +83,10 @@ void Object::createObject(const ObjectCreateInfo& info) {
     }
 
     VkViewport viewport = {};
-    viewport.x = info.viewport.x;
-    viewport.y = info.viewport.y;
-    viewport.width = info.viewport.width;
-    viewport.height = info.viewport.height;
+    viewport.x = info.m_viewport.x;
+    viewport.y = info.m_viewport.y;
+    viewport.width = info.m_viewport.width;
+    viewport.height = info.m_viewport.height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
@@ -116,9 +116,9 @@ void Object::createObject(const ObjectCreateInfo& info) {
 
     VkPipelineMultisampleStateCreateInfo multisampling = {};
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-    if (info.multisampling) {
+    if (info.m_multisampling) {
         multisampling.rasterizationSamples = core::apiCore.multisampling.sampleCount;
-        if (info.minSampleShading) {
+        if (info.m_minSampleShading) {
             multisampling.sampleShadingEnable = VK_TRUE;
             multisampling.minSampleShading = 0.2f;
         }
@@ -130,7 +130,7 @@ void Object::createObject(const ObjectCreateInfo& info) {
     colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
                                           VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
-    colorBlendAttachment.blendEnable = info.colorBlending;
+    colorBlendAttachment.blendEnable = info.m_colorBlending;
     colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
     colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
     colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
@@ -171,7 +171,7 @@ void Object::createObject(const ObjectCreateInfo& info) {
     }
 }
 
-void Object::draw(int i) {
+void Drawable::draw(int i) {
     VkRenderPassBeginInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = m_renderPass->renderPass;

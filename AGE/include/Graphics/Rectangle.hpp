@@ -2,8 +2,8 @@
 
 #include <glm/glm.hpp>
 
-#include "Object.hpp"
-#include "Core/Buffer.hpp"
+#include "Drawable.hpp"
+#include "Buffer.hpp"
 #include "Transformable.hpp"
 #include "View.hpp"
 #include "Texture.hpp"
@@ -20,12 +20,11 @@ struct TexturedRectangleUniform {
     glm::vec2 texCoords[4];
 };
 
-class Rectangle : public Object, public Transformable {
-    core::Buffer m_uboBuffer;
+class Rectangle : public Drawable, public Transformable {
+    Buffer m_uboBuffer;
     glm::vec4 m_color = {};
     bool m_isOwner;
 
-    void preCreate(View& view, ObjectCreateInfo& objectCreateInfo);
 public:
     void destroy();
 
@@ -50,10 +49,10 @@ class TexturedRectangleInstance;
 
 // factory
 // FIXME:
-class RectangleFactory : public Object {
+class RectangleFactory : public Drawable {
     std::vector<RectangleUniform> m_ubos;
     uint32_t m_totalSize = 0; // size of ubos in bytes
-    core::Buffer m_uboBuffer; // sizeof(uniform) * count
+    Buffer m_uboBuffer; // sizeof(uniform) * count
     uint32_t m_count = 0;   // max rectangle count
 public:
     void destroy();
@@ -62,10 +61,10 @@ public:
     void upload();
 };
 
-class TexturedRectangleFactory : public Object {
+class TexturedRectangleFactory : public Drawable {
     std::vector<TexturedRectangleUniform> m_ubos;
     uint32_t m_totalSize = 0; // size of ubos in bytes
-    core::Buffer m_uboBuffer; // sizeof(uniform) * count
+    Buffer m_uboBuffer; // sizeof(uniform) * count
     uint32_t m_count = 0;     // max rectangle count
 public:
     void destroy();
@@ -76,7 +75,7 @@ public:
 
 class RectangleInstance : public Transformable {
     RectangleUniform* m_uniform = nullptr;
-    core::Buffer* m_uboBuffer = nullptr;
+    Buffer* m_uboBuffer = nullptr;
     uint32_t m_factoryOffset = 0;
     friend class RectangleFactory;
 public:
@@ -90,7 +89,7 @@ public:
 
 class TexturedRectangleInstance : public Transformable {
     TexturedRectangleUniform* m_uniform = nullptr;
-    core::Buffer* m_uboBuffer = nullptr;
+    Buffer* m_uboBuffer = nullptr;
     uint32_t m_factoryOffset = 0;
     friend class TexturedRectangleFactory;
 public:

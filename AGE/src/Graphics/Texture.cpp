@@ -2,7 +2,7 @@
 
 #include "Texture.hpp"
 #include "External/stb_image.h"
-#include "Core/Buffer.hpp"
+#include "Buffer.hpp"
 #include "Core/Core.hpp"
 #include "Core/TransitionImageLayout.hpp"
 
@@ -66,9 +66,9 @@ void Texture::create(const std::string& filename, const TextureCreateInfo& creat
         mipLevel = createInfo.mipLevel;
     }
 
-    core::Buffer stagingBuffer;
+    Buffer stagingBuffer;
     stagingBuffer.create(
-        core::BufferCreateInfo()
+        BufferCreateInfo()
             .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
             .setSize(imageSize)
             .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)

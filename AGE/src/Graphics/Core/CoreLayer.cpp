@@ -17,11 +17,9 @@ CoreLayer::CoreLayer() {
     createCommandPools();
     createSyncObjects();
     allocateCommandBuffers();
-    // createCamera();
 }
 
 CoreLayer::~CoreLayer() {
-    // apiCore.camera.buffer.destroy();
 	vkFreeCommandBuffers(apiCore.device, apiCore.commandPools.graphicsPool,
 		apiCore.commandBuffers.data.size(), apiCore.commandBuffers.data.data());
 

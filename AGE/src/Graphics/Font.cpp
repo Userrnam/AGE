@@ -1,7 +1,7 @@
 #include <stdexcept>
 
 #include "Font.hpp"
-#include "Core/Buffer.hpp"
+#include "Buffer.hpp"
 
 namespace age {
 
@@ -90,9 +90,9 @@ void Font::load(const std::string& fontPath, unsigned fontSize) {
     // createInfo.size = maxHeight * totalWidth * sizeof(uint32_t);
     // createInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
-    core::Buffer stagingBuffer;
+    Buffer stagingBuffer;
     stagingBuffer.create(
-        core::BufferCreateInfo()
+        BufferCreateInfo()
             .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
             .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
             .setSize(maxHeight * totalWidth * sizeof(uint32_t))

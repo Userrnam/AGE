@@ -6,7 +6,6 @@
 #include <GLFW/glfw3.h>
 
 #include "Image.hpp"
-#include "Buffer.hpp"
 #include "RenderPassManager.hpp"
 #include "RenderPassRef.hpp"
 #include "DescriptorLayout.hpp"

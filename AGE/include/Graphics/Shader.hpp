@@ -11,7 +11,7 @@ class ShaderSpecialization {
     std::vector<VkSpecializationMapEntry> m_entries;
     std::vector<uint8_t> m_data;
 
-    friend class Object;
+    friend class Drawable;
 public:
 
     template<typename T>

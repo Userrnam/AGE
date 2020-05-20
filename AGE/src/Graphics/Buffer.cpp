@@ -1,14 +1,14 @@
 #include "Buffer.hpp"
 
-#include "Core.hpp"
+#include "Core/Core.hpp"
 #include "utils.hpp"
 #include "TransitionImageLayout.hpp"
 
-namespace age::core {
+namespace age {
 
 void Buffer::destroy() {
-	vkDestroyBuffer(apiCore.device, m_buffer, nullptr);
-    vkFreeMemory(apiCore.device, m_memory, nullptr);
+	vkDestroyBuffer(core::apiCore.device, m_buffer, nullptr);
+    vkFreeMemory(core::apiCore.device, m_memory, nullptr);
 }
 
 void Buffer::create(const BufferCreateInfo& info) {
@@ -20,28 +20,28 @@ void Buffer::create(const BufferCreateInfo& info) {
 	bufferInfo.usage = info.m_usage;
 	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-	if (vkCreateBuffer(apiCore.device, &bufferInfo, nullptr, &m_buffer) != VK_SUCCESS) {
+	if (vkCreateBuffer(core::apiCore.device, &bufferInfo, nullptr, &m_buffer) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create vertex buffer");
 	}
 
 	VkMemoryRequirements memRequirements;
-	vkGetBufferMemoryRequirements(apiCore.device, m_buffer, &memRequirements);
+	vkGetBufferMemoryRequirements(core::apiCore.device, m_buffer, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
 	// TODO: store memory type indicies in core or smth to reduce host - device calls
-	allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, info.m_memoryProperties);
+	allocInfo.memoryTypeIndex = core::findMemoryType(memRequirements.memoryTypeBits, info.m_memoryProperties);
 
-	if (vkAllocateMemory(apiCore.device, &allocInfo, nullptr, &m_memory) != VK_SUCCESS) {
+	if (vkAllocateMemory(core::apiCore.device, &allocInfo, nullptr, &m_memory) != VK_SUCCESS) {
 		throw std::runtime_error("failed to allocate vertex buffer memory");
 	}
 
-	vkBindBufferMemory(apiCore.device, m_buffer, m_memory, 0);
+	vkBindBufferMemory(core::apiCore.device, m_buffer, m_memory, 0);
 }
 
 void Buffer::copyTo(Buffer& buffer, VkDeviceSize size, VkDeviceSize srcOffset, VkDeviceSize dstOffset) {
-	VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+	VkCommandBuffer commandBuffer = core::beginSingleTimeCommands();
 
 	VkBufferCopy copyRegion = {};
 	copyRegion.size = size;
@@ -49,12 +49,12 @@ void Buffer::copyTo(Buffer& buffer, VkDeviceSize size, VkDeviceSize srcOffset, V
 	copyRegion.srcOffset = srcOffset;
 	vkCmdCopyBuffer(commandBuffer, m_buffer, buffer.m_buffer, 1, &copyRegion);
 
-	endSingleTimeCommands(commandBuffer);
+	core::endSingleTimeCommands(commandBuffer);
 }
 
 // FIXME: add support to load mipmaped images
-void Buffer::copyTo(Image& image, VkDeviceSize srcOffset) {
-	TransitionInfo transitionInfo;
+void Buffer::copyTo(core::Image& image, VkDeviceSize srcOffset) {
+	core::TransitionInfo transitionInfo;
 	transitionInfo.image = image.getImage();
     transitionInfo.mipLevel = image.getMipLevel();
 	transitionInfo.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -63,9 +63,9 @@ void Buffer::copyTo(Image& image, VkDeviceSize srcOffset) {
 	transitionInfo.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 	transitionInfo.srcStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 	transitionInfo.dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-	transitionImageLayout(transitionInfo);
+	core::transitionImageLayout(transitionInfo);
 
-	VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+	VkCommandBuffer commandBuffer = core::beginSingleTimeCommands();
 
 	VkBufferImageCopy region = {};
 	region.bufferOffset = srcOffset;
@@ -91,14 +91,14 @@ void Buffer::copyTo(Image& image, VkDeviceSize srcOffset) {
 		&region
 	);
 
-	endSingleTimeCommands(commandBuffer);
+	core::endSingleTimeCommands(commandBuffer);
 }
 
 void Buffer::load(const void* data, VkDeviceSize size, VkDeviceSize offset) {
 	void* mapped;
-	vkMapMemory(apiCore.device, m_memory, offset, size, 0, &mapped);
+	vkMapMemory(core::apiCore.device, m_memory, offset, size, 0, &mapped);
 		memcpy(mapped, data, static_cast<size_t>(size));
-	vkUnmapMemory(apiCore.device, m_memory);
+	vkUnmapMemory(core::apiCore.device, m_memory);
 }
 
 void Buffer::loadDeviceLocal(const void* data, VkDeviceSize size, VkDeviceSize offset) {
@@ -118,4 +118,4 @@ void Buffer::loadDeviceLocal(const void* data, VkDeviceSize size, VkDeviceSize o
 	stagingBuffer.destroy();
 }
 
-} // namespace age::core
+} // namespace age

@@ -9,7 +9,7 @@ namespace age {
 
 Camera::Camera() {
     m_buffer.create(
-        core::UniformBufferCreateInfo().setSize(sizeof(glm::mat4))
+        UniformBufferCreateInfo().setSize(sizeof(glm::mat4))
     );
 
     m_descriptor.get(
