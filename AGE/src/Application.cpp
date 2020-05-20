@@ -56,13 +56,13 @@ void Application::create() {
 
 void Application::run() {
     static auto startTime = std::chrono::high_resolution_clock::now();
+
     while (!core::window::closed()) {
         core::window::pollEvents();
         auto currentTime = std::chrono::high_resolution_clock::now();
         float elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
         startTime = currentTime;
         onUpdate(elapsedTime);
-        core::window::render();
         core::window::present();
     }
 

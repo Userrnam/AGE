@@ -13,5 +13,4 @@ if(APPLE)
     include_directories("/usr/local/Cellar/freetype/2.10.1/include/freetype2")
 endif(APPLE)
 
-
 add_subdirectory(AGE)

@@ -162,10 +162,8 @@ void createLogicalDevice() {
 	std::vector<VkQueueFamilyProperties> queues = getQueueFamilyProperties(apiCore.physicalDevice);
 
 	bool graphicsQueueFound = false;
-	bool presentQueueFound = false;
 	bool transferQueueFound = false;
-
-	uint32_t presentQueueIndex = 0;
+	uint32_t graphicsSupportedIndex;
 
 	// try to find queue that supports only transfer
 	uint32_t index = 0;
@@ -185,48 +183,39 @@ void createLogicalDevice() {
 			continue;
 		}
 		if (!graphicsQueueFound && (queue.queueFlags & VK_QUEUE_GRAPHICS_BIT)) {
-			apiCore.queues.graphics.index = index;
-			graphicsQueueFound = true;
-			if (!presentQueueFound && (queue.queueCount > 1)) {
-				VkBool32 presentSupport = false;
-				vkGetPhysicalDeviceSurfaceSupportKHR(apiCore.physicalDevice, index, apiCore.window.surface, &presentSupport);
-
-				if (presentSupport) {
-					apiCore.queues.present.index = index;
-					presentQueueFound = true;
-					presentQueueIndex = 1;
-				}
+			graphicsSupportedIndex = index;
+			VkBool32 presentSupport = false;
+			vkGetPhysicalDeviceSurfaceSupportKHR(apiCore.physicalDevice, index, apiCore.window.surface, &presentSupport);
+			if (presentSupport) {
+				apiCore.queues.graphics.index = index;
+				graphicsQueueFound = true;
+				apiCore.queues.present.index = index;
 			}
 		} else if (!transferQueueFound && (queue.queueFlags & VK_QUEUE_TRANSFER_BIT)) {
 			apiCore.queues.transfer.index = index;
 			transferQueueFound = true;
-			if (!presentQueueFound && (queue.queueCount > 1)) {
-				VkBool32 presentSupport = false;
-				vkGetPhysicalDeviceSurfaceSupportKHR(apiCore.physicalDevice, index, apiCore.window.surface, &presentSupport);
-
-				if (presentSupport) {
-					apiCore.queues.present.index = index;
-					presentQueueFound = true;
-					presentQueueIndex = 1;
-				}
-			}
-		} else if (!presentQueueFound) {
-			VkBool32 presentSupport = false;
-			vkGetPhysicalDeviceSurfaceSupportKHR(apiCore.physicalDevice, index, apiCore.window.surface, &presentSupport);
-			if (presentSupport) {
-				apiCore.queues.present.index = index;
-				presentQueueFound = true;
-				presentQueueIndex = 0;
-			}
 		}
 		index++;
 	}
 
+	// no queue, that supports graphics and present
 	if (!graphicsQueueFound) {
-		throw std::runtime_error("graphics queue not found");
+		apiCore.queues.graphics.index = graphicsSupportedIndex;
+		index = 0;
+		for (auto& queue : queues) {
+			if (index == apiCore.queues.graphics.index || index == apiCore.queues.transfer.index) {
+				continue;
+			}
+			VkBool32 presentSupport = false;
+			vkGetPhysicalDeviceSurfaceSupportKHR(apiCore.physicalDevice, index, apiCore.window.surface, &presentSupport);
+			if (presentSupport) {
+				apiCore.queues.present.index = index;
+			}
+		}
+		std::cout << "Warning: Using different queues for graphics and present\n";
 	}
 	
-	std::vector<uint32_t> queueFamilies = {
+	std::set<uint32_t> queueFamilies = {
 		apiCore.queues.graphics.index,
 		apiCore.queues.transfer.index,
 		apiCore.queues.present.index
@@ -271,7 +260,11 @@ void createLogicalDevice() {
 
 	vkGetDeviceQueue(apiCore.device, apiCore.queues.graphics.index, 0, &apiCore.queues.graphics.queue);
 	vkGetDeviceQueue(apiCore.device, apiCore.queues.transfer.index, 0, &apiCore.queues.transfer.queue);
-	vkGetDeviceQueue(apiCore.device, apiCore.queues.present.index, presentQueueIndex, &apiCore.queues.present.queue);
+	if (apiCore.queues.present.index != apiCore.queues.graphics.index) {
+		vkGetDeviceQueue(apiCore.device, apiCore.queues.present.index, 0, &apiCore.queues.present.queue);
+	} else {
+		apiCore.queues.present.queue = apiCore.queues.graphics.queue;
+	}
 }
 
 // FIXME: choose surface format
@@ -307,19 +300,12 @@ void createSwapchain() {
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-// FIXME:
-	// QueueFamilyIndicies indicies = findQueueFamilies(apiCore.physicalDevice);
-	// uint32_t queueFamilyIndicies[] = { indicies.graphicsFamily.value(), indicies.presentFamily.value() };
-
-	// if (indicies.graphicsFamily != indicies.presentFamily) {
-	// 	createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-	// 	createInfo.queueFamilyIndexCount = 2;
-	// 	createInfo.pQueueFamilyIndices = queueFamilyIndicies;
-	// } else {
-	//  createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-	// 	createInfo.queueFamilyIndexCount = 0;           // optional
-	// 	createInfo.pQueueFamilyIndices = nullptr;       // optional
-	// }
+	uint32_t queueFamilyIndicies[] = { apiCore.queues.graphics.index, apiCore.queues.present.index };
+	if (apiCore.queues.graphics.index != apiCore.queues.present.index) {
+		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+		createInfo.queueFamilyIndexCount = 2;
+		createInfo.pQueueFamilyIndices = queueFamilyIndicies;
+	}
 
 	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
 	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;

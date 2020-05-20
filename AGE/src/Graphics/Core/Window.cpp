@@ -80,15 +80,15 @@ std::chrono::steady_clock::time_point curTime;
     prevTime = curTime;
 
 
-static uint32_t imageIndex;
+// static uint32_t imageIndex;
 // static VkSemaphore signalSemaphore;
 
-void render() {
+void present() {
     TIME_LOG("render start")
     vkWaitForFences(apiCore.device, 1, &apiCore.sync.inFlightFence, VK_TRUE, UINT64_MAX); // 554
     TIME_LOG("wait for fances")
 
-    // uint32_t imageIndex;
+    uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(apiCore.device, apiCore.swapchain.swapchain, // 215
         UINT64_MAX, apiCore.sync.imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
@@ -126,9 +126,7 @@ void render() {
     }
 
     TIME_LOG("Queue Submit")
-}
 
-void present() {
     VkSwapchainKHR swapChains[] = { apiCore.swapchain.swapchain };
     VkPresentInfoKHR presentInfo = {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -139,7 +137,7 @@ void present() {
     presentInfo.pImageIndices = &imageIndex;
     presentInfo.pResults = nullptr;
 
-    VkResult result = vkQueuePresentKHR(apiCore.queues.present.queue, &presentInfo); // 484
+    result = vkQueuePresentKHR(apiCore.queues.present.queue, &presentInfo); // 484
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || apiCore.framebufferResized) {
         apiCore.framebufferResized = false;
         recreateSwapchain();
