@@ -10,7 +10,6 @@
 
 namespace age {
 
-
 void Application::updateCommandBuffers() {
     // update active commandBuffer
     if (core::apiCore.commandBuffers.active == core::apiCore.commandBuffers.data.data()) {
@@ -50,6 +49,7 @@ void Application::draw(int i) {
 }
 
 void Application::create() {
+    defaultView.create();
     onCreate();
     updateCommandBuffers();
 }
@@ -67,6 +67,8 @@ void Application::run() {
     }
 
     vkDeviceWaitIdle(core::apiCore.device);
+
+    defaultView.destroy();
     onDelete();
 }
 

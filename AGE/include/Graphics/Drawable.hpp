@@ -3,7 +3,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-#include "Viewport.hpp"
+#include "View.hpp"
 #include "Shader.hpp"
 #include "Descriptor.hpp"
 #include "Core/RenderPassRef.hpp"
@@ -14,7 +14,7 @@
 namespace age {
 
 class DrawableCreateInfo {
-    Viewport m_viewport;
+    View m_view;
     bool m_depthTest = false;
     bool m_multisampling = false;
     bool m_colorBlending = false;
@@ -36,12 +36,11 @@ class DrawableCreateInfo {
         Buffer buffer;
     } m_index;
 
-
     friend class Drawable;
 public:
 
-    inline DrawableCreateInfo& setViewport(const Viewport& viewport) {
-        m_viewport = viewport;
+    inline DrawableCreateInfo& setView(const View& view) {
+        m_view = view;
         return *this;
     }
 
@@ -169,5 +168,7 @@ protected:
 public:
     void draw(int i);
 };
+
+void destroyPipeline(VkPipeline pipeline);
 
 } // namespace age

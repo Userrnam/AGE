@@ -16,9 +16,16 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     m_instanceCount = info.m_instanceCount;
 
     std::vector<VkDescriptorSetLayout> layouts;
-    layouts.reserve(info.m_descriptors.size());
-    m_setPools.reserve(info.m_descriptors.size());
-    m_descriptorSets.reserve(info.m_descriptors.size());
+    layouts.reserve(info.m_descriptors.size() + 1);
+    m_setPools.reserve(info.m_descriptors.size() + 1);
+    m_descriptorSets.reserve(info.m_descriptors.size() + 1);
+
+    // add camera descriptor
+    auto cameraDescriptor = info.m_view.getCamera().getDescriptor();
+    m_descriptorSets.push_back(cameraDescriptor.m_set);
+    m_setPools.push_back(cameraDescriptor.m_pool);
+    layouts.push_back(cameraDescriptor.m_layout);
+
     for (auto& d : info.m_descriptors) {
         m_descriptorSets.push_back(d.m_set);
         m_setPools.push_back(d.m_pool);
@@ -83,10 +90,10 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     }
 
     VkViewport viewport = {};
-    viewport.x = info.m_viewport.x;
-    viewport.y = info.m_viewport.y;
-    viewport.width = info.m_viewport.width;
-    viewport.height = info.m_viewport.height;
+    viewport.x = info.m_view.getViewport().x;
+    viewport.y = info.m_view.getViewport().y;
+    viewport.width = info.m_view.getViewport().width;
+    viewport.height = info.m_view.getViewport().height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
@@ -191,6 +198,10 @@ void Drawable::draw(int i) {
         m_pipelineLayout, 0, m_descriptorSets.size(), m_descriptorSets.data(), 0, nullptr);
         vkCmdDrawIndexed(core::apiCore.commandBuffers.active[i], m_index.count, m_instanceCount, 0, 0, 0);
     vkCmdEndRenderPass(core::apiCore.commandBuffers.active[i]);
+}
+
+void destroyPipeline(VkPipeline pipeline) {
+    vkDestroyPipeline(core::apiCore.device, pipeline, nullptr);
 }
 
 } // namespace age

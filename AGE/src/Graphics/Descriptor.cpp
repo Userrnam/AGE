@@ -4,27 +4,20 @@
 
 namespace age {
 
-VkDescriptorSetLayout createDescriptorSetLayout(const DescriptorInfo& info) {
+VkDescriptorSetLayout createDescriptorSetLayout(DescriptorLayout& info) {
 	std::vector<VkDescriptorSetLayoutBinding> bindings;
 
-	if (info.m_ubos.size() > 0) {
+	uint32_t bindingIndex = 0;
+	for (auto& binding : info.layoutInfo) {
 		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-		uboLayoutBinding.binding = 0;
-		uboLayoutBinding.descriptorCount = info.m_ubos.size();
-		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		uboLayoutBinding.binding = bindingIndex;
+		uboLayoutBinding.descriptorCount = binding.info.count;
+		uboLayoutBinding.descriptorType = static_cast<VkDescriptorType>(binding.info.type);
+		uboLayoutBinding.stageFlags = binding.info.stage;
 		uboLayoutBinding.pImmutableSamplers = nullptr;
 		bindings.push_back(uboLayoutBinding);
-	}
 
-	if (info.m_textures.size() > 0) {
-		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-		samplerLayoutBinding.binding = 1;
-		samplerLayoutBinding.descriptorCount = info.m_textures.size();
-		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		samplerLayoutBinding.pImmutableSamplers = nullptr;
-		bindings.push_back(samplerLayoutBinding);
+		bindingIndex++;
 	}
 
 	VkDescriptorSetLayoutCreateInfo layoutInfo = {};
@@ -32,32 +25,48 @@ VkDescriptorSetLayout createDescriptorSetLayout(const DescriptorInfo& info) {
 	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
 	layoutInfo.pBindings = bindings.data();
 
-	VkDescriptorSetLayout descriptorSetLayout;
-	if (vkCreateDescriptorSetLayout(core::apiCore.device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
+	if (vkCreateDescriptorSetLayout(core::apiCore.device, &layoutInfo, nullptr, &info.layout) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create descriptor set layout");
 	}
 
-	DescriptorLayout dl;
-	dl.layout = descriptorSetLayout;
-	dl.uboBinding = 0;
-	dl.uboCount = info.m_ubos.size();
-	dl.samplerBinding = 1;
-	dl.samplerCount = info.m_textures.size();
-
-	core::apiCore.descriptor.layouts.push_back(dl);
+	core::apiCore.descriptor.layouts.push_back(info);
 
     return core::apiCore.descriptor.layouts[core::apiCore.descriptor.layouts.size()-1].layout;
 }
 
-VkDescriptorSetLayout requestDescriptorSetLayout(const DescriptorInfo& info) {
+bool inVector(const DescriptorLayoutInfo& info, const std::vector<DescriptorLayoutInfo>& v) {
+	for (auto& i : v) {
+		if (i.description == info.description) {
+			return true;
+		}
+	}
+	return false;
+}
+
+inline bool descriptorSetLayoutsSame(const DescriptorLayout& layout1, const DescriptorLayout& layout2) {
+	if (layout1.layoutInfo.size() != layout2.layoutInfo.size()) {
+		return false;
+	}
+
+	for (size_t i = 0; i < layout1.layoutInfo.size(); ++i) {
+		if (layout1.layoutInfo[i].description != layout2.layoutInfo[i].description) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+VkDescriptorSetLayout requestDescriptorSetLayout(DescriptorLayout& requiredLayout) {
     for (auto& layout : core::apiCore.descriptor.layouts) {
-        if (layout.samplerCount == info.m_textures.size() && layout.uboCount == info.m_ubos.size()) {
+        if (descriptorSetLayoutsSame(layout, requiredLayout)) {
             return layout.layout;
         }
     }
-    return createDescriptorSetLayout(info);
+    return createDescriptorSetLayout(requiredLayout);
 }
 
+// fix pool managment
 // also allocates sets
 core::Pool& createDescriptorPool(uint32_t uboCount, uint32_t samplerCount, uint32_t setCount) {
 	VkDescriptorPoolSize poolSizes[2];
@@ -117,7 +126,18 @@ VkDescriptorSet Descriptor::requestDescriptorSet(const DescriptorInfo& info) {
 VkDescriptorSet Descriptor::createDescriptorSets(const DescriptorInfo& info) {
     std::vector<VkDescriptorSetLayout> layouts(info.m_setCount, m_layout);
 
-	auto& pool = createDescriptorPool(info.m_ubos.size(), info.m_textures.size(), info.m_setCount);
+	uint32_t totalBufferSize = 0;
+	uint32_t totalSamplerSize = 0;
+
+	for (auto& binding : info.m_ubosBindings) {
+		totalBufferSize += binding.getBuffers().size();
+	}
+
+	for (auto& binding : info.m_texturesBindings) {
+		totalSamplerSize += binding.getTextures().size();
+	}
+
+	auto& pool = createDescriptorPool(totalBufferSize, totalSamplerSize, info.m_setCount);
 	pool.layout = m_layout;
 
 	VkDescriptorSetAllocateInfo allocInfo = {};
@@ -136,53 +156,79 @@ VkDescriptorSet Descriptor::createDescriptorSets(const DescriptorInfo& info) {
 }
 
 Descriptor& Descriptor::get(const DescriptorInfo& info) {
-	m_layout = requestDescriptorSetLayout(info);
+	DescriptorLayout layout;
+
+	layout.layoutInfo.resize(info.m_ubosBindings.size() + info.m_texturesBindings.size());
+	uint32_t bindingIndex;
+
+	for (bindingIndex = 0; bindingIndex < info.m_ubosBindings.size(); ++bindingIndex) {
+		layout.layoutInfo[bindingIndex].info.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		layout.layoutInfo[bindingIndex].info.count = info.m_ubosBindings[bindingIndex].getBuffers().size();
+		layout.layoutInfo[bindingIndex].info.stage = info.m_ubosBindings[bindingIndex].getStage();
+	}
+
+	for (size_t i = 0; i < info.m_texturesBindings.size(); ++i) {
+		layout.layoutInfo[bindingIndex].info.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		layout.layoutInfo[bindingIndex].info.count = info.m_texturesBindings[i].getTextures().size();
+		layout.layoutInfo[bindingIndex].info.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+		bindingIndex++;
+	}
+
+	m_layout = requestDescriptorSetLayout(layout);
 	m_set = requestDescriptorSet(info);
 
-	std::vector<VkDescriptorBufferInfo> bufferInfos;
-	for (auto& ubo : info.m_ubos) {
-		VkDescriptorBufferInfo bufferInfo = {};
-		bufferInfo.buffer = ubo->getBuffer();
-		bufferInfo.range = ubo->getSize();
-		bufferInfos.push_back(bufferInfo);
-	}
-
-	std::vector<VkDescriptorImageInfo> imageInfos;
-	for (auto& sampler : info.m_textures) {
-		VkDescriptorImageInfo imageInfo = {};
-		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = sampler->getImage().getView();
-		imageInfo.sampler = sampler->getSampler();
-		imageInfos.push_back(imageInfo);
-	}
-
+	uint32_t writeDescriptorIndex = 0;
 	std::vector<VkWriteDescriptorSet> descriptorWrites = {};
-	if (info.m_ubos.size() != 0 && info.m_textures.size() != 0) {
-		descriptorWrites.resize(2);
-	} else {
-		descriptorWrites.resize(1);
+	descriptorWrites.resize(info.m_ubosBindings.size() + info.m_texturesBindings.size());
+
+	std::vector<std::vector<VkDescriptorBufferInfo>> bufferInfos;
+	bufferInfos.resize(info.m_ubosBindings.size());
+	for (size_t i = 0; i < info.m_ubosBindings.size(); ++i) {
+		bufferInfos[i].resize(info.m_ubosBindings[i].getBuffers().size());
+		for (size_t j = 0; j < info.m_ubosBindings[i].getBuffers().size(); ++j) {
+			auto& ubo = info.m_ubosBindings[i].getBuffers()[j];
+
+			VkDescriptorBufferInfo bufferInfo = {};
+			bufferInfo.buffer = ubo->getBuffer();
+			bufferInfo.range = ubo->getSize();
+			bufferInfos[i][j] = bufferInfo;
+		}
+
+		descriptorWrites[writeDescriptorIndex] = {};
+		descriptorWrites[writeDescriptorIndex].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[writeDescriptorIndex].dstSet = m_set;
+		descriptorWrites[writeDescriptorIndex].dstBinding = writeDescriptorIndex;
+		descriptorWrites[writeDescriptorIndex].dstArrayElement = 0;
+		descriptorWrites[writeDescriptorIndex].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		descriptorWrites[writeDescriptorIndex].descriptorCount = bufferInfos[i].size();
+		descriptorWrites[writeDescriptorIndex].pBufferInfo = bufferInfos[i].data();
+
+		writeDescriptorIndex++;
 	}
 
-	uint32_t i = 0;
-	if (info.m_ubos.size() != 0) {
-		descriptorWrites[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[i].dstSet = m_set;
-		descriptorWrites[i].dstBinding = 0;
-		descriptorWrites[i].dstArrayElement = 0;
-		descriptorWrites[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrites[i].descriptorCount = bufferInfos.size();
-		descriptorWrites[i].pBufferInfo = bufferInfos.data();
-		i++;
-	}
+	std::vector<std::vector<VkDescriptorImageInfo>> imageInfos;
+	imageInfos.resize(info.m_texturesBindings.size());
+	for (size_t i = 0; i < info.m_texturesBindings.size(); ++i) {
+		imageInfos[i].resize(info.m_texturesBindings[i].getTextures().size());
+		for (size_t j = 0; j < info.m_texturesBindings[i].getTextures().size(); ++j) {
+			auto& image = info.m_texturesBindings[i].getTextures()[j];
 
-	if (info.m_textures.size() != 0) {
-		descriptorWrites[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[i].dstSet = m_set;
-		descriptorWrites[i].dstBinding = 1;
-		descriptorWrites[i].dstArrayElement = 0;
-		descriptorWrites[i].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorWrites[i].descriptorCount = imageInfos.size();
-		descriptorWrites[i].pImageInfo = imageInfos.data();
+			VkDescriptorImageInfo imageInfo = {};
+			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo.imageView = image->getImage().getView();
+			imageInfo.sampler = image->getSampler();
+			imageInfos[i][j] = imageInfo;
+		}
+
+		descriptorWrites[writeDescriptorIndex] = {};
+		descriptorWrites[writeDescriptorIndex].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[writeDescriptorIndex].dstSet = m_set;
+		descriptorWrites[writeDescriptorIndex].dstBinding = writeDescriptorIndex;
+		descriptorWrites[writeDescriptorIndex].dstArrayElement = 0;
+		descriptorWrites[writeDescriptorIndex].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorWrites[writeDescriptorIndex].descriptorCount = imageInfos[i].size();
+		descriptorWrites[writeDescriptorIndex].pImageInfo = imageInfos[i].data();
 	}
 
 	vkUpdateDescriptorSets(core::apiCore.device, descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);

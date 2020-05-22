@@ -33,15 +33,12 @@ public:
     }
 };
 
-class Shaders;
-
 class Shader {
     VkShaderModule m_shaderModule;
     std::string m_entry = "main";
     VkShaderStageFlagBits m_stage;
     ShaderSpecialization m_specialization;
 
-    friend class age::Shaders;
 public:
     Shader& create(const std::string& filename);
     void destroy();

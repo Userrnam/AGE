@@ -7,17 +7,19 @@
 
 namespace age {
 
-Camera::Camera() {
+void Camera::create() {
     m_buffer.create(
         UniformBufferCreateInfo().setSize(sizeof(glm::mat4))
     );
 
     m_descriptor.get(
-        DescriptorInfo().addBuffer(m_buffer)
+        DescriptorInfo().addBuffersBinding(
+            BuffersBinding().addBuffer(m_buffer).setStage(VK_SHADER_STAGE_VERTEX_BIT)
+        )
     );
 }
 
-Camera::~Camera() {
+void Camera::destroy() {
     m_buffer.destroy();
 }
 

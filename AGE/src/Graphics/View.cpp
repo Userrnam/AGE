@@ -5,7 +5,9 @@
 
 namespace age {
 
-View::View() {
+void View::create() {
+    m_camera.create();
+
     m_viewport.x = 0.0f;
     m_viewport.y = 0.0f;
     m_viewport.width = static_cast<float>(core::apiCore.swapchain.extent.width);
@@ -15,6 +17,10 @@ View::View() {
     m_camera.setOrigin({ m_viewport.width / 2, m_viewport.height / 2 });
     m_camera.setPosition({ m_viewport.width / 2, m_viewport.height / 2 });
     m_camera.upload();
+}
+
+void View::destroy() {
+    m_camera.destroy();
 }
 
 } // namespace age

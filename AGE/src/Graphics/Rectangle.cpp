@@ -19,10 +19,10 @@ namespace age {
 typedef glm::vec2 VType;
 
 static std::vector<Vertex<VType>> verticies = {
-    { { 0.0, 0.0 } },
-    { { 1.0, 0.0 } },
-    { { 1.0, 1.0 } },
-    { { 0.0, 1.0 } },
+    VType({ 0.0, 0.0 }),
+    VType({ 1.0, 0.0 }),
+    VType({ 1.0, 1.0 }),
+    VType({ 0.0, 1.0 }),
 };
 
 VERTEX_ATTRIBUTES(VType) = {
@@ -31,50 +31,7 @@ VERTEX_ATTRIBUTES(VType) = {
 
 static std::vector<Index16> indicies = { 0, 1, 2, 2, 3, 0 };
 
-void Rectangle::create(const Rectangle& sample) {
-    m_isOwner = false;
-
-    m_renderPass = sample.m_renderPass;
-    m_vertex = sample.m_vertex;
-    m_index = sample.m_index;
-    m_pipeline = sample.m_pipeline;
-    m_pipelineLayout = sample.m_pipelineLayout;
-    m_descriptorSets = sample.m_descriptorSets;
-    m_instanceCount = sample.m_instanceCount;
-
-    m_uboBuffer.create(
-        UniformBufferCreateInfo().setSize(sizeof(RectangleUniform))
-    );
-
-    // replace ubo descriptor
-    m_descriptorSets[1] = Descriptor().get(
-        DescriptorInfo().addBuffer(m_uboBuffer)
-    ).getSet();
-}
-
-void Rectangle::create(const Rectangle& sample, Texture& texture) {
-    m_isOwner = false;
-
-    m_renderPass = sample.m_renderPass;
-    m_vertex = sample.m_vertex;
-    m_index = sample.m_index;
-    m_pipeline = sample.m_pipeline;
-    m_pipelineLayout = sample.m_pipelineLayout;
-    m_descriptorSets = sample.m_descriptorSets;
-
-    m_uboBuffer.create(
-        UniformBufferCreateInfo().setSize(sizeof(RectangleUniform))
-    );
-
-    // replace ubo descriptor
-    m_descriptorSets[1] = Descriptor().get(
-        DescriptorInfo().addBuffer(m_uboBuffer).addTexture(texture)
-    ).getSet();
-}
-
 void Rectangle::create(View& view, bool colorBlending) {
-
-    m_isOwner = true;
 
     m_uboBuffer.create(
         UniformBufferCreateInfo().setSize(sizeof(RectangleUniform))
@@ -89,15 +46,17 @@ void Rectangle::create(View& view, bool colorBlending) {
     createDrawable(
         DrawableCreateInfo()
         .setColorBlendEnable(colorBlending)
-        .setViewport(view.getViewport())
+        .setView(view)
         .setDepthTestEnable(false)
         .setMinSampleShading(0.0f)
         .setMultisamplingEnable(false)
         .setIstanceCount(1)
-        .addDescriptor(view.getCamera().getDescriptor())
+        // .addDescriptor(view.getCamera().getDescriptor())
         .addDescriptor(
             Descriptor().get(
-                DescriptorInfo().addBuffer(m_uboBuffer)
+                DescriptorInfo().addBuffersBinding(
+                    BuffersBinding().addBuffer(m_uboBuffer).setStage(VK_SHADER_STAGE_VERTEX_BIT)
+                )
             )
         )
         .loadIndicies(indicies)
@@ -112,8 +71,6 @@ void Rectangle::create(View& view, bool colorBlending) {
 
 void Rectangle::create(View& view, Texture& texture, bool colorBlending) {
 
-    m_isOwner = true;
-
     m_uboBuffer.create(
         UniformBufferCreateInfo().setSize(sizeof(RectangleUniform))
     );
@@ -127,15 +84,21 @@ void Rectangle::create(View& view, Texture& texture, bool colorBlending) {
     createDrawable(
         DrawableCreateInfo()
         .setColorBlendEnable(colorBlending)
-        .setViewport(view.getViewport())
+        .setView(view)
         .setDepthTestEnable(false)
         .setMinSampleShading(0.0f)
         .setMultisamplingEnable(false)
         .setIstanceCount(1)
-        .addDescriptor(view.getCamera().getDescriptor())
+        // .addDescriptor(view.getCamera().getDescriptor())
         .addDescriptor(
             Descriptor().get(
-                DescriptorInfo().addBuffer(m_uboBuffer).addTexture(texture)
+                DescriptorInfo()
+                .addBuffersBinding(
+                    BuffersBinding().addBuffer(m_uboBuffer).setStage(VK_SHADER_STAGE_VERTEX_BIT)
+                )
+                .addTexturesBinding(
+                    TexturesBinding().addTexture(texture)
+                )
             )
         )
         .loadIndicies(indicies)
@@ -151,11 +114,9 @@ void Rectangle::create(View& view, Texture& texture, bool colorBlending) {
 void Rectangle::destroy() {
     m_uboBuffer.destroy();
     freeDescriptor(m_setPools[1], m_descriptorSets[1]);
-    if (m_isOwner) {
-        m_vertex.buffer.destroy();
-        m_index.buffer.destroy();
-        vkDestroyPipeline(core::apiCore.device, m_pipeline, nullptr);
-    }
+    m_vertex.buffer.destroy();
+    m_index.buffer.destroy();
+    vkDestroyPipeline(core::apiCore.device, m_pipeline, nullptr);
 }
 
 void Rectangle::uploadUniform(const RectangleUniform& uniform) {
@@ -220,15 +181,17 @@ void RectangleFactory::create(View& view, uint32_t count, bool colorBlending) {
     createDrawable(
         DrawableCreateInfo()
         .setColorBlendEnable(colorBlending)
-        .setViewport(view.getViewport())
+        .setView(view)
         .setDepthTestEnable(false)
         .setMinSampleShading(0.0f)
         .setMultisamplingEnable(false)
         .setIstanceCount(0)
-        .addDescriptor(view.getCamera().getDescriptor())
+        // .addDescriptor(view.getCamera().getDescriptor())
         .addDescriptor(
             Descriptor().get(
-                DescriptorInfo().addBuffer(m_uboBuffer)
+                DescriptorInfo().addBuffersBinding(
+                    BuffersBinding().addBuffer(m_uboBuffer).setStage(VK_SHADER_STAGE_VERTEX_BIT)
+                )
             )
         )
         .loadIndicies(indicies)
@@ -292,15 +255,21 @@ void TexturedRectangleFactory::create(View& view, uint32_t count, Texture& textu
     createDrawable(
         DrawableCreateInfo()
         .setColorBlendEnable(colorBlending)
-        .setViewport(view.getViewport())
+        .setView(view)
         .setDepthTestEnable(false)
         .setMinSampleShading(0.0f)
         .setMultisamplingEnable(false)
         .setIstanceCount(0)
-        .addDescriptor(view.getCamera().getDescriptor())
+        // .addDescriptor(view.getCamera().getDescriptor())
         .addDescriptor(
             Descriptor().get(
-                DescriptorInfo().addBuffer(m_uboBuffer).addTexture(texture)
+                DescriptorInfo()
+                .addBuffersBinding(
+                    BuffersBinding().addBuffer(m_uboBuffer).setStage(VK_SHADER_STAGE_VERTEX_BIT)
+                )
+                .addTexturesBinding(
+                    TexturesBinding().addTexture(texture)
+                )
             )
         )
         .loadIndicies(indicies)

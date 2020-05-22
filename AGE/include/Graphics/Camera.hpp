@@ -14,14 +14,9 @@ class Camera : public Transformable {
     Descriptor m_descriptor;
     Buffer m_buffer;
     glm::mat4 m_projection = glm::mat4(1.0f);
-
-    // FIXME
-    friend class Rectangle;
-    friend class RectangleFactory;
-    friend class TexturedRectangleFactory;
 public:
-    Camera();
-    ~Camera();
+    void create();
+    void destroy();
 
     Descriptor getDescriptor() const { return m_descriptor; }
 

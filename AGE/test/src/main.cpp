@@ -9,6 +9,8 @@
 #include "Utils/utils.hpp"
 #include "Graphics.hpp"
 
+#include "TestTriangle.hpp"
+
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""
 #endif
@@ -20,6 +22,8 @@ class Application : public age::Application {
     age::Rectangle rect;
     age::Rectangle background;
     age::Rectangle emptyRect;
+
+    TestTriangle triangle;
 
     glm::vec2 winSize;
     glm::vec2 rectSize;
@@ -41,10 +45,13 @@ class Application : public age::Application {
         rFactory.draw(i);
         trFactory.draw(i);
         text.draw(i);
+        triangle.draw(i);
     }
 
     void onCreate() override {
-        age::core::setClearColor({1, 0, 0, 1});
+        dynamicView.create();
+        triangle.create(defaultView);
+
         winSize = getWindowSize();
         tex.create(age::getResourcePath("mountains.png"));
 
@@ -110,6 +117,8 @@ class Application : public age::Application {
         rect.destroy();
         rFactory.destroy();
         trFactory.destroy();
+        triangle.destroy();
+        dynamicView.destroy();
     }
 
     void onUpdate(float elapsedTime) override {

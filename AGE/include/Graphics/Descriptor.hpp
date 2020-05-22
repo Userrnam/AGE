@@ -8,12 +8,40 @@
 
 namespace age {
 
-// ubos - binding 0
-// samplers - binding 1
+class BuffersBinding {
+    std::vector<Buffer*> m_ubos;
+    VkShaderStageFlags m_stage = 0;
+
+public:
+    inline BuffersBinding& addBuffer(Buffer& buffer) {
+        m_ubos.push_back(&buffer);
+        return *this;
+    }
+
+    inline BuffersBinding& setStage(VkShaderStageFlags stage) {
+        m_stage = stage;
+        return *this;
+    }
+
+    inline VkShaderStageFlags getStage() const { return m_stage; }
+    inline const std::vector<Buffer*>& getBuffers() const { return m_ubos; }
+};
+
+class TexturesBinding {
+    std::vector<Texture*> m_textures;
+
+public:
+    inline TexturesBinding& addTexture(Texture& texture) {
+        m_textures.push_back(&texture);
+        return *this;
+    }
+
+    inline const std::vector<Texture*>& getTextures() const { return m_textures; }
+};
 
 class DescriptorInfo {
-    std::vector<Buffer*> m_ubos;
-    std::vector<Texture*> m_textures;
+    std::vector<BuffersBinding> m_ubosBindings;
+    std::vector<TexturesBinding> m_texturesBindings;
     uint32_t m_setCount = 16;
 
     friend class Descriptor;
@@ -21,13 +49,13 @@ class DescriptorInfo {
     friend VkDescriptorSetLayout requestDescriptorSetLayout(const DescriptorInfo& info);
 public:
 
-    inline DescriptorInfo& addBuffer(Buffer& buffer) {
-        m_ubos.push_back(&buffer);
+    inline DescriptorInfo& addBuffersBinding(const BuffersBinding& buffersBinding) {
+        m_ubosBindings.push_back(buffersBinding);
         return *this;
     }
 
-    inline DescriptorInfo& addTexture(Texture& texture) {
-        m_textures.push_back(&texture);
+    inline DescriptorInfo& addTexturesBinding(const TexturesBinding& texturesBinding) {
+        m_texturesBindings.push_back(texturesBinding);
         return *this;
     }
 

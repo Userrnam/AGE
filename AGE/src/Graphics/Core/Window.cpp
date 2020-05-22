@@ -68,31 +68,12 @@ void recreateSwapchain() {
 
 }
 
-#include <chrono>
-
-std::chrono::steady_clock::time_point prevTime;
-std::chrono::steady_clock::time_point curTime;
-
-#define TIME_LOG(name) \
-    curTime = std::chrono::high_resolution_clock::now(); \
-    std::cout << name << ": " \
-    << std::chrono::duration<float, std::chrono::seconds::period>(curTime - prevTime).count() * 6000 << " %\n"; \
-    prevTime = curTime;
-
-
-// static uint32_t imageIndex;
-// static VkSemaphore signalSemaphore;
-
 void present() {
-    TIME_LOG("render start")
-    vkWaitForFences(apiCore.device, 1, &apiCore.sync.inFlightFence, VK_TRUE, UINT64_MAX); // 554
-    TIME_LOG("wait for fances")
+    vkWaitForFences(apiCore.device, 1, &apiCore.sync.inFlightFence, VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(apiCore.device, apiCore.swapchain.swapchain, // 215
+    VkResult result = vkAcquireNextImageKHR(apiCore.device, apiCore.swapchain.swapchain,
         UINT64_MAX, apiCore.sync.imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
-
-    TIME_LOG("acqure next image")
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         recreateSwapchain();
@@ -102,8 +83,6 @@ void present() {
     }
 
     VkSemaphore waitSemaphores[] = { apiCore.sync.imageAvailableSemaphore };
-    // VkSemaphore signalSemaphores[] = { apiCore.sync.renderFinishedSemaphore };
-    // signalSemaphore = apiCore.sync.renderFinishedSemaphore;
     VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
     VkSubmitInfo submitInfo = {};
@@ -116,16 +95,12 @@ void present() {
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = &apiCore.sync.renderFinishedSemaphore;
 
-    vkResetFences(apiCore.device, 1, &apiCore.sync.inFlightFence); // 65
+    vkResetFences(apiCore.device, 1, &apiCore.sync.inFlightFence);
 
-    TIME_LOG("reset fences")
-
-    if (vkQueueSubmit(apiCore.queues.graphics.queue, 1, &submitInfo, // 1359
+    if (vkQueueSubmit(apiCore.queues.graphics.queue, 1, &submitInfo,
         apiCore.sync.inFlightFence) != VK_SUCCESS) {
         throw std::runtime_error("failed to submit draw command buffer");
     }
-
-    TIME_LOG("Queue Submit")
 
     VkSwapchainKHR swapChains[] = { apiCore.swapchain.swapchain };
     VkPresentInfoKHR presentInfo = {};
@@ -137,16 +112,13 @@ void present() {
     presentInfo.pImageIndices = &imageIndex;
     presentInfo.pResults = nullptr;
 
-    result = vkQueuePresentKHR(apiCore.queues.present.queue, &presentInfo); // 484
+    result = vkQueuePresentKHR(apiCore.queues.present.queue, &presentInfo);
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || apiCore.framebufferResized) {
         apiCore.framebufferResized = false;
         recreateSwapchain();
     } else if (result != VK_SUCCESS) {
         throw std::runtime_error("failed to present swap chain image");
     }
-    TIME_LOG("present")
-
-    std::cout << "\n\n\n";
 }
 
 } // namespace age::core

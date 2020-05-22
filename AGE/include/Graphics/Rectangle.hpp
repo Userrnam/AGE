@@ -30,13 +30,10 @@ struct TexturedRectangleUniform {
 class Rectangle : public Drawable, public Transformable {
     Buffer m_uboBuffer;
     glm::vec4 m_color = {};
-    bool m_isOwner;
 
 public:
     void destroy();
 
-    void create(const Rectangle& sample);
-    void create(const Rectangle& sample, Texture& texture);
     void create(View& view, bool colorBlending = false);
     void create(View& view, Texture& texture, bool colorBlending = false);
 

@@ -94,37 +94,6 @@ struct Core {
     VkDevice device = VK_NULL_HANDLE;
 
     std::vector<RenderPassRef> renderPasses;
-
-    void print(int tab = 4) {
-        std::cout << "descriptor.pools:\n";
-        int ident = 0;
-        ident += tab;
-        for (auto& pool : descriptor.pools) {
-            printVar(pool.layout, ident);
-            printVar(pool.pool, ident);
-            printVar(pool.remainingSize, ident);
-
-            for (int i=0;i<tab*2;++i) { std::cout << ' '; }
-            std::cout << "sets\n";
-            ident += tab;
-            for (auto& set: pool.sets) {
-                printVar(set, ident);
-            }
-            ident -= tab;
-        }
-        ident -= tab;
-
-        std::cout << "descripotr.layouts:\n";
-        ident += tab;
-        for (auto& layout: descriptor.layouts) {
-            printVar(layout.layout, ident);
-            printVar(layout.samplerBinding, ident);
-            printVar(layout.samplerCount, ident);
-            printVar(layout.uboBinding, ident);
-            printVar(layout.uboCount, ident);
-        }
-        ident -= tab;
-    }
 };
 
 extern Core apiCore;
