@@ -31,7 +31,7 @@ VERTEX_ATTRIBUTES(VType) = {
 
 static std::vector<Index16> indicies = { 0, 1, 2, 2, 3, 0 };
 
-void Rectangle::create(View& view, bool colorBlending) {
+void Rectangle::create(Layer* layer, bool colorBlending) {
 
     m_uboBuffer.create(
         UniformBufferCreateInfo().setSize(sizeof(RectangleUniform))
@@ -46,7 +46,7 @@ void Rectangle::create(View& view, bool colorBlending) {
     createDrawable(
         DrawableCreateInfo()
         .setColorBlendEnable(colorBlending)
-        .setView(view)
+        .setLayer(layer)
         .setDepthTestEnable(false)
         .setMinSampleShading(0.0f)
         .setMultisamplingEnable(false)
@@ -69,7 +69,7 @@ void Rectangle::create(View& view, bool colorBlending) {
     fragmentShader.destroy();
 }
 
-void Rectangle::create(View& view, Texture& texture, bool colorBlending) {
+void Rectangle::create(Layer* layer, Texture& texture, bool colorBlending) {
 
     m_uboBuffer.create(
         UniformBufferCreateInfo().setSize(sizeof(RectangleUniform))
@@ -84,7 +84,7 @@ void Rectangle::create(View& view, Texture& texture, bool colorBlending) {
     createDrawable(
         DrawableCreateInfo()
         .setColorBlendEnable(colorBlending)
-        .setView(view)
+        .setLayer(layer)
         .setDepthTestEnable(false)
         .setMinSampleShading(0.0f)
         .setMultisamplingEnable(false)
@@ -157,7 +157,7 @@ void RectangleFactory::addChild(RectangleInstance& instance) {
     m_instanceCount++;
 }
 
-void RectangleFactory::create(View& view, uint32_t count, bool colorBlending) {
+void RectangleFactory::create(Layer* layer, uint32_t count, bool colorBlending) {
     m_count = count;
     m_ubos.resize(count);
 
@@ -181,7 +181,7 @@ void RectangleFactory::create(View& view, uint32_t count, bool colorBlending) {
     createDrawable(
         DrawableCreateInfo()
         .setColorBlendEnable(colorBlending)
-        .setView(view)
+        .setLayer(layer)
         .setDepthTestEnable(false)
         .setMinSampleShading(0.0f)
         .setMultisamplingEnable(false)
@@ -230,7 +230,7 @@ void TexturedRectangleFactory::addChild(TexturedRectangleInstance& instance) {
     m_instanceCount++;
 }
 
-void TexturedRectangleFactory::create(View& view, uint32_t count, Texture& texture, bool colorBlending) {
+void TexturedRectangleFactory::create(Layer* layer, uint32_t count, Texture& texture, bool colorBlending) {
     m_count = count;
     m_ubos.resize(count);
 
@@ -255,7 +255,7 @@ void TexturedRectangleFactory::create(View& view, uint32_t count, Texture& textu
     createDrawable(
         DrawableCreateInfo()
         .setColorBlendEnable(colorBlending)
-        .setView(view)
+        .setLayer(layer)
         .setDepthTestEnable(false)
         .setMinSampleShading(0.0f)
         .setMultisamplingEnable(false)

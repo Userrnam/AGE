@@ -1,4 +1,6 @@
 #include <stdexcept>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #include "Font.hpp"
 #include "Buffer.hpp"
@@ -84,11 +86,6 @@ void Font::load(const std::string& fontPath, unsigned fontSize) {
 		imageData[i * 4 + 3] |= pixels[i];
     }
     delete [] pixels;
-
-    // core::BufferCreateInfo createInfo;
-    // createInfo.memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-    // createInfo.size = maxHeight * totalWidth * sizeof(uint32_t);
-    // createInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 
     Buffer stagingBuffer;
     stagingBuffer.create(

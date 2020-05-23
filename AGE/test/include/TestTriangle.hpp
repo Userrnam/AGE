@@ -2,6 +2,7 @@
 
 #include "Graphics.hpp"
 #include "Utils/utils.hpp"
+// #include "G"
 
 struct VertexElement {
     glm::vec4 m_color;
@@ -27,7 +28,7 @@ std::vector<age::Index16> indicies = {
 
 class TestTriangle : public age::Drawable {
 public:
-    void create(age::View& view) {
+    void create(age::Layer* layer) {
         age::Shader vertexShader;
         age::Shader fragmentShader;
 
@@ -41,7 +42,8 @@ public:
             .setDepthTestEnable(false)
             .setMinSampleShading(0.0f)
             .setIstanceCount(1)
-            .setView(view)
+            // .setView(view)
+            .setLayer(layer)
             .loadIndicies(indicies)
             .loadVerticies(verticies)
             .addShader(vertexShader)

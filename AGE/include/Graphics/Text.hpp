@@ -6,7 +6,7 @@
 #include "Font.hpp"
 #include "Rectangle.hpp"
 #include "Transformable.hpp"
-#include "View.hpp"
+#include "Layer.hpp"
 
 namespace age {
 
@@ -15,7 +15,7 @@ class Text : Transformable {
     TexturedRectangleFactory m_charBoxes;
     std::vector<TexturedRectangleInstance> m_trInstances;
 public:
-    void create(View& view, Font& font, uint32_t maxSize = 128);
+    void create(Layer* layer, Font& font, uint32_t maxSize = 128);
     void setText(const std::string& text);
     void draw(int i);
     void destroy();

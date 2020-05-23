@@ -3,9 +3,9 @@
 
 namespace age {
 
-void Text::create(View& view, Font& font, uint32_t maxSize) {
+void Text::create(Layer* layer, Font& font, uint32_t maxSize) {
     m_font = &font;
-    m_charBoxes.create(view, maxSize, font.m_atlas, true);
+    m_charBoxes.create(layer, maxSize, font.m_atlas, true);
 }
 
 void Text::setText(const std::string& text) {
@@ -17,7 +17,7 @@ void Text::setText(const std::string& text) {
         m_charBoxes.addChild(trInstance);
         trInstance.setPosition(move, 0);
         trInstance.setScale(character.size);
-        trInstance.move(character.bearing.x, character.size.y - character.bearing.y);
+        trInstance.move(character.bearing.x, character.bearing.y - character.size.y);
         trInstance.setTexCoords(character.texCoords);
         trInstance.updateTransform();
         m_trInstances.push_back(trInstance);

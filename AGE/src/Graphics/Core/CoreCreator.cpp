@@ -1,4 +1,4 @@
-#include "CoreLayer.hpp"
+#include "CoreCreator.hpp"
 #include "coreAPI.hpp"
 #include "Window.hpp"
 #include "Core.hpp"
@@ -6,7 +6,7 @@
 
 namespace age::core {
 
-CoreLayer::CoreLayer() {
+void initCore() {
     init();
     window::create();
     pickPhysicalDevice();
@@ -19,7 +19,7 @@ CoreLayer::CoreLayer() {
     allocateCommandBuffers();
 }
 
-CoreLayer::~CoreLayer() {
+void destroyCore() {
 	vkFreeCommandBuffers(apiCore.device, apiCore.commandPools.graphicsPool,
 		apiCore.commandBuffers.data.size(), apiCore.commandBuffers.data.data());
 

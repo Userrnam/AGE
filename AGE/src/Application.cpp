@@ -1,6 +1,9 @@
 #include <chrono>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #include "Application.hpp"
+#include "Core/CoreCreator.hpp"
 
 #include "Graphics/Core/coreAPI.hpp"
 #include "Graphics/Core/Window.hpp"
@@ -9,6 +12,10 @@
 #include "Viewport.hpp"
 
 namespace age {
+
+extern FT_Library ftLibrary;
+
+std::chrono::steady_clock::time_point currentTime;
 
 void Application::updateCommandBuffers() {
     // update active commandBuffer
@@ -29,7 +36,9 @@ void Application::updateCommandBuffers() {
 			throw std::runtime_error("failed to begin recording command buffer");
 		}
 
-		draw(i);
+        for (auto& layer: m_layers) {
+            layer->draw(i);
+        }
 
 		if (vkEndCommandBuffer(core::apiCore.commandBuffers.active[i]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to record command buffer");
@@ -37,39 +46,78 @@ void Application::updateCommandBuffers() {
 	}
 }
 
-glm::vec2 Application::getWindowSize() {
-    glm::vec2 out;
-    out.x = core::apiCore.swapchain.extent.width;
-    out.y = core::apiCore.swapchain.extent.height;
-    return out;
+// glm::vec2 Application::getWindowSize() {
+//     glm::vec2 out;
+//     out.x = core::apiCore.swapchain.extent.width;
+//     out.y = core::apiCore.swapchain.extent.height;
+//     return out;
+// }
+
+// void Application::draw(int i) {
+//     core::cmd::clear(i);
+// }
+
+// void Application::create() {
+//     defaultView.create();
+//     onCreate();
+//     updateCommandBuffers();
+// }
+
+Application::~Application() {
+    for (Layer* layer : m_layers) {
+        layer->destroy();
+        delete layer;
+    }
+    core::destroyCore();
 }
 
-void Application::draw(int i) {
-    core::cmd::clear(i);
-}
-
-void Application::create() {
-    defaultView.create();
-    onCreate();
-    updateCommandBuffers();
+inline void initFreetype() {
+    if (FT_Init_FreeType(&ftLibrary)) {
+        throw std::runtime_error("initFreeType: failed to init");
+    }
 }
 
 void Application::run() {
-    static auto startTime = std::chrono::high_resolution_clock::now();
+    onCoreConfig();
+
+    core::initCore();
+    initFreetype();
+
+    onCreate();
+
+    for (Layer* layer : m_layers) {
+        layer->onCreate();
+    }
+
+    if (m_layers.size() == 0) {
+        std::cout << "Application has no layers\n";
+        return;
+    }
+
+    updateCommandBuffers();
+
+    auto startTime = std::chrono::high_resolution_clock::now();
 
     while (!core::window::closed()) {
         core::window::pollEvents();
-        auto currentTime = std::chrono::high_resolution_clock::now();
+        currentTime = std::chrono::high_resolution_clock::now();
         float elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
         startTime = currentTime;
-        onUpdate(elapsedTime);
+
+        for (auto layer : m_layers) {
+            layer->onUpdate(elapsedTime);
+        }
+
+        // onUpdate(elapsedTime);
         core::window::present();
     }
 
     vkDeviceWaitIdle(core::apiCore.device);
 
-    defaultView.destroy();
-    onDelete();
+    onDestroy();
+
+    // defaultView.destroy();
+    // onDelete();
 }
 
 } // namespace age

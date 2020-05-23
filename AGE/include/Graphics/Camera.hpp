@@ -8,7 +8,7 @@
 
 namespace age {
 
-class View;
+class Viewport;
 
 class Camera : public Transformable {
     Descriptor m_descriptor;
@@ -20,8 +20,8 @@ public:
 
     Descriptor getDescriptor() const { return m_descriptor; }
 
-    void setOrthoganalProjection(View& view, float zNear = 0.0f, float zFar = 1.0f);
-    void setPerspectiveProjection(View& view, float angle = 3.14/4., float zNear=0.1f, float zFar=10.0f);
+    void setOrthoganalProjection(const Viewport& vieport, float zNear = 0.0f, float zFar = 1.0f);
+    void setPerspectiveProjection(const Viewport& viewport, float angle = 3.14/4., float zNear=0.1f, float zFar=10.0f);
 
     void upload();
 };

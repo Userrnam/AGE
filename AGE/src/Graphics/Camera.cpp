@@ -2,8 +2,7 @@
 #include <iostream>
 
 #include "Camera.hpp"
-
-#include "View.hpp"
+#include "Viewport.hpp"
 
 namespace age {
 
@@ -23,17 +22,17 @@ void Camera::destroy() {
     m_buffer.destroy();
 }
 
-void Camera::setOrthoganalProjection(View& view, float zNear, float zFar) {
+void Camera::setOrthoganalProjection(const Viewport& viewport, float zNear, float zFar) {
     m_projection = glm::ortho(
-		0.0f, view.getViewport().width,
-		view.getViewport().height, 0.0f,
+		0.0f, viewport.width,
+		viewport.height, 0.0f,
         zNear, zFar
 	);
 }
 
-void Camera::setPerspectiveProjection(View& view, float angle, float zNear, float zFar) {
+void Camera::setPerspectiveProjection(const Viewport& viewport, float angle, float zNear, float zFar) {
     m_projection = glm::perspective(
-        angle, view.getViewport().width / view.getViewport().height, zNear, zFar
+        angle, viewport.width / viewport.height, zNear, zFar
     );
 }
 

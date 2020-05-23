@@ -21,7 +21,8 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     m_descriptorSets.reserve(info.m_descriptors.size() + 1);
 
     // add camera descriptor
-    auto cameraDescriptor = info.m_view.getCamera().getDescriptor();
+    // auto cameraDescriptor = info.m_view.getCamera().getDescriptor();
+    auto cameraDescriptor = info.m_layer->camera.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
     m_setPools.push_back(cameraDescriptor.m_pool);
     layouts.push_back(cameraDescriptor.m_layout);
@@ -90,10 +91,10 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     }
 
     VkViewport viewport = {};
-    viewport.x = info.m_view.getViewport().x;
-    viewport.y = info.m_view.getViewport().y;
-    viewport.width = info.m_view.getViewport().width;
-    viewport.height = info.m_view.getViewport().height;
+    viewport.x = info.m_layer->getViewport().x;
+    viewport.y = info.m_layer->getViewport().y;
+    viewport.width = info.m_layer->getViewport().width;
+    viewport.height = info.m_layer->getViewport().height;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 

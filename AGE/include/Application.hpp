@@ -1,26 +1,46 @@
 #pragma once
 
-#include "Graphics/Core/CoreLayer.hpp"
-#include "Graphics/View.hpp"
+// #include <memory>
+
+// #include "Graphics/Core/CoreLayer.hpp"
+#include "Layer.hpp"
 #include <glm/glm.hpp>
 
 namespace age {
 
-class Application : public core::CoreLayer {
-protected:
-    View defaultView;
+class Application {
+    std::vector<Layer*> m_layers;
 
+    void update();
     void updateCommandBuffers();
-    glm::vec2 getWindowSize();
+protected:
+    inline void pushLayer(Layer* layer) {
+        m_layers.push_back(layer);
+    }
 
-    // FIXME: rename Warning: draw must not be empty
-    virtual void draw(int i);
+    inline Layer* popLayer() {
+        Layer* out = m_layers.back();
+        m_layers.pop_back();
+        return out;
+    }
+
+    // View defaultView;
+
+    // glm::vec2 getWindowSize();
+
+    virtual void onCoreConfig() {}
     virtual void onCreate() {}
-    virtual void onUpdate(float elapsedTime) {}
-    virtual void onDelete() {}
+    virtual void onDestroy() {}
+
+    // // FIXME: rename Warning: draw must not be empty
+    // virtual void draw(int i);
+    // virtual void onCreate() {}
+    // virtual void onUpdate(float elapsedTime) {}
+    // virtual void onDelete() {}
 
 public:
-    void create();
+    ~Application();
+    // void create();
     void run();
 };
 

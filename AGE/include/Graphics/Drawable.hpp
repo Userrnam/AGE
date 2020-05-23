@@ -3,7 +3,8 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-#include "View.hpp"
+// #include "View.hpp"
+#include "Layer.hpp"
 #include "Shader.hpp"
 #include "Descriptor.hpp"
 #include "Core/RenderPassRef.hpp"
@@ -14,7 +15,7 @@
 namespace age {
 
 class DrawableCreateInfo {
-    View m_view;
+    Layer* m_layer;
     bool m_depthTest = false;
     bool m_multisampling = false;
     bool m_colorBlending = false;
@@ -39,8 +40,13 @@ class DrawableCreateInfo {
     friend class Drawable;
 public:
 
-    inline DrawableCreateInfo& setView(const View& view) {
-        m_view = view;
+    // inline DrawableCreateInfo& setView(const View& view) {
+    //     m_view = view;
+    //     return *this;
+    // }
+
+    inline DrawableCreateInfo& setLayer(Layer* layer) {
+        m_layer = layer;
         return *this;
     }
 

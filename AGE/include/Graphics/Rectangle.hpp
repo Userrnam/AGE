@@ -5,7 +5,8 @@
 #include "Drawable.hpp"
 #include "Buffer.hpp"
 #include "Transformable.hpp"
-#include "View.hpp"
+// #include "View.hpp"
+#include "Layer.hpp"
 #include "Texture.hpp"
 
 namespace age {
@@ -34,8 +35,8 @@ class Rectangle : public Drawable, public Transformable {
 public:
     void destroy();
 
-    void create(View& view, bool colorBlending = false);
-    void create(View& view, Texture& texture, bool colorBlending = false);
+    void create(Layer* layer, bool colorBlending = false);
+    void create(Layer* layer, Texture& texture, bool colorBlending = false);
 
     glm::vec4 getColor() const { return m_color; }
     void setColor(const glm::vec4& color);
@@ -60,7 +61,7 @@ class RectangleFactory : public Drawable {
     uint32_t m_count = 0;   // max rectangle count
 public:
     void destroy();
-    void create(View& view, uint32_t count, bool colorBlending = false);
+    void create(Layer* layer, uint32_t count, bool colorBlending = false);
     void addChild(RectangleInstance& instance);
     void upload();
 };
@@ -72,7 +73,7 @@ class TexturedRectangleFactory : public Drawable {
     uint32_t m_count = 0;     // max rectangle count
 public:
     void destroy();
-    void create(View& view, uint32_t count, Texture& texture, bool colorBlending = false);
+    void create(Layer* layer, uint32_t count, Texture& texture, bool colorBlending = false);
     void addChild(TexturedRectangleInstance& instance);
     void upload();
 };
