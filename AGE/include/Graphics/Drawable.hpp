@@ -3,7 +3,6 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-// #include "View.hpp"
 #include "Layer.hpp"
 #include "Shader.hpp"
 #include "Descriptor.hpp"
@@ -155,7 +154,7 @@ protected:
     core::RenderPassRef* m_renderPass;
     VkPipelineLayout m_pipelineLayout;
     VkPipeline m_pipeline;
-    std::vector<void*> m_setPools;
+    std::vector<uint32_t> m_poolIndicies;
     std::vector<VkDescriptorSet> m_descriptorSets;
 
     struct {

@@ -27,8 +27,18 @@ std::vector<age::Index16> indicies = {
 };
 
 class TestTriangle : public age::Drawable {
+    age::Buffer ubo;
+    glm::vec4 blendColor;
 public:
     void create(age::Layer* layer) {
+        ubo.create(
+            age::UniformBufferCreateInfo()
+            .setSize(sizeof(blendColor))
+        );
+
+        blendColor = {1, 0, 0, 1};
+        ubo.load(&blendColor, sizeof(blendColor));
+
         age::Shader vertexShader;
         age::Shader fragmentShader;
 
@@ -42,10 +52,17 @@ public:
             .setDepthTestEnable(false)
             .setMinSampleShading(0.0f)
             .setIstanceCount(1)
-            // .setView(view)
             .setLayer(layer)
             .loadIndicies(indicies)
             .loadVerticies(verticies)
+            .addDescriptor(
+                age::Descriptor().get(
+                    age::DescriptorInfo()
+                    .addBuffersBinding(
+                        age::BuffersBinding().addBuffer(ubo).setStage(VK_SHADER_STAGE_FRAGMENT_BIT)
+                    )
+                )
+            )
             .addShader(vertexShader)
             .addShader(fragmentShader)
         );
@@ -57,6 +74,8 @@ public:
     void destroy() {
         m_vertex.buffer.destroy();
         m_index.buffer.destroy();
+        ubo.destroy();
+        age::freeDescriptor(m_poolIndicies[1], m_descriptorSets[1]);
         age::destroyPipeline(m_pipeline);
     }
 };

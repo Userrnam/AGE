@@ -8,6 +8,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 include_directories("/usr/local/include")
 link_directories("/usr/local/lib")
 
+add_compile_definitions("DEBUG")
+
 # freetype path
 if(APPLE)
     include_directories("/usr/local/Cellar/freetype/2.10.1/include/freetype2")

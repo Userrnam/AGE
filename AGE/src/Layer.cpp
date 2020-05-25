@@ -4,6 +4,10 @@
 
 namespace age {
 
+void Layer::clearWindow(int i, const glm::vec4 clearColor) {
+    age::core::cmd::clear(i, clearColor);
+}
+
 Layer::Layer(const Viewport& viewport) {
     camera.create();
 
@@ -28,7 +32,7 @@ void Layer::destroy() {
 }
 
 void Layer::draw(int i) {
-    core::cmd::clear(i);
+    core::cmd::clear(i, {});
 }
 
 } // namespace age

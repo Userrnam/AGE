@@ -13,6 +13,7 @@ class Layer {
 protected:
     Camera camera;
     const Viewport& getViewport() const { return m_viewport; }
+    void clearWindow(int i, const glm::vec4 clearColor = {});
 public:
     Layer(const Viewport& viewport = {});
     void destroy();

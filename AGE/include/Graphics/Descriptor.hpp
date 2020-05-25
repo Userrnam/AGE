@@ -6,6 +6,8 @@
 #include "Buffer.hpp"
 #include "Texture.hpp"
 
+#include "Debug.hpp"
+
 namespace age {
 
 class BuffersBinding {
@@ -13,12 +15,20 @@ class BuffersBinding {
     VkShaderStageFlags m_stage = 0;
 
 public:
+
+#ifdef DEBUG
+    bool stageSet = false;
+#endif
+
     inline BuffersBinding& addBuffer(Buffer& buffer) {
         m_ubos.push_back(&buffer);
         return *this;
     }
 
     inline BuffersBinding& setStage(VkShaderStageFlags stage) {
+#ifdef DEBUG
+        stageSet = true;
+#endif
         m_stage = stage;
         return *this;
     }
@@ -29,7 +39,6 @@ public:
 
 class TexturesBinding {
     std::vector<Texture*> m_textures;
-
 public:
     inline TexturesBinding& addTexture(Texture& texture) {
         m_textures.push_back(&texture);
@@ -50,11 +59,15 @@ class DescriptorInfo {
 public:
 
     inline DescriptorInfo& addBuffersBinding(const BuffersBinding& buffersBinding) {
+        ASSERT(buffersBinding.getBuffers().size(), "DescriptorInfo::addBuffersBinding: Binding has no buffers")
+        ASSERT(buffersBinding.stageSet, "DescriptorInfo::addBuffersBinding: stage has not been set")
+
         m_ubosBindings.push_back(buffersBinding);
         return *this;
     }
 
     inline DescriptorInfo& addTexturesBinding(const TexturesBinding& texturesBinding) {
+        ASSERT(texturesBinding.getTextures().size(), "DescriptorInfo::addTexturesBinding: binding has no textures")
         m_texturesBindings.push_back(texturesBinding);
         return *this;
     }
@@ -66,9 +79,9 @@ public:
 };
 
 class Descriptor {
-    void* m_pool;
-    VkDescriptorSetLayout m_layout;
-    VkDescriptorSet m_set;
+    uint32_t m_poolIndex = 0;
+    VkDescriptorSetLayout m_layout = VK_NULL_HANDLE;
+    VkDescriptorSet m_set = VK_NULL_HANDLE;
 
     VkDescriptorSet requestDescriptorSet(const DescriptorInfo& info);
     VkDescriptorSet createDescriptorSets(const DescriptorInfo& info);
@@ -81,6 +94,6 @@ public:
     Descriptor& get(const DescriptorInfo& info);
 };
 
-void freeDescriptor(void* pool, VkDescriptorSet descriptor);
+void freeDescriptor(uint32_t poolIndex, VkDescriptorSet descriptor);
 
 } // namespace age

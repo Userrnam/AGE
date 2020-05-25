@@ -11,61 +11,12 @@
 
 namespace age {
 
-struct RectangleUniform {
-    glm::mat4 transform;
-    glm::vec4 color;
-};
-
 struct TexturedRectangleUniform {
     glm::mat4 transform;
     glm::vec2 texCoords[4];
 };
 
-// Rectangle options : 
-// static | dynamic size & scale
-// with | without texture
-// with static | dynamic texture coordinates,
-// with | without color
-// with static | dynamic color
-
-class Rectangle : public Drawable, public Transformable {
-    Buffer m_uboBuffer;
-    glm::vec4 m_color = {};
-
-public:
-    void destroy();
-
-    void create(Layer* layer, bool colorBlending = false);
-    void create(Layer* layer, Texture& texture, bool colorBlending = false);
-
-    glm::vec4 getColor() const { return m_color; }
-    void setColor(const glm::vec4& color);
-    void setColor(float r, float g, float b, float a);
-
-    void uploadUniform(const RectangleUniform& uniform);
-    void upload();
-};
-
-// Factory<Rectangle> rFactory;
-// Instance<Rectangle> fI = rFactory.getInstance();
-
-class RectangleInstance;
 class TexturedRectangleInstance;
-
-// factory
-// FIXME:
-class RectangleFactory : public Drawable {
-    std::vector<RectangleUniform> m_ubos;
-    uint32_t m_totalSize = 0; // size of ubos in bytes
-    Buffer m_uboBuffer; // sizeof(uniform) * count
-    uint32_t m_count = 0;   // max rectangle count
-public:
-    void destroy();
-    void create(Layer* layer, uint32_t count, bool colorBlending = false);
-    void addChild(RectangleInstance& instance);
-    void upload();
-};
-
 class TexturedRectangleFactory : public Drawable {
     std::vector<TexturedRectangleUniform> m_ubos;
     uint32_t m_totalSize = 0; // size of ubos in bytes
@@ -75,20 +26,6 @@ public:
     void destroy();
     void create(Layer* layer, uint32_t count, Texture& texture, bool colorBlending = false);
     void addChild(TexturedRectangleInstance& instance);
-    void upload();
-};
-
-class RectangleInstance : public Transformable {
-    RectangleUniform* m_uniform = nullptr;
-    Buffer* m_uboBuffer = nullptr;
-    uint32_t m_factoryOffset = 0;
-    friend class RectangleFactory;
-public:
-    glm::vec4 getColor() const { return m_uniform->color; }
-    void setColor(const glm::vec4& color);
-    void setColor(float r, float g, float b, float a);
-
-    void updateTransform();
     void upload();
 };
 

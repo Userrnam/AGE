@@ -109,16 +109,15 @@ VkDescriptorSet Descriptor::requestDescriptorSet(const DescriptorInfo& info) {
         if (pool.layout == m_layout) {
 			if (pool.remainingSize > 0) {
 				pool.remainingSize--;
-                m_pool = &pool;
 				return pool.sets[pool.remainingSize];
 			}
 			if (pool.freeIndicies.size() > 0) {
 				uint32_t freeIndex = pool.freeIndicies.back();
 				pool.freeIndicies.pop_back();
-                m_pool = &pool;
 				return pool.sets[freeIndex];
 			}
         }
+		m_poolIndex++;
     }
 	return createDescriptorSets(info);
 }
@@ -150,7 +149,6 @@ VkDescriptorSet Descriptor::createDescriptorSets(const DescriptorInfo& info) {
 		throw std::runtime_error("failed to allocate descriptor sets");
 	}
 
-    m_pool = &pool;
 	pool.remainingSize--;
 	return pool.sets[pool.remainingSize];
 }
@@ -236,11 +234,11 @@ Descriptor& Descriptor::get(const DescriptorInfo& info) {
 	return *this;
 }
 
-void freeDescriptor(void* pool, VkDescriptorSet descriptor) {
-    auto p = reinterpret_cast<core::Pool*>(pool);
-    for (size_t i = 0; i < p->sets.size(); ++i) {
-        if (p->sets[i] == descriptor) {
-            p->freeIndicies.push_back(i);
+void freeDescriptor(uint32_t poolIndex, VkDescriptorSet descriptor) {
+	auto& pool = core::apiCore.descriptor.pools[poolIndex];
+    for (size_t i = 0; i < pool.sets.size(); ++i) {
+        if (pool.sets[i] == descriptor) {
+			pool.freeIndicies.push_back(i);
             return;
         }
     }

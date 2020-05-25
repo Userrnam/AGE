@@ -3,6 +3,7 @@
 #include "Core/Core.hpp"
 #include "Core/RenderPassManager.hpp"
 #include "PipelineLayoutManager.hpp"
+#include "Core/Pool.hpp"
 
 namespace age {
 
@@ -17,19 +18,19 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
 
     std::vector<VkDescriptorSetLayout> layouts;
     layouts.reserve(info.m_descriptors.size() + 1);
-    m_setPools.reserve(info.m_descriptors.size() + 1);
+    m_poolIndicies.reserve(info.m_descriptors.size() + 1);
     m_descriptorSets.reserve(info.m_descriptors.size() + 1);
 
     // add camera descriptor
     // auto cameraDescriptor = info.m_view.getCamera().getDescriptor();
     auto cameraDescriptor = info.m_layer->camera.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
-    m_setPools.push_back(cameraDescriptor.m_pool);
+    m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
     layouts.push_back(cameraDescriptor.m_layout);
 
     for (auto& d : info.m_descriptors) {
         m_descriptorSets.push_back(d.m_set);
-        m_setPools.push_back(d.m_pool);
+        m_poolIndicies.push_back(d.m_poolIndex);
         layouts.push_back(d.m_layout);
     }
 

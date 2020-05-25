@@ -21,6 +21,7 @@ class ExampleLayer : public age::Layer {
     age::Font font;
 
     virtual void draw(int i) override {
+        // clearWindow(i);
         triangle.draw(i);
         text.draw(i);
     }
@@ -30,6 +31,7 @@ class ExampleLayer : public age::Layer {
         font.load(age::getResourcePath("BraveSt.ttf"));
         text.create(this, font);
         text.setText("Hello, world");
+        // text.move(100, 100);
         triangle.create(this);
     }
 

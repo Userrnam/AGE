@@ -10,7 +10,7 @@
 
 namespace age {
 
-class Text : Transformable {
+class Text : public Transformable {
     Font* m_font;
     TexturedRectangleFactory m_charBoxes;
     std::vector<TexturedRectangleInstance> m_trInstances;

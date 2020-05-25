@@ -31,191 +31,6 @@ VERTEX_ATTRIBUTES(VType) = {
 
 static std::vector<Index16> indicies = { 0, 1, 2, 2, 3, 0 };
 
-void Rectangle::create(Layer* layer, bool colorBlending) {
-
-    m_uboBuffer.create(
-        UniformBufferCreateInfo().setSize(sizeof(RectangleUniform))
-    );
-
-    Shader vertexShader;
-    Shader fragmentShader;
-
-    vertexShader.setStage(VK_SHADER_STAGE_VERTEX_BIT).create(SHADER_PATH "rectangleC.vert.spv");
-    fragmentShader.setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(SHADER_PATH "rectangleC.frag.spv");
-
-    createDrawable(
-        DrawableCreateInfo()
-        .setColorBlendEnable(colorBlending)
-        .setLayer(layer)
-        .setDepthTestEnable(false)
-        .setMinSampleShading(0.0f)
-        .setMultisamplingEnable(false)
-        .setIstanceCount(1)
-        // .addDescriptor(view.getCamera().getDescriptor())
-        .addDescriptor(
-            Descriptor().get(
-                DescriptorInfo().addBuffersBinding(
-                    BuffersBinding().addBuffer(m_uboBuffer).setStage(VK_SHADER_STAGE_VERTEX_BIT)
-                )
-            )
-        )
-        .loadIndicies(indicies)
-        .loadVerticies(verticies)
-        .addShader(vertexShader)
-        .addShader(fragmentShader)
-    );
-
-    vertexShader.destroy();
-    fragmentShader.destroy();
-}
-
-void Rectangle::create(Layer* layer, Texture& texture, bool colorBlending) {
-
-    m_uboBuffer.create(
-        UniformBufferCreateInfo().setSize(sizeof(RectangleUniform))
-    );
-
-    Shader vertexShader;
-    Shader fragmentShader;
-
-    vertexShader.setStage(VK_SHADER_STAGE_VERTEX_BIT).create(SHADER_PATH "rectangleCT.vert.spv");
-    fragmentShader.setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(SHADER_PATH "rectangleCT.frag.spv");
-
-    createDrawable(
-        DrawableCreateInfo()
-        .setColorBlendEnable(colorBlending)
-        .setLayer(layer)
-        .setDepthTestEnable(false)
-        .setMinSampleShading(0.0f)
-        .setMultisamplingEnable(false)
-        .setIstanceCount(1)
-        // .addDescriptor(view.getCamera().getDescriptor())
-        .addDescriptor(
-            Descriptor().get(
-                DescriptorInfo()
-                .addBuffersBinding(
-                    BuffersBinding().addBuffer(m_uboBuffer).setStage(VK_SHADER_STAGE_VERTEX_BIT)
-                )
-                .addTexturesBinding(
-                    TexturesBinding().addTexture(texture)
-                )
-            )
-        )
-        .loadIndicies(indicies)
-        .loadVerticies(verticies)
-        .addShader(vertexShader)
-        .addShader(fragmentShader)
-    );
-
-    vertexShader.destroy();
-    fragmentShader.destroy();
-}
-
-void Rectangle::destroy() {
-    m_uboBuffer.destroy();
-    freeDescriptor(m_setPools[1], m_descriptorSets[1]);
-    m_vertex.buffer.destroy();
-    m_index.buffer.destroy();
-    vkDestroyPipeline(core::apiCore.device, m_pipeline, nullptr);
-}
-
-void Rectangle::uploadUniform(const RectangleUniform& uniform) {
-    m_uboBuffer.load(&uniform, sizeof(uniform));
-}
-
-void Rectangle::setColor(const glm::vec4& color) {
-    m_color = color;
-}
-
-void Rectangle::setColor(float r, float g, float b, float a) {
-    m_color.r = r;
-    m_color.g = g;
-    m_color.b = b;
-    m_color.a = a;
-}
-
-// FIXME
-void Rectangle::upload() {
-    RectangleUniform uniform;
-    uniform.color = m_color;
-    uniform.transform = getTransform();
-
-    m_uboBuffer.load(&uniform, sizeof(uniform));
-}
-
-void RectangleFactory::addChild(RectangleInstance& instance) {
-    if (m_instanceCount >= m_count) {
-        throw std::runtime_error("RectangleFactory::addChild: attempt to fit " + std::to_string(m_instanceCount+1) +
-        " children in a factory with size " + std::to_string(m_count));
-    }
-
-    instance.m_factoryOffset = m_instanceCount * sizeof(RectangleUniform);
-    instance.m_uniform = &m_ubos[m_instanceCount];
-    instance.m_uboBuffer = &m_uboBuffer;
-    m_totalSize += sizeof(RectangleUniform);
-
-    m_instanceCount++;
-}
-
-void RectangleFactory::create(Layer* layer, uint32_t count, bool colorBlending) {
-    m_count = count;
-    m_ubos.resize(count);
-
-
-    m_uboBuffer.create(
-        UniformBufferCreateInfo().setSize(sizeof(RectangleUniform) * count)
-    );
-
-    Shader vertexShader;
-    Shader fragmentShader;
-
-    vertexShader
-        .setStage(VK_SHADER_STAGE_VERTEX_BIT)
-        .setSpecialization(
-            ShaderSpecialization().add<uint32_t>(count)
-        )
-        .create(SHADER_PATH "factoryRectangleC.vert.spv");
-    
-    fragmentShader.setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(SHADER_PATH "rectangleC.frag.spv");
-
-    createDrawable(
-        DrawableCreateInfo()
-        .setColorBlendEnable(colorBlending)
-        .setLayer(layer)
-        .setDepthTestEnable(false)
-        .setMinSampleShading(0.0f)
-        .setMultisamplingEnable(false)
-        .setIstanceCount(0)
-        // .addDescriptor(view.getCamera().getDescriptor())
-        .addDescriptor(
-            Descriptor().get(
-                DescriptorInfo().addBuffersBinding(
-                    BuffersBinding().addBuffer(m_uboBuffer).setStage(VK_SHADER_STAGE_VERTEX_BIT)
-                )
-            )
-        )
-        .loadIndicies(indicies)
-        .loadVerticies(verticies)
-        .addShader(vertexShader)
-        .addShader(fragmentShader)
-    );
-
-    vertexShader.destroy();
-    fragmentShader.destroy();
-}
-
-void RectangleFactory::destroy() {
-    m_uboBuffer.destroy();
-    freeDescriptor(m_setPools[1], m_descriptorSets[1]);
-    m_vertex.buffer.destroy();
-    m_index.buffer.destroy();
-    vkDestroyPipeline(core::apiCore.device, m_pipeline, nullptr);
-}
-
-void RectangleFactory::upload() {
-    m_uboBuffer.load(m_ubos.data(), m_totalSize);
-}
-
 void TexturedRectangleFactory::addChild(TexturedRectangleInstance& instance) {
     if (m_instanceCount >= m_count) {
         throw std::runtime_error("RectangleFactory::addChild: attempt to fit " + std::to_string(m_instanceCount+1) +
@@ -260,7 +75,6 @@ void TexturedRectangleFactory::create(Layer* layer, uint32_t count, Texture& tex
         .setMinSampleShading(0.0f)
         .setMultisamplingEnable(false)
         .setIstanceCount(0)
-        // .addDescriptor(view.getCamera().getDescriptor())
         .addDescriptor(
             Descriptor().get(
                 DescriptorInfo()
@@ -284,7 +98,7 @@ void TexturedRectangleFactory::create(Layer* layer, uint32_t count, Texture& tex
 
 void TexturedRectangleFactory::destroy() {
     m_uboBuffer.destroy();
-    freeDescriptor(m_setPools[1], m_descriptorSets[1]);
+    freeDescriptor(m_poolIndicies[1], m_descriptorSets[1]);
     m_vertex.buffer.destroy();
     m_index.buffer.destroy();
     vkDestroyPipeline(core::apiCore.device, m_pipeline, nullptr);
@@ -292,26 +106,6 @@ void TexturedRectangleFactory::destroy() {
 
 void TexturedRectangleFactory::upload() {
     m_uboBuffer.load(m_ubos.data(), m_totalSize);
-}
-
-void RectangleInstance::setColor(const glm::vec4& color) {
-    m_uniform->color = color;
-}
-
-void RectangleInstance::setColor(float r, float g, float b, float a) {
-    m_uniform->color.r = r;
-    m_uniform->color.g = g;
-    m_uniform->color.b = b;
-    m_uniform->color.a = a;
-}
-
-void RectangleInstance::updateTransform() {
-    m_uniform->transform = getTransform();
-}
-
-// FIXME
-void RectangleInstance::upload() {
-    m_uboBuffer->load(m_uniform, sizeof(RectangleUniform), m_factoryOffset);
 }
 
 void TexturedRectangleInstance::setTexCoords(glm::vec2 coords[4]) {

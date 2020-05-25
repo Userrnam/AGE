@@ -3,6 +3,7 @@
 #include "Core/Core.hpp"
 #include "utils.hpp"
 #include "TransitionImageLayout.hpp"
+#include "Debug.hpp"
 
 namespace age {
 
@@ -12,6 +13,8 @@ void Buffer::destroy() {
 }
 
 void Buffer::create(const BufferCreateInfo& info) {
+	ASSERT(info.m_size, "Buffer::create: buffer size must be grater than 0")
+
 	m_size = info.m_size;
 
     VkBufferCreateInfo bufferInfo = {};

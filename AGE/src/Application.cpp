@@ -46,23 +46,6 @@ void Application::updateCommandBuffers() {
 	}
 }
 
-// glm::vec2 Application::getWindowSize() {
-//     glm::vec2 out;
-//     out.x = core::apiCore.swapchain.extent.width;
-//     out.y = core::apiCore.swapchain.extent.height;
-//     return out;
-// }
-
-// void Application::draw(int i) {
-//     core::cmd::clear(i);
-// }
-
-// void Application::create() {
-//     defaultView.create();
-//     onCreate();
-//     updateCommandBuffers();
-// }
-
 Application::~Application() {
     for (Layer* layer : m_layers) {
         layer->destroy();
@@ -108,16 +91,12 @@ void Application::run() {
             layer->onUpdate(elapsedTime);
         }
 
-        // onUpdate(elapsedTime);
         core::window::present();
     }
 
     vkDeviceWaitIdle(core::apiCore.device);
 
     onDestroy();
-
-    // defaultView.destroy();
-    // onDelete();
 }
 
 } // namespace age
