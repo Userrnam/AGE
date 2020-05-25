@@ -2,7 +2,6 @@
 
 #include "Graphics.hpp"
 #include "Utils/utils.hpp"
-// #include "G"
 
 struct VertexElement {
     glm::vec4 m_color;
@@ -12,8 +11,8 @@ struct VertexElement {
 };
 
 std::vector<age::Vertex<VertexElement>> verticies = {
-    VertexElement({ 0, 0, 1, 0 }, { 200, 0 }),
-    VertexElement({ 0, 1, 0, 0 }, { 0, 300 }),
+    VertexElement({ 0, 0, 1, 0 }, { 1200, 0 }),
+    VertexElement({ 0, 1, 0, 0 }, { 0, 800 }),
     VertexElement({ 1, 0, 0, 0 }, { 0, 0 }),
 };
 

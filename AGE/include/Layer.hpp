@@ -10,6 +10,7 @@ namespace age {
 class Layer {
     Viewport m_viewport;
     friend class Drawable;
+    friend class Application;
 protected:
     Camera camera;
     const Viewport& getViewport() const { return m_viewport; }

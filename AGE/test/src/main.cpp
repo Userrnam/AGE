@@ -53,8 +53,8 @@ class Application : public age::Application {
     virtual void onCoreConfig() override {
         age::setResourcePath(RESOURCE_PATH);
         age::core::CoreConfig config;
-        config.window.width = 948;
-        config.window.height = 481;
+        config.window.width = 1200;
+        config.window.height = 800;
         config.appInfo.name = "test";
         config.window.title = "hello";
         config.multisampling.sampleCount = VK_SAMPLE_COUNT_4_BIT;

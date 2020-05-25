@@ -10,10 +10,17 @@ namespace age {
 
 class Viewport;
 
+struct CameraUniform {
+    glm::mat4 m_projection = glm::mat4(1.0f);
+    glm::vec4 m_time = glm::vec4(0.0f);
+};
+
 class Camera : public Transformable {
     Descriptor m_descriptor;
     Buffer m_buffer;
-    glm::mat4 m_projection = glm::mat4(1.0f);
+    CameraUniform m_uniform;
+
+    friend class Application;
 public:
     void create();
     void destroy();

@@ -10,8 +10,8 @@ class Transformable {
     glm::vec2 m_origin = {};
     float m_rotation = 0;
     glm::mat4 m_transform;
-    bool m_needUpdate = true;
 protected:
+    bool m_needUpdate = false;
     glm::mat4 getTransform();
 public:
     glm::vec2 getScale() const { return m_scale; }

@@ -89,6 +89,8 @@ void Application::run() {
 
         for (auto layer : m_layers) {
             layer->onUpdate(elapsedTime);
+            layer->camera.m_uniform.m_time[0] = std::chrono::duration<float, std::chrono::seconds::period>(currentTime.time_since_epoch()).count();
+            layer->camera.upload();
         }
 
         core::window::present();
