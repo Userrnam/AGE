@@ -28,18 +28,18 @@ void Camera::setOrthoganalProjection(const Viewport& viewport, float zNear, floa
 		viewport.height, 0.0f,
         zNear, zFar
 	);
-    m_needUpdate = true;
+    m_projectionChanged = true;
 }
 
 void Camera::setPerspectiveProjection(const Viewport& viewport, float angle, float zNear, float zFar) {
     m_uniform.m_projection = glm::perspective(
         angle, viewport.width / viewport.height, zNear, zFar
     );
-    m_needUpdate = true;
+    m_projectionChanged = true;
 }
 
 void Camera::upload() {
-    if (m_needUpdate) {
+    if (m_projectionChanged) {
         CameraUniform u;
         u.m_projection = m_uniform.m_projection * getTransform();
         u.m_time = m_uniform.m_time;

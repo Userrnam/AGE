@@ -19,7 +19,7 @@ class Camera : public Transformable {
     Descriptor m_descriptor;
     Buffer m_buffer;
     CameraUniform m_uniform;
-
+    bool m_projectionChanged = false;
     friend class Application;
 public:
     void create();

@@ -15,6 +15,7 @@ namespace age {
 
 extern FT_Library ftLibrary;
 
+bool commandBuffersNeedUpdate = true;
 std::chrono::steady_clock::time_point currentTime;
 
 void Application::updateCommandBuffers() {
@@ -77,11 +78,14 @@ void Application::run() {
         return;
     }
 
-    updateCommandBuffers();
-
     auto startTime = std::chrono::high_resolution_clock::now();
 
     while (!core::window::closed()) {
+        if (commandBuffersNeedUpdate) {
+            updateCommandBuffers();
+            commandBuffersNeedUpdate = false;
+        }
+
         core::window::pollEvents();
         currentTime = std::chrono::high_resolution_clock::now();
         float elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();

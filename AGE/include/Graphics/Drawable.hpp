@@ -39,11 +39,6 @@ class DrawableCreateInfo {
     friend class Drawable;
 public:
 
-    // inline DrawableCreateInfo& setView(const View& view) {
-    //     m_view = view;
-    //     return *this;
-    // }
-
     inline DrawableCreateInfo& setLayer(Layer* layer) {
         m_layer = layer;
         return *this;

@@ -67,12 +67,8 @@ void Font::load(const std::string& fontPath, unsigned fontSize) {
         character.bearing.y = face->glyph->bitmap_top;
         character.size.x = face->glyph->bitmap.width;
         character.size.y = face->glyph->bitmap.rows;
-        // FIXME: optimize
-        // set texCoords
-        character.texCoords[0] = { static_cast<float>(curX) / textureWidth, static_cast<float>(bitmap->rows) / textureHeight };
-        character.texCoords[1] = { static_cast<float>(bitmap->width + curX) / textureWidth, static_cast<float>(bitmap->rows) / textureHeight };
-        character.texCoords[2] = { static_cast<float>(bitmap->width + curX) / textureWidth, 0 };
-        character.texCoords[3] = { static_cast<float>(curX) / textureWidth, 0 };
+        character.bottomLeftTexCoord = { static_cast<float>(curX) / textureWidth, static_cast<float>(bitmap->rows) / textureHeight };
+        character.topRightTexCoord = { static_cast<float>(curX + bitmap->width) / textureWidth, 0.0f };
 
         curX += bitmap->width + 1;
     }

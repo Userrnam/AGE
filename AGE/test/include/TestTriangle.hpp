@@ -11,9 +11,9 @@ struct VertexElement {
 };
 
 std::vector<age::Vertex<VertexElement>> verticies = {
-    VertexElement({ 0, 0, 1, 0 }, { 1200, 0 }),
-    VertexElement({ 0, 1, 0, 0 }, { 0, 800 }),
-    VertexElement({ 1, 0, 0, 0 }, { 0, 0 }),
+    VertexElement({ 0, 0, 1, 0 }, { 2 * 1200, 0 }),
+    VertexElement({ 1, 0, 0, 0 }, { 2 * 1200, 2 * 800 }),
+    VertexElement({ 0, 1, 0, 0 }, { 0, 2 * 800 }),
 };
 
 VERTEX_ATTRIBUTES(VertexElement) = {

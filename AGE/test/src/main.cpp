@@ -19,20 +19,23 @@ class ExampleLayer : public age::Layer {
     TestTriangle triangle;
     age::Text text;
     age::Font font;
+    bool show_fps = true;
 
     virtual void draw(int i) override {
-        // clearWindow(i);
+        clearWindow(i);
         triangle.draw(i);
         text.draw(i);
     }
 
     virtual void onCreate() override {
-        // font.load(age::getResourcePath("Courier.dfont"), 100);
-        font.load(age::getResourcePath("BraveSt.ttf"));
-        text.create(this, font);
-        text.setText("Hello, world");
-        // text.move(100, 100);
+        // font.load(age::getResourcePath("BraveSt.ttf"));
+        font.load(age::getResourcePath("Courier.dfont"));
         triangle.create(this);
+        text.create(this, font);
+        text.setPosition(100, 100);
+        text.setColor(1, 1, 0, 1);
+
+        text.uploadMapData();
     }
 
     virtual void onDestroy() override {
@@ -42,7 +45,10 @@ class ExampleLayer : public age::Layer {
     }
 
     virtual void onUpdate(float elapsedTime) override {
-
+        text.rotate(elapsedTime);
+        text.setOrigin(0.5, 0.5);
+        text.uploadMapData();
+        text.setText("fps: " + std::to_string(1.0/elapsedTime));
     }
 
 public:

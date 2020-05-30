@@ -24,23 +24,12 @@ protected:
         return out;
     }
 
-    // View defaultView;
-
-    // glm::vec2 getWindowSize();
-
     virtual void onCoreConfig() {}
     virtual void onCreate() {}
     virtual void onDestroy() {}
 
-    // // FIXME: rename Warning: draw must not be empty
-    // virtual void draw(int i);
-    // virtual void onCreate() {}
-    // virtual void onUpdate(float elapsedTime) {}
-    // virtual void onDelete() {}
-
 public:
     ~Application();
-    // void create();
     void run();
 };
 
