@@ -25,8 +25,6 @@ void Text::setText(const std::string& text) {
         move += character.advance;
     }
 
-    std::cout << m_instanceCount << std::endl;
-
     TileMap::uploadTiles();
 }
 

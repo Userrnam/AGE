@@ -15,10 +15,7 @@ namespace age {
 
 class DrawableCreateInfo {
     Layer* m_layer;
-    bool m_depthTest = false;
-    bool m_multisampling = false;
     bool m_colorBlending = false;
-    float m_minSampleShading = 0.0f;
     uint32_t m_instanceCount = 1;
 
     std::vector<Shader> m_shaders;
@@ -44,23 +41,8 @@ public:
         return *this;
     }
 
-    inline DrawableCreateInfo& setDepthTestEnable(bool flag) {
-        m_depthTest = flag;
-        return *this;
-    }
-
-    inline DrawableCreateInfo& setMultisamplingEnable(bool flag) {
-        m_multisampling = flag;
-        return *this;
-    }
-
     inline DrawableCreateInfo& setColorBlendEnable(bool flag) {
         m_colorBlending = flag;
-        return *this;
-    }
-
-    inline DrawableCreateInfo& setMinSampleShading(float val) {
-        m_minSampleShading = val;
         return *this;
     }
 

@@ -47,9 +47,6 @@ public:
         createDrawable(
             age::DrawableCreateInfo()
             .setColorBlendEnable(false)
-            .setMultisamplingEnable(false)
-            .setDepthTestEnable(false)
-            .setMinSampleShading(0.0f)
             .setIstanceCount(1)
             .setLayer(layer)
             .loadIndicies(indicies)

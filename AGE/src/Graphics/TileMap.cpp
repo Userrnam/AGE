@@ -51,9 +51,6 @@ void TileMap::create(Layer* layer, Texture& texture, uint32_t maxSize, bool blen
         DrawableCreateInfo()
         .setColorBlendEnable(blendEnable)
         .setLayer(layer)
-        .setDepthTestEnable(false)
-        .setMinSampleShading(0.0f)
-        .setMultisamplingEnable(false)
         .setIstanceCount(0)
         .addDescriptor(
             Descriptor().get(

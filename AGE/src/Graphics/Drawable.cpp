@@ -35,10 +35,10 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     }
 
     core::RenderPassConfig renderPassConfig = 0;
-    if (info.m_depthTest) {
+    if (info.m_layer->m_depthTest) {
         renderPassConfig = core::RENDER_PASS_DEPTH_BIT | core::RENDER_PASS_MULTISAMPLING_BIT;
     }
-    if (info.m_multisampling) {
+    if (info.m_layer->m_multisampling) {
         renderPassConfig |= core::RENDER_PASS_MULTISAMPLING_BIT;
     }
 
@@ -82,7 +82,7 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
 
     VkPipelineDepthStencilStateCreateInfo depthStencil = {};
     depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-    if (info.m_depthTest) {
+    if (info.m_layer->m_depthTest) {
         depthStencil.depthTestEnable = VK_TRUE;
         depthStencil.depthWriteEnable = VK_TRUE;
         depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
@@ -125,11 +125,11 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
 
     VkPipelineMultisampleStateCreateInfo multisampling = {};
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-    if (info.m_multisampling) {
+    if (info.m_layer->m_multisampling) {
         multisampling.rasterizationSamples = core::apiCore.multisampling.sampleCount;
-        if (info.m_minSampleShading) {
+        if (info.m_layer->m_minSampleShading) {
             multisampling.sampleShadingEnable = VK_TRUE;
-            multisampling.minSampleShading = 0.2f;
+            multisampling.minSampleShading = info.m_layer->m_minSampleShading;
         }
     } else {
         multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;

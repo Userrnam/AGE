@@ -8,7 +8,11 @@ void Layer::clearWindow(int i, const glm::vec4 clearColor) {
     age::core::cmd::clear(i, clearColor);
 }
 
-Layer::Layer(const Viewport& viewport) {
+Layer::Layer(const Viewport& viewport, bool depthTest, bool multisampling, float minSampleShading) {
+    m_depthTest = depthTest;
+    m_multisampling = multisampling;
+    m_minSampleShading = minSampleShading;
+
     camera.create();
 
     if (viewport.width == 0 | viewport.height == 0) {
