@@ -19,7 +19,6 @@ class ExampleLayer : public age::Layer {
     TestTriangle triangle;
     age::Text text;
     age::Font font;
-    bool show_fps = true;
 
     virtual void draw(int i) override {
         clearWindow(i);
@@ -58,14 +57,17 @@ public:
 class Application : public age::Application {
     virtual void onCoreConfig() override {
         age::setResourcePath(RESOURCE_PATH);
-        age::core::CoreConfig config;
-        config.window.width = 1200;
-        config.window.height = 800;
-        config.appInfo.name = "test";
-        config.window.title = "hello";
-        config.multisampling.sampleCount = VK_SAMPLE_COUNT_4_BIT;
-        age::core::setCoreConfig(config);
-        age::core::setClearColor({1, 1, 1, 1});
+
+        age::config::setApplicationName("app");
+        age::config::setApplicationVersion(VK_MAKE_VERSION(1,0,0));
+        age::config::setDebugEnable(true);
+        age::config::setSampleCount(VK_SAMPLE_COUNT_4_BIT);
+        age::config::setWindowProperties(
+            age::config::WindowProperties()
+            .setResizeEnable(false)
+            .setSize(800, 600)
+            .setTitle("app")
+        );
     }
 
     virtual void onCreate() override {

@@ -49,7 +49,6 @@ struct Core {
         VkExtent2D extent;
         std::vector<VkImage> images;
         std::vector<VkImageView> imageViews;
-        VkClearColorValue clearColor = {};
     } swapchain;
 
     struct {

@@ -16,7 +16,7 @@ struct CoreConfig {
     } features;
 
     struct {
-        std::string name;
+        std::string name = "appName";
         uint32_t version = VK_MAKE_VERSION(1, 0, 0);
     } appInfo;
 

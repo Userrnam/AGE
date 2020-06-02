@@ -24,10 +24,10 @@ const std::vector<const char*> validationLayers = {
 Core apiCore;
 CoreConfig coreConfig;
 
-void setCoreConfig(const CoreConfig& config) {
-	coreConfig = config;
-	apiCore.debug.enable = config.debugEnable;
-}
+// void setCoreConfig(const CoreConfig& config) {
+// 	coreConfig = config;
+// 	apiCore.debug.enable = config.debugEnable;
+// }
 
 void init() {
 	glfwInit();
@@ -419,13 +419,6 @@ void allocateCommandBuffers() {
 	if (vkAllocateCommandBuffers(apiCore.device, &allocInfo, apiCore.commandBuffers.data.data()) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create command buffers");
 	}
-}
-
-void setClearColor(const Color& color) {
-	apiCore.swapchain.clearColor.float32[0] = color.r;
-	apiCore.swapchain.clearColor.float32[1] = color.g;
-	apiCore.swapchain.clearColor.float32[2] = color.b;
-	apiCore.swapchain.clearColor.float32[3] = color.a;
 }
 
 } // namespace age::core

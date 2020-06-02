@@ -7,7 +7,7 @@
 
 namespace age::core {
 
-void setCoreConfig(const CoreConfig& config);
+// void setCoreConfig(const CoreConfig& config);
 void init();
 void pickPhysicalDevice();
 void createLogicalDevice();
@@ -18,6 +18,5 @@ void createCommandPools();
 
 void createSyncObjects();
 void allocateCommandBuffers();
-void setClearColor(const Color& color);
 
 } // namespace age::core
