@@ -8,6 +8,7 @@
 
 #include "Utils/utils.hpp"
 #include "Graphics.hpp"
+#include "Audio.hpp"
 
 #include "TestTriangle.hpp"
 
@@ -55,6 +56,9 @@ public:
 };
 
 class Application : public age::Application {
+    age::Sound sound;
+    age::SoundSource source;
+
     virtual void onCoreConfig() override {
         age::setResourcePath(RESOURCE_PATH);
 
@@ -71,11 +75,30 @@ class Application : public age::Application {
     }
 
     virtual void onCreate() override {
+        // audio test
+        age::Listener::setPosition(0, 0, 1);
+        age::Listener::setVelocity(0, 0, 0);
+        age::Listener::setOrientation(age::Orientation());
+
+        sound.create();
+        sound.load(age::getResourcePath("test.wav"));
+
+        source.create();
+        source.setPitch(1);
+        source.setGain(0.5);
+        source.setPosition(0, 0, 0);
+        source.setVelocity(0, 0, 0);
+        source.setLooping(true);
+        source.setSound(&sound);
+
+        source.play();
+
         pushLayer(new ExampleLayer());
     }
 
     virtual void onDestroy() override {
-
+        source.destroy();
+        sound.destroy();
     }
 };
 

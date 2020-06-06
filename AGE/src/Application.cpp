@@ -3,17 +3,20 @@
 #include FT_FREETYPE_H
 
 #include "Application.hpp"
-#include "Core/CoreCreator.hpp"
+#include "Viewport.hpp"
 
+#include "Graphics/Core/CoreCreator.hpp"
 #include "Graphics/Core/coreAPI.hpp"
 #include "Graphics/Core/Window.hpp"
 #include "Graphics/Core/Core.hpp"
 #include "Graphics/Core/Command.hpp"
-#include "Viewport.hpp"
+
+#include "Audio/Core.hpp"
 
 namespace age {
 
 extern FT_Library ftLibrary;
+audio::Core audioCore;
 
 bool commandBuffersNeedUpdate = true;
 std::chrono::steady_clock::time_point currentTime;
@@ -48,6 +51,10 @@ void Application::updateCommandBuffers() {
 }
 
 Application::~Application() {
+    // destroy audio
+    audioCore.destroy();
+
+    // destroy graphics
     for (Layer* layer : m_layers) {
         layer->destroy();
         delete layer;
@@ -64,8 +71,14 @@ inline void initFreetype() {
 void Application::run() {
     onCoreConfig();
 
+    // init graphics
     core::initCore();
+
+    // init freetype
     initFreetype();
+
+    // init audio
+    audioCore.init();
 
     onCreate();
 

@@ -48,7 +48,7 @@ void Font::load(const std::string& fontPath, unsigned fontSize) {
     unsigned curX = 0;
 
     // fill texture atlas
-    for (unsigned char c = 0; c < 128; ++c) {
+    for (unsigned char c = 32; c < 127; ++c) {
         FT_Load_Char(face, c, FT_LOAD_RENDER);
         FT_Bitmap* bitmap = &face->glyph->bitmap;
 

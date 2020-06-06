@@ -54,10 +54,25 @@ target_include_directories(graphics PRIVATE
 
 if (APPLE)
 target_link_libraries(graphics glfw vulkan utils freetype)
-else ()
+else (APPLE)
 target_link_libraries(graphics vulkan glfw3 rt m dl X11 pthread xcb Xau Xdmcp utils freetype)
-endif ()
+endif (APPLE)
 # end build graphics
+
+# build audio
+file(GLOB sources
+    "src/Audio/*.cpp"
+)
+add_library(audio STATIC ${sources})
+if (APPLE)
+target_link_libraries(audio "-framework OpenAL")
+else (APPLE)
+target_link_libraries(audio openal)
+endif (APPLE)
+target_include_directories(audio PRIVATE
+    "include/Audio"
+)
+# end build audio
 
 # build age
 include_directories("include")
@@ -68,7 +83,7 @@ add_library(age STATIC ${sources})
 target_include_directories(age PRIVATE
     "include/Graphics"
 )
-target_link_libraries(age graphics)
+target_link_libraries(age graphics audio)
 # end build age
 
 # build test
