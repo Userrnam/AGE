@@ -117,8 +117,8 @@ int main(int argc, char* argv[]) {
 
     std::cout << mat1 * mat2;
 
-    // Application app;
-    // app.run();
+    Application app;
+    app.run();
 
     return 0;
 }
