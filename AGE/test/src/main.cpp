@@ -9,6 +9,7 @@
 #include "Utils/utils.hpp"
 #include "Graphics.hpp"
 #include "Audio.hpp"
+#include "Math.hpp"
 
 #include "TestTriangle.hpp"
 
@@ -103,8 +104,21 @@ class Application : public age::Application {
 };
 
 int main(int argc, char* argv[]) {
-    Application app;
-    app.run();
+
+    age::Matrix2f mat1 = {
+        1.0, 2.0,
+        3.0, 4.0
+    };
+
+    age::Matrix2f mat2 = {
+        1.0, 5.0,
+        4.0, 2.0
+    };
+
+    std::cout << mat1 * mat2;
+
+    // Application app;
+    // app.run();
 
     return 0;
 }
