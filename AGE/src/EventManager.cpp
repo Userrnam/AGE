@@ -59,6 +59,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     eStruct.button = button;
     eStruct.action = action;
     eStruct.mods = mods;
+    glfwGetCursorPos(core::apiCore.window.handle, &eStruct.xPos, &eStruct.yPos);
 
     Event e;
     e.setId(hash("glfw_mouse_button"));

@@ -43,7 +43,7 @@ everything depends on position
 */
 
 
-// it's scene + game logic, maybe change jit?
+// it's scene + game logic, maybe change it?
 class TestScene : public age::Scene {
     TestTriangle triangle;
 
@@ -95,7 +95,7 @@ class Application : public age::Application {
         case age::event::MOUSE_BUTTON: {
             auto s = e.getStructure<age::event::MouseButton>();
             if (s.action == GLFW_PRESS && s.button == GLFW_MOUSE_BUTTON_1) {
-                std::cout << "click\n";
+                std::cout << "pos: (" << s.xPos << "; " << s.yPos << ")\n";
             }
             break;
         }

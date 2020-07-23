@@ -67,6 +67,8 @@ struct CursorPos {
 };
 
 struct MouseButton {
+    double xPos;
+    double yPos;
     int button;
     int action;
     int mods;
