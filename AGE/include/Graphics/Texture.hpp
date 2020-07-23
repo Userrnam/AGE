@@ -25,7 +25,6 @@ class Texture {
     core::Image m_image;
 public:
     void destroy();
-    // FIXME
     VkSampler getSampler() const { return m_sampler; }
     const core::Image& getImage() const { return m_image; }
     void setImage(core::Image& image) { m_image = image; }

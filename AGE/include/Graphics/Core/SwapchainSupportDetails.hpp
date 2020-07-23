@@ -14,7 +14,7 @@ struct SwapChainSupportDetails {
 SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
-// FIXME: add prefered format
+// FIXME: add prefered formats
 VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 

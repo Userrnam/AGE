@@ -29,6 +29,7 @@ struct CoreConfig {
 
     struct {
         VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
+        float minSampleShading = 0.2;
     } multisampling;
 
     bool debugEnable = true;

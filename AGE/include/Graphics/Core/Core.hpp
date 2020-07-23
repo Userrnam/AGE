@@ -92,7 +92,7 @@ struct Core {
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
     VkDevice device = VK_NULL_HANDLE;
 
-    std::vector<RenderPassRef> renderPasses;
+    RenderPassRef renderPass;
 };
 
 extern Core apiCore;

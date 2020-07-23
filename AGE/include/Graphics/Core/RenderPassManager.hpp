@@ -6,6 +6,6 @@
 
 namespace age::core {
 
-RenderPassRef* requestRenderPass(RenderPassConfig rpc);
+void createRenderPass(RenderPassConfig rpc);
 
 } // namespace age::core

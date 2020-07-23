@@ -25,7 +25,7 @@ VERTEX_ATTRIBUTES(VType) = {
 static std::vector<Index16> indicies = { 0, 1, 2, 2, 3, 0 };
 
 
-void TileMap::create(Layer* layer, Texture& texture, uint32_t maxSize, bool blendEnable) {
+void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendEnable) {
     m_maxSize = maxSize;
     m_tiles.reserve(m_maxSize);
 
@@ -50,7 +50,7 @@ void TileMap::create(Layer* layer, Texture& texture, uint32_t maxSize, bool blen
     createDrawable(
         DrawableCreateInfo()
         .setColorBlendEnable(blendEnable)
-        .setLayer(layer)
+        .setView(view)
         .setIstanceCount(0)
         .addDescriptor(
             Descriptor().get(

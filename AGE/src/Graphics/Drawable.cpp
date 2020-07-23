@@ -1,9 +1,14 @@
 #include "Drawable.hpp"
 
 #include "Core/Core.hpp"
+#include "CoreConfig.hpp"
 #include "Core/RenderPassManager.hpp"
 #include "PipelineLayoutManager.hpp"
 #include "Core/Pool.hpp"
+
+namespace age::core {
+    extern CoreConfig coreConfig;
+}
 
 namespace age {
 
@@ -23,7 +28,7 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
 
     // add camera descriptor
     // auto cameraDescriptor = info.m_view.getCamera().getDescriptor();
-    auto cameraDescriptor = info.m_layer->camera.getDescriptor();
+    auto cameraDescriptor = info.m_view->camera.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
     m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
     layouts.push_back(cameraDescriptor.m_layout);
@@ -33,16 +38,6 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
         m_poolIndicies.push_back(d.m_poolIndex);
         layouts.push_back(d.m_layout);
     }
-
-    core::RenderPassConfig renderPassConfig = 0;
-    if (info.m_layer->m_depthTest) {
-        renderPassConfig = core::RENDER_PASS_DEPTH_BIT | core::RENDER_PASS_MULTISAMPLING_BIT;
-    }
-    if (info.m_layer->m_multisampling) {
-        renderPassConfig |= core::RENDER_PASS_MULTISAMPLING_BIT;
-    }
-
-    m_renderPass = core::requestRenderPass(renderPassConfig);
 
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
     shaderStages.resize(info.m_shaders.size());
@@ -82,22 +77,12 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
 
     VkPipelineDepthStencilStateCreateInfo depthStencil = {};
     depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-    if (info.m_layer->m_depthTest) {
-        depthStencil.depthTestEnable = VK_TRUE;
-        depthStencil.depthWriteEnable = VK_TRUE;
-        depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
-        depthStencil.depthBoundsTestEnable = VK_FALSE;
-        depthStencil.minDepthBounds = 0.0f;
-        depthStencil.maxDepthBounds = 1.0f;
-    }
 
     VkViewport viewport = {};
-    viewport.x = info.m_layer->getViewport().x;
-    viewport.y = info.m_layer->getViewport().y;
-    viewport.width = info.m_layer->getViewport().width;
-    viewport.height = info.m_layer->getViewport().height;
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
+    viewport.x = info.m_view->getViewport().x;
+    viewport.y = info.m_view->getViewport().y;
+    viewport.width = info.m_view->getViewport().width;
+    viewport.height = info.m_view->getViewport().height;
 
     VkRect2D scissors = {};
     scissors.offset = { static_cast<int32_t>(viewport.x), static_cast<int32_t>(viewport.y) };
@@ -125,11 +110,11 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
 
     VkPipelineMultisampleStateCreateInfo multisampling = {};
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-    if (info.m_layer->m_multisampling) {
+    if (core::coreConfig.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
         multisampling.rasterizationSamples = core::apiCore.multisampling.sampleCount;
-        if (info.m_layer->m_minSampleShading) {
+        if (core::coreConfig.multisampling.minSampleShading) {
             multisampling.sampleShadingEnable = VK_TRUE;
-            multisampling.minSampleShading = info.m_layer->m_minSampleShading;
+            multisampling.minSampleShading = core::coreConfig.multisampling.minSampleShading;
         }
     } else {
         multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
@@ -169,7 +154,7 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     pipelineCreateInfo.pDepthStencilState = &depthStencil;
     pipelineCreateInfo.pMultisampleState = &multisampling;
     pipelineCreateInfo.layout = m_pipelineLayout;
-    pipelineCreateInfo.renderPass = m_renderPass->renderPass;
+    pipelineCreateInfo.renderPass = core::apiCore.renderPass.renderPass;
     pipelineCreateInfo.subpass = 0;
     pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineCreateInfo.basePipelineIndex = -1;
@@ -183,8 +168,8 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
 void Drawable::draw(int i) {
     VkRenderPassBeginInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = m_renderPass->renderPass;
-    renderPassInfo.framebuffer = m_renderPass->framebuffers[i];
+    renderPassInfo.renderPass = core::apiCore.renderPass.renderPass;
+    renderPassInfo.framebuffer = core::apiCore.renderPass.framebuffers[i];
     renderPassInfo.renderArea.offset = { 0, 0 };
     renderPassInfo.renderArea.extent = core::apiCore.swapchain.extent;
 

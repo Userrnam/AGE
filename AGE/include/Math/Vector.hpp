@@ -101,6 +101,7 @@ template<typename T, int size, T(*rootFunc)(T)>
 class FPVector : public Vector<T, size> {
 public:
     FPVector(std::initializer_list<T> data) : Vector<T, size>(data) {}
+    FPVector() {}
 
     T length() {
         T len;

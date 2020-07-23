@@ -12,53 +12,37 @@
 #include "Math.hpp"
 
 #include "TestTriangle.hpp"
+#include "Scene.hpp"
+#include <GlFW/glfw3.h>
 
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""
 #endif
 
-class ExampleLayer : public age::Layer {
+class TestScene : public age::Scene {
     TestTriangle triangle;
-    age::Text text;
-    age::Font font;
-
-    virtual void draw(int i) override {
-        clearWindow(i);
-        triangle.draw(i);
-        text.draw(i);
-    }
 
     virtual void onCreate() override {
-        // font.load(age::getResourcePath("BraveSt.ttf"));
-        font.load(age::getResourcePath("Courier.dfont"));
-        triangle.create(this);
-        text.create(this, font);
-        text.setPosition(100, 100);
-        text.setColor(1, 1, 0, 1);
+        m_views.push_back(age::View());
+        m_views[0].init();
+        triangle.create(m_views[0]);
 
-        text.uploadMapData();
-    }
+        // problem: store extra data (buffers etc)?
+        // make some component for extra data
+        std::vector<age::Drawable> targets = { triangle };
 
-    virtual void onDestroy() override {
-        font.destroy();
-        text.destroy();
-        triangle.destroy();
+        parent->m_renderer.render(targets);
     }
 
     virtual void onUpdate(float elapsedTime) override {
-        text.rotate(elapsedTime);
-        text.setOrigin(0.5, 0.5);
-        text.uploadMapData();
-        text.setText("fps: " + std::to_string(1.0/elapsedTime));
     }
 
 public:
-    ExampleLayer(const age::Viewport& viewport = {}) : Layer(viewport) {}
+    TestScene(age::Application* app) : age::Scene(app) {}
 };
 
 class Application : public age::Application {
-    age::Sound sound;
-    age::SoundSource source;
+    TestTriangle triangle;
 
     virtual void onCoreConfig() override {
         age::setResourcePath(RESOURCE_PATH);
@@ -76,47 +60,41 @@ class Application : public age::Application {
     }
 
     virtual void onCreate() override {
-        // audio test
-        age::Listener::setPosition(0, 0, 1);
-        age::Listener::setVelocity(0, 0, 0);
-        age::Listener::setOrientation(age::Orientation());
+        setActiveScene(new TestScene(this));
+    }
 
-        sound.create();
-        sound.load(age::getResourcePath("test.wav"));
+    virtual void onEvent(age::Event e) override {
+        switch (e) {
 
-        source.create();
-        source.setPitch(1);
-        source.setGain(0.5);
-        source.setPosition(0, 0, 0);
-        source.setVelocity(0, 0, 0);
-        source.setLooping(true);
-        source.setSound(&sound);
+        case age::event::MOUSE_BUTTON: {
+            auto s = e.getStructure<age::event::MouseButton>();
+            if (s.action == GLFW_PRESS && s.button == GLFW_MOUSE_BUTTON_1) {
+                std::cout << "click\n";
+            }
+            break;
+        }
 
-        source.play();
-
-        pushLayer(new ExampleLayer());
+        case age::event::KEY: {
+            auto s = e.getStructure<age::event::Key>();
+            if (s.action == GLFW_PRESS && s.key == GLFW_KEY_S) {
+                stop();
+            }
+            break;
+        }
+        default:
+            break;
+        }
     }
 
     virtual void onDestroy() override {
-        source.destroy();
-        sound.destroy();
+        for (auto view : m_views) {
+            view.destroy();
+        }
+        triangle.destroy();
     }
 };
 
 int main(int argc, char* argv[]) {
-
-    age::Matrix2f mat1 = {
-        1.0, 2.0,
-        3.0, 4.0
-    };
-
-    age::Matrix2f mat2 = {
-        1.0, 5.0,
-        4.0, 2.0
-    };
-
-    std::cout << mat1 * mat2;
-
     Application app;
     app.run();
 

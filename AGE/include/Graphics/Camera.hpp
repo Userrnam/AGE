@@ -20,7 +20,7 @@ class Camera : public Transformable {
     Buffer m_buffer;
     CameraUniform m_uniform;
     bool m_projectionChanged = false;
-    friend class Application;
+    friend class Scene;
 public:
     void create();
     void destroy();

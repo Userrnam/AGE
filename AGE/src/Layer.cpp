@@ -1,18 +1,14 @@
-#include "Layer.hpp"
+#include "View.hpp"
 #include "Core/Core.hpp"
 #include "Core/Command.hpp"
 
 namespace age {
 
-void Layer::clearWindow(int i, const glm::vec4 clearColor) {
+void View::clearWindow(int i, const glm::vec4 clearColor) {
     age::core::cmd::clear(i, clearColor);
 }
 
-Layer::Layer(const Viewport& viewport, bool depthTest, bool multisampling, float minSampleShading) {
-    m_depthTest = depthTest;
-    m_multisampling = multisampling;
-    m_minSampleShading = minSampleShading;
-
+void View::init(const Viewport& viewport) {
     camera.create();
 
     if (viewport.width == 0 | viewport.height == 0) {
@@ -30,13 +26,12 @@ Layer::Layer(const Viewport& viewport, bool depthTest, bool multisampling, float
     camera.upload();
 }
 
-void Layer::destroy() {
-    onDestroy();
+void View::destroy() {
     camera.destroy();
 }
 
-void Layer::draw(int i) {
-    core::cmd::clear(i, {});
-}
+// void Layer::draw(int i) {
+//     core::cmd::clear(i, {});
+// }
 
 } // namespace age

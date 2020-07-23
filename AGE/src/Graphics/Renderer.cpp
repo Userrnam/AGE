@@ -1,0 +1,79 @@
+#include "Renderer.hpp"
+#include "Graphics/Core/Command.hpp"
+#include "Graphics/Core/CoreCreator.hpp"
+#include "Graphics/Core/Core.hpp"
+
+namespace age {
+
+bool commandBuffersNeedUpdate = true;
+
+void Renderer::updateCommandBuffers() {
+    // update active commandBuffer
+    if (core::apiCore.commandBuffers.active == core::apiCore.commandBuffers.data.data()) {
+        core::apiCore.commandBuffers.active += core::apiCore.swapchain.images.size();
+    } else {
+        core::apiCore.commandBuffers.active -= core::apiCore.swapchain.images.size();
+    }
+
+    VkCommandBufferBeginInfo beginInfo = {};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = 0;
+	beginInfo.pInheritanceInfo = nullptr;
+
+	for (size_t i = 0; i < core::apiCore.commandBuffers.size; ++i) {
+        vkResetCommandBuffer(core::apiCore.commandBuffers.active[i], 0);
+		if (vkBeginCommandBuffer(core::apiCore.commandBuffers.active[i], &beginInfo) != VK_SUCCESS) {
+			throw std::runtime_error("failed to begin recording command buffer");
+		}
+
+        draw(i);
+
+		if (vkEndCommandBuffer(core::apiCore.commandBuffers.active[i]) != VK_SUCCESS) {
+			throw std::runtime_error("failed to record command buffer");
+		}
+	}
+}
+
+void Renderer::draw(int j) {
+    for (size_t i = 0; i < pTargets->size(); ++i) {
+        (*pTargets)[i].draw(j);
+    }
+}
+
+void Renderer::render(std::vector<Drawable>& targets) {
+    // deside if we need update
+    this->pTargets = &targets;
+    if (commandBuffersNeedUpdate) {
+        updateCommandBuffers();
+        commandBuffersNeedUpdate = false;
+    }
+}
+
+void Renderer::init() {
+    core::initCore();
+
+    // clear screen
+    VkCommandBufferBeginInfo beginInfo = {};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = 0;
+	beginInfo.pInheritanceInfo = nullptr;
+
+	for (size_t i = 0; i < core::apiCore.commandBuffers.size; ++i) {
+        vkResetCommandBuffer(core::apiCore.commandBuffers.active[i], 0);
+		if (vkBeginCommandBuffer(core::apiCore.commandBuffers.active[i], &beginInfo) != VK_SUCCESS) {
+			throw std::runtime_error("failed to begin recording command buffer");
+		}
+
+        core::cmd::clear(i, {});
+
+		if (vkEndCommandBuffer(core::apiCore.commandBuffers.active[i]) != VK_SUCCESS) {
+			throw std::runtime_error("failed to record command buffer");
+		}
+	}
+}
+
+void Renderer::destroy() {
+    core::destroyCore();
+}
+
+} // namespace age

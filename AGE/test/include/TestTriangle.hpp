@@ -29,7 +29,7 @@ class TestTriangle : public age::Drawable {
     age::Buffer ubo;
     glm::vec4 blendColor;
 public:
-    void create(age::Layer* layer) {
+    void create(age::View& view) {
         ubo.create(
             age::UniformBufferCreateInfo()
             .setSize(sizeof(blendColor))
@@ -48,7 +48,7 @@ public:
             age::DrawableCreateInfo()
             .setColorBlendEnable(false)
             .setIstanceCount(1)
-            .setLayer(layer)
+            .setView(view)
             .loadIndicies(indicies)
             .loadVerticies(verticies)
             .addDescriptor(

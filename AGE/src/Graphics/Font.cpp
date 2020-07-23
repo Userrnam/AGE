@@ -26,7 +26,7 @@ void Font::load(const std::string& fontPath, unsigned fontSize) {
     }
 
     // FIXME: image is long now, may be there is a better way
-    // determine size of atlas
+    // to determine size of atlas
     unsigned maxHeight = 0;
     unsigned totalWidth = 0;
     for (unsigned char c = 0; c < 128; ++c) {

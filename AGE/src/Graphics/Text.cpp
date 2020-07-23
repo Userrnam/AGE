@@ -3,9 +3,9 @@
 
 namespace age {
 
-void Text::create(Layer* layer, Font& font, uint32_t maxSize) {
+void Text::create(View& view, Font& font, uint32_t maxSize) {
     m_font = &font;
-    TileMap::create(layer, font.m_atlas, maxSize, true);
+    TileMap::create(view, font.m_atlas, maxSize, true);
 }
 
 void Text::setText(const std::string& text) {

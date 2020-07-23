@@ -29,7 +29,7 @@ class TileMap : public Drawable, public Transformable {
     uint32_t m_maxSize = 0;
 protected:
 public:
-    void create(Layer* layer, Texture& texture, uint32_t maxSize, bool blendEnable);
+    void create(View& view, Texture& texture, uint32_t maxSize, bool blendEnable);
 
     void addTile(const Tile& tile);
     void removeTile(size_t index);

@@ -3,7 +3,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-#include "Layer.hpp"
+#include "View.hpp"
 #include "Shader.hpp"
 #include "Descriptor.hpp"
 #include "Core/RenderPassRef.hpp"
@@ -14,7 +14,7 @@
 namespace age {
 
 class DrawableCreateInfo {
-    Layer* m_layer;
+    View* m_view;
     bool m_colorBlending = false;
     uint32_t m_instanceCount = 1;
 
@@ -36,8 +36,8 @@ class DrawableCreateInfo {
     friend class Drawable;
 public:
 
-    inline DrawableCreateInfo& setLayer(Layer* layer) {
-        m_layer = layer;
+    inline DrawableCreateInfo& setView(View& view) {
+        m_view = &view;
         return *this;
     }
 
@@ -128,7 +128,6 @@ public:
 
 class Drawable {
 protected:
-    core::RenderPassRef* m_renderPass;
     VkPipelineLayout m_pipelineLayout;
     VkPipeline m_pipeline;
     std::vector<uint32_t> m_poolIndicies;

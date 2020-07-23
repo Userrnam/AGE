@@ -11,11 +11,6 @@ void createFramebuffers(RenderPassRef& renderPassRef) {
 	size_t swapchainImageViewIndex = 0;
     std::vector<VkImageView> attachments;
 
-    if (renderPassRef.config & RENDER_PASS_DEPTH_BIT) {
-        attachments.push_back(apiCore.depth.image.getView());
-		swapchainImageViewIndex++;
-    }
-
     if (renderPassRef.config & RENDER_PASS_MULTISAMPLING_BIT) {
         attachments.push_back(apiCore.multisampling.image.getView());
 		swapchainImageViewIndex++;
@@ -41,25 +36,11 @@ void createFramebuffers(RenderPassRef& renderPassRef) {
 	}
 }
 
-RenderPassRef* createRenderPass(RenderPassConfig rpc) {
+void createRenderPass(RenderPassConfig rpc) {
     RenderPassRef renderPass = {};
     renderPass.config = rpc;
 
     std::vector<VkAttachmentDescription> attachments;
-
-    if (rpc & RENDER_PASS_DEPTH_BIT) {
-        VkAttachmentDescription depthAttachment = {};
-        depthAttachment.format = apiCore.depth.format;
-        depthAttachment.samples = apiCore.multisampling.sampleCount;
-        depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-        attachments.push_back(depthAttachment);
-    }   
 
     VkAttachmentDescription colorAttachment = {};
 	colorAttachment.format = apiCore.swapchain.format;
@@ -82,7 +63,6 @@ RenderPassRef* createRenderPass(RenderPassConfig rpc) {
 
     attachments.push_back(colorAttachment);
 
-	
     if (rpc & RENDER_PASS_MULTISAMPLING_BIT) {
         VkAttachmentDescription colorAttachmentResolve = {};
         colorAttachmentResolve.format = apiCore.swapchain.format;
@@ -105,13 +85,6 @@ RenderPassRef* createRenderPass(RenderPassConfig rpc) {
 	VkSubpassDescription subpass = {};
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpass.colorAttachmentCount = 1;
-
-    if (rpc & RENDER_PASS_DEPTH_BIT) {
-        depthAttachmentRef.attachment = attachmentIndex;
-        depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-        subpass.pDepthStencilAttachment = &depthAttachmentRef;
-        attachmentIndex++;
-    }
 
 	colorAttachmentRef.attachment = attachmentIndex;
 	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
@@ -148,19 +121,7 @@ RenderPassRef* createRenderPass(RenderPassConfig rpc) {
 
 	createFramebuffers(renderPass);
 
-    apiCore.renderPasses.push_back(renderPass);
-
-    return &apiCore.renderPasses.back();
-}
-
-RenderPassRef* requestRenderPass(RenderPassConfig rpc) {
-	for (auto& renderPass : apiCore.renderPasses) {
-		if (renderPass.config == rpc) {
-			return &renderPass;
-		}
-	}
-	
-	return createRenderPass(rpc);
+	apiCore.renderPass = renderPass;
 }
 
 } // namespace age::core

@@ -1,3 +1,6 @@
+include_directories("include/External")
+
+
 # build utils
 file(GLOB utils_sources
     "src/Utils/*.cpp"

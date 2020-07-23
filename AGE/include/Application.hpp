@@ -1,36 +1,46 @@
 #pragma once
 
-// #include <memory>
-
-// #include "Graphics/Core/CoreLayer.hpp"
-#include "Layer.hpp"
 #include <glm/glm.hpp>
+
+#include "Graphics/Renderer.hpp"
+
+#include "View.hpp"
+#include "Scene.hpp"
+#include "EventManager.hpp"
+#include "Event.hpp"
 
 namespace age {
 
+// how to make transition?
 class Application {
-    std::vector<Layer*> m_layers;
+    bool m_isRunning = true;
 
     void update();
-    void updateCommandBuffers();
 protected:
-    inline void pushLayer(Layer* layer) {
-        m_layers.push_back(layer);
+    Scene* pActiveScene = nullptr;
+    // not sure if we need this
+    std::vector<View> m_views;
+
+
+    void setActiveScene(Scene* scene) {
+        pActiveScene = scene;
+        scene->onCreate();
     }
 
-    inline Layer* popLayer() {
-        Layer* out = m_layers.back();
-        m_layers.pop_back();
-        return out;
-    }
-
+    virtual void onEvent(Event event) {}
     virtual void onCoreConfig() {}
     virtual void onCreate() {}
     virtual void onDestroy() {}
 
 public:
+    Renderer m_renderer;
+    Application() {}
+
     ~Application();
     void run();
+    void stop() {
+        m_isRunning = false;
+    }
 };
 
 } // namespace age
