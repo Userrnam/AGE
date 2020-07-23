@@ -20,13 +20,25 @@ void Renderer::updateCommandBuffers() {
 	beginInfo.flags = 0;
 	beginInfo.pInheritanceInfo = nullptr;
 
+    VkRenderPassBeginInfo renderPassInfo = {};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = core::apiCore.renderPass.renderPass;
+    renderPassInfo.renderArea.offset = { 0, 0 };
+    renderPassInfo.renderArea.extent = core::apiCore.swapchain.extent;
+
 	for (size_t i = 0; i < core::apiCore.commandBuffers.size; ++i) {
         vkResetCommandBuffer(core::apiCore.commandBuffers.active[i], 0);
 		if (vkBeginCommandBuffer(core::apiCore.commandBuffers.active[i], &beginInfo) != VK_SUCCESS) {
 			throw std::runtime_error("failed to begin recording command buffer");
 		}
 
+        renderPassInfo.framebuffer = core::apiCore.renderPass.framebuffers[i];
+
+        vkCmdBeginRenderPass(core::apiCore.commandBuffers.active[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
         draw(i);
+
+        vkCmdEndRenderPass(core::apiCore.commandBuffers.active[i]);
 
 		if (vkEndCommandBuffer(core::apiCore.commandBuffers.active[i]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to record command buffer");
