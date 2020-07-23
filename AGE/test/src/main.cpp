@@ -19,6 +19,31 @@
 #define RESOURCE_PATH ""
 #endif
 
+
+// how to update position for physics, renderer, audio simultaniously?
+// positions are updated by physics engine, so everything has outdated data
+// 1. run physics simulation
+// 2. update positions for audio and drawable
+
+/*
+
+all entities for scene created at once, than I can use
+
+physics component -> position, events
+position, size (used by renderer and audio)
+drawable
+[pd] sound
+[pd] ubo component.update()
+descriptor
+
+some extra data (texture)
+
+everything depends on position
+
+*/
+
+
+// it's scene + game logic, maybe change jit?
 class TestScene : public age::Scene {
     TestTriangle triangle;
 
@@ -35,6 +60,7 @@ class TestScene : public age::Scene {
     }
 
     virtual void onUpdate(float elapsedTime) override {
+        
     }
 
 public:

@@ -49,8 +49,11 @@ public:
             .setColorBlendEnable(false)
             .setIstanceCount(1)
             .setView(view)
-            .loadIndicies(indicies)
-            .loadVerticies(verticies)
+            .setVIBuffers(
+                age::VIBuffers()
+                .loadIndicies(indicies)
+                .loadVerticies(verticies)
+            )
             .addDescriptor(
                 age::Descriptor().get(
                     age::DescriptorInfo()

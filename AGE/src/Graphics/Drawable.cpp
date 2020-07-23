@@ -166,6 +166,7 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
 }
 
 void Drawable::draw(int i) {
+    // we have only one render pass so this can be moved
     VkRenderPassBeginInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = core::apiCore.renderPass.renderPass;

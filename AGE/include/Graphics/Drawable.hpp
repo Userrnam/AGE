@@ -10,6 +10,8 @@
 #include "Buffer.hpp"
 #include "Vertex.hpp"
 #include "Index.hpp"
+#include "VIBuffers.hpp"
+#include "viData.hpp"
 
 namespace age {
 
@@ -21,20 +23,16 @@ class DrawableCreateInfo {
     std::vector<Shader> m_shaders;
     std::vector<Descriptor> m_descriptors;
 
-    struct {
-        VkVertexInputBindingDescription bindingDescription;
-        std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-        Buffer buffer;
-    } m_vertex;
-
-    struct {
-        uint32_t count;
-        VkIndexType type;
-        Buffer buffer;
-    } m_index;
+    viVertex m_vertex;
+    viIndex m_index;
 
     friend class Drawable;
 public:
+    inline DrawableCreateInfo& setVIBuffers(VIBuffers& vibuffers) {
+        m_vertex = vibuffers.vertex;
+        m_index = vibuffers.index;
+        return *this;
+    }
 
     inline DrawableCreateInfo& setView(View& view) {
         m_view = &view;
