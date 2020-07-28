@@ -16,7 +16,7 @@ struct CameraUniform {
 };
 
 class Camera : public Transformable {
-    Descriptor m_descriptor;
+    DescriptorSet m_descriptor;
     Buffer m_buffer;
     CameraUniform m_uniform;
     bool m_projectionChanged = false;
@@ -25,7 +25,7 @@ public:
     void create();
     void destroy();
 
-    Descriptor getDescriptor() const { return m_descriptor; }
+    DescriptorSet getDescriptor() const { return m_descriptor; }
 
     void setOrthoganalProjection(const Viewport& vieport, float zNear = 0.0f, float zFar = 1.0f);
     void setPerspectiveProjection(const Viewport& viewport, float angle = 3.14/4., float zNear=0.1f, float zFar=10.0f);

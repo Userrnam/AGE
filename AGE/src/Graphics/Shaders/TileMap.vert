@@ -1,8 +1,6 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-layout (constant_id = 0) const uint MAX_SAMPLE = 1;
-
 struct Tile {
     vec2 size;
     vec2 position;
@@ -12,12 +10,13 @@ struct Tile {
 
 layout(set = 0, binding = 0) uniform CameraObject {
     mat4 transform;
+    vec4 time;
 } camera;
 
-layout(set = 1, binding = 0) uniform UboBlock {
+layout(set = 1, binding = 0) readonly buffer UboBlock {
     mat4 transform;
     vec4 color;
-    Tile tiles[MAX_SAMPLE];
+    Tile tiles[];
 } uboBlock;
 
 layout(location = 0) in vec2 inPosition;
@@ -33,7 +32,6 @@ void main() {
     );
 
     gl_Position = camera.transform * uboBlock.transform * tileTransform * vec4(inPosition, -1.0, 1.0);
-    // gl_Position = camera.transform * uboBlock.transform * tileTransform * vec4(inPosition, -1.0, 1.0);
 
     if (gl_VertexIndex == 0) {
         texCoord = uboBlock.tiles[gl_InstanceIndex].bottomLeftTexCoord;

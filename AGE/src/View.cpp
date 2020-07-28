@@ -11,7 +11,7 @@ void View::clearWindow(int i, const glm::vec4 clearColor) {
 void View::init(const Viewport& viewport) {
     camera.create();
 
-    if (viewport.width == 0 | viewport.height == 0) {
+    if (viewport.width == 0 || viewport.height == 0) {
         m_viewport.x = 0.0f;
         m_viewport.y = 0.0f;
         m_viewport.width = static_cast<float>(core::apiCore.swapchain.extent.width);

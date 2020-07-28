@@ -5,8 +5,6 @@
 
 namespace age {
 
-bool commandBuffersNeedUpdate = true;
-
 void Renderer::updateCommandBuffers() {
     // update active commandBuffer
     if (core::apiCore.commandBuffers.active == core::apiCore.commandBuffers.data.data()) {
@@ -55,10 +53,7 @@ void Renderer::draw(int j) {
 void Renderer::render(std::vector<Drawable>& targets) {
     // deside if we need update
     this->pTargets = &targets;
-    if (commandBuffersNeedUpdate) {
-        updateCommandBuffers();
-        commandBuffersNeedUpdate = false;
-    }
+    updateCommandBuffers();
 }
 
 void Renderer::init() {

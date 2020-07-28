@@ -12,8 +12,11 @@ void Camera::create() {
     );
 
     m_descriptor.get(
-        DescriptorInfo().addBuffersBinding(
-            BuffersBinding().addBuffer(m_buffer).setStage(VK_SHADER_STAGE_VERTEX_BIT)
+        DescriptorSetInfo().addBinding(
+            DescriptorBinding()
+            .add(m_buffer)
+            .setStage(VK_SHADER_STAGE_VERTEX_BIT)
+            .setDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
         )
     );
 }
@@ -23,6 +26,9 @@ void Camera::destroy() {
 }
 
 void Camera::setOrthoganalProjection(const Viewport& viewport, float zNear, float zFar) {
+    m_uniform.m_time[2] = viewport.width;
+    m_uniform.m_time[3] = viewport.height;
+
     m_uniform.m_projection = glm::ortho(
 		0.0f, viewport.width,
 		viewport.height, 0.0f,

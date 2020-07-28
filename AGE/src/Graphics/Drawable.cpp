@@ -27,7 +27,6 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     m_descriptorSets.reserve(info.m_descriptors.size() + 1);
 
     // add camera descriptor
-    // auto cameraDescriptor = info.m_view.getCamera().getDescriptor();
     auto cameraDescriptor = info.m_view->camera.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
     m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
@@ -101,7 +100,7 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     rasterizer.rasterizerDiscardEnable = VK_FALSE;
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizer.lineWidth = 1.0f;
-    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+    rasterizer.cullMode = VK_CULL_MODE_NONE;
     rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterizer.depthBiasEnable = VK_FALSE;
     rasterizer.depthBiasConstantFactor = 0.0f;

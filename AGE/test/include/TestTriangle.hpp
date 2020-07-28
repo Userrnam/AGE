@@ -11,9 +11,9 @@ struct VertexElement {
 };
 
 std::vector<age::Vertex<VertexElement>> verticies = {
-    VertexElement({ 0, 0, 1, 0 }, { 2 * 1200, 0 }),
-    VertexElement({ 1, 0, 0, 0 }, { 2 * 1200, 2 * 800 }),
-    VertexElement({ 0, 1, 0, 0 }, { 0, 2 * 800 }),
+    VertexElement({ 0, 0, 1, 0 }, { 2 * 800, 0 }),
+    VertexElement({ 1, 0, 0, 0 }, { 2 * 800, 2 * 600 }),
+    VertexElement({ 0, 1, 0, 0 }, { 0, 2 * 600 }),
 };
 
 VERTEX_ATTRIBUTES(VertexElement) = {
@@ -54,12 +54,18 @@ public:
                 .loadIndicies(indicies)
                 .loadVerticies(verticies)
             )
-            .addDescriptor(
-                age::Descriptor().get(
-                    age::DescriptorInfo()
-                    .addBuffersBinding(
-                        age::BuffersBinding().addBuffer(ubo).setStage(VK_SHADER_STAGE_FRAGMENT_BIT)
+            .addDescriptorSet(
+                age::DescriptorSet().get(
+                    age::DescriptorSetInfo()
+                    .addBinding(
+                        age::DescriptorBinding()
+                        .add(ubo)
+                        .setStage(VK_SHADER_STAGE_FRAGMENT_BIT)
+                        .setDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
                     )
+                    // .addBuffersBinding(
+                    //     age::BuffersBinding().addBuffer(ubo).setStage(VK_SHADER_STAGE_FRAGMENT_BIT)
+                    // )
                 )
             )
             .addShader(vertexShader)

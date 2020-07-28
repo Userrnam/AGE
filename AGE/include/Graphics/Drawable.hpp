@@ -21,7 +21,7 @@ class DrawableCreateInfo {
     uint32_t m_instanceCount = 1;
 
     std::vector<Shader> m_shaders;
-    std::vector<Descriptor> m_descriptors;
+    std::vector<DescriptorSet> m_descriptors;
 
     viVertex m_vertex;
     viIndex m_index;
@@ -54,7 +54,7 @@ public:
         return *this;
     }
 
-    inline DrawableCreateInfo& addDescriptor(const Descriptor& descriptor) {
+    inline DrawableCreateInfo& addDescriptorSet(const DescriptorSet& descriptor) {
         m_descriptors.push_back(descriptor);
         return *this;
     }

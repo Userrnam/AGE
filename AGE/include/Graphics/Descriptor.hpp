@@ -2,6 +2,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vector>
+#include <variant>
 
 #include "Buffer.hpp"
 #include "Texture.hpp"
@@ -10,88 +11,71 @@
 
 namespace age {
 
-class BuffersBinding {
-    std::vector<Buffer*> m_ubos;
+class DescriptorBinding {
     VkShaderStageFlags m_stage = 0;
-
+    VkDescriptorType m_descriptorType;
+    std::vector<std::variant<Buffer*, Texture*>> m_descriptors;
 public:
+    inline VkShaderStageFlags getStage() const { return m_stage; }
+    inline VkDescriptorType getDescriptorType() const { return m_descriptorType; }
+    inline const std::vector<std::variant<Buffer*, Texture*>>& getDescriptors() const {
+        return m_descriptors;
+    }
 
-#ifdef DEBUG
-    bool stageSet = false;
-#endif
-
-    inline BuffersBinding& addBuffer(Buffer& buffer) {
-        m_ubos.push_back(&buffer);
+    inline DescriptorBinding& setDescriptorType(VkDescriptorType type) {
+        m_descriptorType = type;
         return *this;
     }
 
-    inline BuffersBinding& setStage(VkShaderStageFlags stage) {
-#ifdef DEBUG
-        stageSet = true;
-#endif
+    inline DescriptorBinding& setStage(VkShaderStageFlags stage) {
         m_stage = stage;
         return *this;
     }
 
-    inline VkShaderStageFlags getStage() const { return m_stage; }
-    inline const std::vector<Buffer*>& getBuffers() const { return m_ubos; }
-};
-
-class TexturesBinding {
-    std::vector<Texture*> m_textures;
-public:
-    inline TexturesBinding& addTexture(Texture& texture) {
-        m_textures.push_back(&texture);
+    inline DescriptorBinding& add(Buffer& buffer) {
+        m_descriptors.push_back(&buffer);
         return *this;
     }
 
-    inline const std::vector<Texture*>& getTextures() const { return m_textures; }
+    inline DescriptorBinding& add(Texture& texture) {
+        m_descriptors.push_back(&texture);
+        return *this;
+    }
 };
 
-class DescriptorInfo {
-    std::vector<BuffersBinding> m_ubosBindings;
-    std::vector<TexturesBinding> m_texturesBindings;
+class DescriptorSetInfo {
+    std::vector<DescriptorBinding> m_bindings;
     uint32_t m_setCount = 16;
 
-    friend class Descriptor;
-    friend VkDescriptorSetLayout createDescriptorSetLayout(const DescriptorInfo& info);
-    friend VkDescriptorSetLayout requestDescriptorSetLayout(const DescriptorInfo& info);
+    friend class DescriptorSet;
+    friend VkDescriptorSetLayout createDescriptorSetLayout(const DescriptorSetInfo& info);
+    friend VkDescriptorSetLayout requestDescriptorSetLayout(const DescriptorSetInfo& info);
 public:
-
-    inline DescriptorInfo& addBuffersBinding(const BuffersBinding& buffersBinding) {
-        ASSERT(buffersBinding.getBuffers().size(), "DescriptorInfo::addBuffersBinding: Binding has no buffers")
-        ASSERT(buffersBinding.stageSet, "DescriptorInfo::addBuffersBinding: stage has not been set")
-
-        m_ubosBindings.push_back(buffersBinding);
+    inline DescriptorSetInfo& addBinding(const DescriptorBinding& binding) {
+        m_bindings.push_back(binding);
         return *this;
     }
 
-    inline DescriptorInfo& addTexturesBinding(const TexturesBinding& texturesBinding) {
-        ASSERT(texturesBinding.getTextures().size(), "DescriptorInfo::addTexturesBinding: binding has no textures")
-        m_texturesBindings.push_back(texturesBinding);
-        return *this;
-    }
-
-    inline DescriptorInfo& setSetCount(uint32_t count) {
+    inline DescriptorSetInfo& setSetCount(uint32_t count) {
         m_setCount = count;
         return *this;
     }
 };
 
-class Descriptor {
+class DescriptorSet {
     uint32_t m_poolIndex = 0;
     VkDescriptorSetLayout m_layout = VK_NULL_HANDLE;
     VkDescriptorSet m_set = VK_NULL_HANDLE;
 
-    VkDescriptorSet requestDescriptorSet(const DescriptorInfo& info);
-    VkDescriptorSet createDescriptorSets(const DescriptorInfo& info);
+    VkDescriptorSet requestDescriptorSet(const DescriptorSetInfo& info);
+    VkDescriptorSet createDescriptorSets(const DescriptorSetInfo& info);
 
     friend class Drawable;
 public:
     VkDescriptorSetLayout getLayout() { return m_layout; }
     VkDescriptorSet getSet() { return m_set; }
 
-    Descriptor& get(const DescriptorInfo& info);
+    DescriptorSet& get(const DescriptorSetInfo& info);
 };
 
 void freeDescriptor(uint32_t poolIndex, VkDescriptorSet descriptor);

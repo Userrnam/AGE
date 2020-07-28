@@ -9,11 +9,12 @@ class Transformable {
     glm::vec2 m_position = {};
     glm::vec2 m_origin = {};
     float m_rotation = 0;
+    // maybe remove this
     glm::mat4 m_transform;
     bool m_needUpdate = true;
-protected:
-    glm::mat4 getTransform();
 public:
+    glm::mat4 getTransform();
+
     glm::vec2 getScale() const { return m_scale; }
     glm::vec2 getPosition() const { return m_position; }
     glm::vec2 getOrigin() const { return m_origin; }

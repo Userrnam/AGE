@@ -42,34 +42,93 @@ everything depends on position
 
 */
 
-
 // it's scene + game logic, maybe change it?
 class TestScene : public age::Scene {
     TestTriangle triangle;
+    age::Text text;
+    age::Font font;
+    glm::vec2 move = {};
 
     virtual void onCreate() override {
+        font.load(age::getResourcePath("Courier.dfont"));
+
         m_views.push_back(age::View());
         m_views[0].init();
+
+        text.create(m_views[0], font);
+        text.setText("Hello world");
+        text.setColor({1, 1, 1, 1});
+        text.uploadMapData();
+
         triangle.create(m_views[0]);
 
-        // problem: store extra data (buffers etc)?
-        // make some component for extra data
-        std::vector<age::Drawable> targets = { triangle };
+        auto entity = registry.create();
+        registry.emplace<age::Drawable>(entity, text);
 
+        auto entity2 = registry.create();
+        registry.emplace<age::Drawable>(entity2, triangle);
+
+        auto view = registry.view<age::Drawable>();
+        std::vector<age::Drawable> targets;
+        targets.resize(view.size());
+        for (size_t i = 0; i < view.size(); ++i) {
+            targets[i] = view.get(view[i]);
+        }
         parent->m_renderer.render(targets);
     }
 
+    virtual void onDestroy() override {
+        triangle.destroy();
+        font.destroy();
+        text.destroy();
+    }
+
+    virtual void onEvent(age::Event event) override {
+        if (event == age::event::KEY) {
+            auto e = event.getStructure<age::event::Key>();
+            if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
+                switch (e.key) {
+                case GLFW_KEY_W: move.y = 10; break;
+                case GLFW_KEY_S: move.y = -10; break;
+                case GLFW_KEY_D: move.x = 10; break;
+                case GLFW_KEY_A: move.x = -10; break;
+                
+                default:
+                    break;
+                }
+            } else if (e.action == GLFW_RELEASE) {
+                switch (e.key) {
+                case GLFW_KEY_W: case GLFW_KEY_S: move.y = 0; break;
+                case GLFW_KEY_D: case GLFW_KEY_A: move.x = 0; break;
+                
+                default:
+                    break;
+                }
+            }            
+        }
+    }
+
     virtual void onUpdate(float elapsedTime) override {
-        
+        if (move != glm::vec2(0,0)) {
+            text.move(move);
+            text.uploadMapData();
+
+            // auto view = registry.view<age::Drawable>();
+            // std::vector<age::Drawable> targets;
+            // targets.resize(view.size());
+            // for (size_t i = 0; i < view.size(); ++i) {
+            //     targets[i] = view.get(view[i]);
+            // }
+            // parent->m_renderer.render(targets);
+        }
     }
 
 public:
     TestScene(age::Application* app) : age::Scene(app) {}
 };
 
+// dont know why but mac says app quit unexpectedly on exit
 class Application : public age::Application {
-    TestTriangle triangle;
-
     virtual void onCoreConfig() override {
         age::setResourcePath(RESOURCE_PATH);
 
@@ -102,7 +161,7 @@ class Application : public age::Application {
 
         case age::event::KEY: {
             auto s = e.getStructure<age::event::Key>();
-            if (s.action == GLFW_PRESS && s.key == GLFW_KEY_S) {
+            if (s.action == GLFW_PRESS && s.key == GLFW_KEY_P) {
                 stop();
             }
             break;
@@ -116,7 +175,6 @@ class Application : public age::Application {
         for (auto view : m_views) {
             view.destroy();
         }
-        triangle.destroy();
     }
 };
 

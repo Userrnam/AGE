@@ -56,12 +56,14 @@ void destroyCore() {
 	for (auto imageView : apiCore.swapchain.imageViews) {
 		vkDestroyImageView(apiCore.device, imageView, nullptr);
 	}
+
 	vkDestroySwapchainKHR(apiCore.device, apiCore.swapchain.swapchain, nullptr);
 	vkDestroyDevice(apiCore.device, nullptr);
 
 	if (apiCore.debug.enable) {
 		destroyDebugUtilsMessengerEXT(apiCore.instance, apiCore.debug.messenger, nullptr);
 	}
+
     vkDestroySurfaceKHR(apiCore.instance, apiCore.window.surface, nullptr);
 	vkDestroyInstance(apiCore.instance, nullptr);
 	glfwDestroyWindow(apiCore.window.handle);

@@ -19,9 +19,8 @@ audio::Core audioCore;
 std::chrono::steady_clock::time_point currentTime;
 
 Application::~Application() {
-    // destroy audio
     audioCore.destroy();
-
+    EventManager::destroy();
     m_renderer.destroy();
 }
 
@@ -66,13 +65,13 @@ void Application::run() {
         EventManager::clearEvents();
 
         pActiveScene->update(elapsedTime);
+
         core::window::present();
     }
 
     vkDeviceWaitIdle(core::apiCore.device);
-    audioCore.destroy();
-    EventManager::destroy();
 
+    pActiveScene->destroy();
     onDestroy();
 }
 

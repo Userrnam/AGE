@@ -101,22 +101,27 @@ protected:
 	std::vector<View> m_views;
 	entt::registry registry;
 
+	virtual void onDestroy() {}
+	virtual void onCreate() {}
+
+	// game logic goes here
+	virtual void onEvent(Event event) {}
+	virtual void onUpdate(float elapsedTime) {}
 public:
 	// loads entities from file
 	void load(const std::string& filename) {}
 	// save entities to specified file
 	void save(const std::string& filename) {}
 
-	void destroy() {}
+	void destroy() {
+		onDestroy();
+		for (auto& view : m_views) {
+			view.destroy();
+		}
+		registry.clear();
+	}
 
 	Scene(Application* app) : parent(app) {}
-
-	virtual void onCreate() {}
-	virtual void onDestroy() {}
-
-	// game logic goes here
-	virtual void onEvent(Event event) {}
-	virtual void onUpdate(float elapsedTime) {}
 };
 
 } // namespace age

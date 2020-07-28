@@ -9,9 +9,8 @@ layout(set = 1, binding = 0) uniform Block {
     vec4 blendColor;
 } block;
 
-const vec2 resolution = vec2(1200, 800);
-
 void main() {
+    vec2 resolution = time.zw;
     vec2 coord = 20.0 * (gl_FragCoord.xy - resolution) / min(resolution.x, resolution.y);
 
     float len;

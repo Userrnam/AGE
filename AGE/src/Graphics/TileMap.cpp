@@ -6,8 +6,6 @@
 
 namespace age {
 
-extern bool commandBuffersNeedUpdate;
-
 typedef glm::vec2 VType;
 
 static std::vector<Vertex<VType>> verticies = {
@@ -32,7 +30,10 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
     DrawableCreateInfo createInfo;
 
     m_buffer.create(
-        UniformBufferCreateInfo().setSize(sizeof(Tile) * m_maxSize + sizeof(MapData))
+        BufferCreateInfo()
+        .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
+        .setUsage(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT)
+        .setSize(sizeof(Tile) * m_maxSize + sizeof(MapData))
     );
 
     Shader vertexShader;
@@ -40,9 +41,6 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
 
     vertexShader
         .setStage(VK_SHADER_STAGE_VERTEX_BIT)
-        .setSpecialization(
-            ShaderSpecialization().add<uint32_t>(m_maxSize)
-        )
         .create(SHADER_PATH "TileMap.vert.spv");
 
     fragmentShader.setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(SHADER_PATH "TileMap.frag.spv");
@@ -52,14 +50,20 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
         .setColorBlendEnable(blendEnable)
         .setView(view)
         .setIstanceCount(0)
-        .addDescriptor(
-            Descriptor().get(
-                DescriptorInfo()
-                .addBuffersBinding(
-                    BuffersBinding().addBuffer(m_buffer).setStage(VK_SHADER_STAGE_VERTEX_BIT)
+        .addDescriptorSet(
+            DescriptorSet().get(
+                DescriptorSetInfo()
+                .addBinding(
+                    DescriptorBinding()
+                    .add(m_buffer)
+                    .setStage(VK_SHADER_STAGE_VERTEX_BIT)
+                    .setDescriptorType(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER)
                 )
-                .addTexturesBinding(
-                    TexturesBinding().addTexture(texture)
+                .addBinding(
+                    DescriptorBinding()
+                    .add(texture)
+                    .setDescriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+                    .setStage(VK_SHADER_STAGE_FRAGMENT_BIT)
                 )
             )
         )
@@ -95,19 +99,16 @@ void TileMap::setColor(float r, float g, float b, float a) {
 void TileMap::addTile(const Tile& tile) {
     m_tiles.push_back(tile);
     m_instanceCount++;
-    commandBuffersNeedUpdate = true;
 }
 
 void TileMap::removeTile(size_t index) {
     m_tiles.erase(m_tiles.begin() + index);
     m_instanceCount--;
-    commandBuffersNeedUpdate = true;
 }
 
 void TileMap::clearTiles() {
     m_tiles.clear();
     m_instanceCount = 0;
-    commandBuffersNeedUpdate = true;
 }
 
 void TileMap::uploadMapData() {
