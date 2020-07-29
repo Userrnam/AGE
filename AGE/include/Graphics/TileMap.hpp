@@ -45,7 +45,7 @@ registry.emplace<InstancedComponent<Tile>>(tilemap);
 
 class TileMap : public Drawable, public Transformable {
     std::vector<Tile> m_tiles;
-    std::shared_ptr<ShapeInfo> m_pShapeInfo;
+    Shared<ShapeInfo> m_shapeInfo;
     MapData m_mapData;
     Buffer m_buffer;
     uint32_t m_maxSize = 0;

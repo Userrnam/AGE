@@ -58,7 +58,7 @@ struct ShapeInfo {
         return *this;
     }
 
-    ~ShapeInfo() {
+    void destroy() {
         vertex.buffer.destroy();
         index.buffer.destroy();
     }

@@ -11,6 +11,7 @@
 #include "Vertex.hpp"
 #include "Index.hpp"
 #include "ShapeInfo.hpp"
+#include "Containers/Shared.hpp"
 
 namespace age {
 
@@ -22,12 +23,12 @@ class DrawableCreateInfo {
     std::vector<Shader> m_shaders;
     std::vector<DescriptorSet> m_descriptors;
 
-    std::shared_ptr<ShapeInfo> m_pShapeInfo;
+    Shared<ShapeInfo> *m_pShapeInfo;
 
     friend class Drawable;
 public:
-    inline DrawableCreateInfo& setShapeInfo(std::shared_ptr<ShapeInfo>& pShape) {
-        m_pShapeInfo = pShape;
+    inline DrawableCreateInfo& setShapeInfo(Shared<ShapeInfo>& shape) {
+        m_pShapeInfo = &shape;
         return *this;
     }
 
@@ -64,7 +65,7 @@ protected:
     std::vector<uint32_t> m_poolIndicies;
     std::vector<VkDescriptorSet> m_descriptorSets;
 
-    std::shared_ptr<ShapeInfo> m_pShapeInfo;
+    Shared<ShapeInfo> m_shapeInfo;
 
     uint32_t m_instanceCount;
 

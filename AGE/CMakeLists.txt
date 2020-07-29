@@ -11,6 +11,16 @@ target_include_directories(utils PRIVATE
 )
 # end build utils
 
+# build containers
+file (GLOB containers_sources
+    "src/Containers/*.cpp"
+)
+add_library(containers STATIC ${containers_sources})
+target_include_directories(containers PRIVATE
+    "include/Containers"
+)
+# end build containers
+
 # build graphics
 
 # build shaders
@@ -56,9 +66,9 @@ target_include_directories(graphics PRIVATE
 )
 
 if (APPLE)
-target_link_libraries(graphics glfw vulkan utils freetype)
+target_link_libraries(graphics containers glfw vulkan utils freetype)
 else (APPLE)
-target_link_libraries(graphics vulkan glfw3 rt m dl X11 pthread xcb Xau Xdmcp utils freetype)
+target_link_libraries(graphics containers vulkan glfw3 rt m dl X11 pthread xcb Xau Xdmcp utils freetype)
 endif (APPLE)
 # end build graphics
 

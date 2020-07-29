@@ -43,49 +43,42 @@ everything depends on position
 
 // it's scene + game logic, maybe change it?
 class TestScene : public age::Scene {
-    TestTriangle* triangle;
-    age::Text* text;
+    TestTriangle triangle;
+    age::Text text;
     age::Font font;
     glm::vec2 move = {};
 
     virtual void onCreate() override {
-        triangle = new TestTriangle();
-        text = new age::Text();
-
         font.load(age::getResourcePath("Courier.dfont"));
 
         m_views.push_back(age::View());
         m_views[0].init();
 
-        text->create(m_views[0], font);
-        text->setText("Hello world");
-        text->setColor({1, 1, 1, 1});
-        text->uploadMapData();
+        text.create(m_views[0], font);
+        text.setText("Hello world");
+        text.setColor({1, 1, 1, 1});
+        text.uploadMapData();
 
-        triangle->create(m_views[0]);
+        triangle.create(m_views[0]);
 
         auto entity = registry.create();
-        registry.emplace<age::Drawable*>(entity, text);
+        registry.emplace<age::Drawable>(entity, text);
 
         auto entity2 = registry.create();
-        registry.emplace<age::Drawable*>(entity2, triangle);
+        registry.emplace<age::Drawable>(entity2, triangle);
 
-        auto view = registry.view<age::Drawable*>();
+        auto view = registry.view<age::Drawable>();
         std::vector<age::Drawable> targets;
         targets.resize(view.size());
         for (size_t i = 0; i < view.size(); ++i) {
-            targets[i] = *view.get(view[i]);
+            targets[i] = view.get(view[i]);
         }
         parent->m_renderer.render(targets);
     }
 
     virtual void onDestroy() override {
-        triangle->destroy();
-        text->destroy();
-
-        delete triangle;
-        delete text;
-
+        triangle.destroy();
+        text.destroy();
         font.destroy();
     }
 
@@ -116,8 +109,8 @@ class TestScene : public age::Scene {
 
     virtual void onUpdate(float elapsedTime) override {
         if (move != glm::vec2(0,0)) {
-            text->move(move);
-            text->uploadMapData();
+            text.move(move);
+            text.uploadMapData();
         }
     }
 

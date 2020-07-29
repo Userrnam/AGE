@@ -18,7 +18,7 @@ extern Viewport currentViewport;
 // Fixme: same pipelines can be used with different descriptorSets
 // objects that use same shaders can use same pipeline
 void Drawable::createDrawable(const DrawableCreateInfo& info) {
-    m_pShapeInfo = info.m_pShapeInfo;
+    m_shapeInfo = *info.m_pShapeInfo;
     m_instanceCount = info.m_instanceCount;
 
     std::vector<VkDescriptorSetLayout> layouts;
@@ -65,9 +65,9 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo = {};
     vertexInputCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputCreateInfo.vertexBindingDescriptionCount = 1;
-    vertexInputCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(info.m_pShapeInfo->vertex.attributeDescriptions.size());
-    vertexInputCreateInfo.pVertexBindingDescriptions = &info.m_pShapeInfo->vertex.bindingDescription;
-    vertexInputCreateInfo.pVertexAttributeDescriptions = info.m_pShapeInfo->vertex.attributeDescriptions.data();
+    vertexInputCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(info.m_pShapeInfo->data.vertex.attributeDescriptions.size());
+    vertexInputCreateInfo.pVertexBindingDescriptions = &info.m_pShapeInfo->data.vertex.bindingDescription;
+    vertexInputCreateInfo.pVertexAttributeDescriptions = info.m_pShapeInfo->data.vertex.attributeDescriptions.data();
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -167,14 +167,14 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
 void Drawable::draw(int i) {
     VkDeviceSize offsets[] = { 0 };
 
-    VkBuffer vertexBuffer = m_pShapeInfo->vertex.buffer.getBuffer();
-    VkBuffer indexBuffer = m_pShapeInfo->index.buffer.getBuffer();
+    VkBuffer vertexBuffer = m_shapeInfo.data.vertex.buffer.getBuffer();
+    VkBuffer indexBuffer = m_shapeInfo.data.index.buffer.getBuffer();
     vkCmdBindPipeline(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
     vkCmdBindVertexBuffers(core::apiCore.commandBuffers.active[i], 0, 1, &vertexBuffer, offsets);
-    vkCmdBindIndexBuffer(core::apiCore.commandBuffers.active[i], indexBuffer, 0, m_pShapeInfo->index.type);
+    vkCmdBindIndexBuffer(core::apiCore.commandBuffers.active[i], indexBuffer, 0, m_shapeInfo.data.index.type);
     vkCmdBindDescriptorSets(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, 
     m_pipelineLayout, 0, m_descriptorSets.size(), m_descriptorSets.data(), 0, nullptr);
-    vkCmdDrawIndexed(core::apiCore.commandBuffers.active[i], m_pShapeInfo->index.count, m_instanceCount, 0, 0, 0);
+    vkCmdDrawIndexed(core::apiCore.commandBuffers.active[i], m_shapeInfo.data.index.count, m_instanceCount, 0, 0, 0);
 }
 
 void destroyPipeline(VkPipeline pipeline) {
