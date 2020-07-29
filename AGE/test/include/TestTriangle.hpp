@@ -27,6 +27,7 @@ std::vector<age::Index16> indicies = {
 
 class TestTriangle : public age::Drawable {
     age::Buffer ubo;
+    std::shared_ptr<age::ShapeInfo> pShapeInfo;
     glm::vec4 blendColor;
 public:
     void create(age::View& view) {
@@ -44,16 +45,14 @@ public:
         vertexShader.setStage(VK_SHADER_STAGE_VERTEX_BIT).create(age::getResourcePath("test.vert.spv"));
         fragmentShader.setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(age::getResourcePath("test.frag.spv"));
 
+        pShapeInfo = std::make_shared<age::ShapeInfo>();
+        pShapeInfo.get()->loadIndicies(indicies).loadVerticies(verticies);
         createDrawable(
             age::DrawableCreateInfo()
             .setColorBlendEnable(false)
             .setIstanceCount(1)
             .setView(view)
-            .setVIBuffers(
-                age::VIBuffers()
-                .loadIndicies(indicies)
-                .loadVerticies(verticies)
-            )
+            .setShapeInfo(pShapeInfo)
             .addDescriptorSet(
                 age::DescriptorSet().get(
                     age::DescriptorSetInfo()
@@ -63,9 +62,6 @@ public:
                         .setStage(VK_SHADER_STAGE_FRAGMENT_BIT)
                         .setDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
                     )
-                    // .addBuffersBinding(
-                    //     age::BuffersBinding().addBuffer(ubo).setStage(VK_SHADER_STAGE_FRAGMENT_BIT)
-                    // )
                 )
             )
             .addShader(vertexShader)
@@ -77,8 +73,6 @@ public:
     }
 
     void destroy() {
-        m_vertex.buffer.destroy();
-        m_index.buffer.destroy();
         ubo.destroy();
         age::freeDescriptor(m_poolIndicies[1], m_descriptorSets[1]);
         age::destroyPipeline(m_pipeline);

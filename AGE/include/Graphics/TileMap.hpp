@@ -22,12 +22,33 @@ struct MapData {
     glm::vec4 color;
 };
 
+template<typename T>
+struct InstancedComponent {
+    std::vector<T> m_instances;
+    Buffer buffer;
+
+    void upload() {
+        buffer.load(m_instances.data(), m_instances.size());
+    }
+};
+
+/*
+
+tilemap = registry.create();
+registry.emplace<Drawable>(tilemap, Rectangle);
+// transformable component should have buffer
+registry.emplace<TransformableComponent>(tilemap)
+// has buffer
+registry.emplace<InstancedComponent<Tile>>(tilemap);
+
+*/
+
 class TileMap : public Drawable, public Transformable {
     std::vector<Tile> m_tiles;
+    std::shared_ptr<ShapeInfo> m_pShapeInfo;
     MapData m_mapData;
     Buffer m_buffer;
     uint32_t m_maxSize = 0;
-protected:
 public:
     void create(View& view, Texture& texture, uint32_t maxSize, bool blendEnable);
 

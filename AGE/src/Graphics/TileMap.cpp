@@ -44,6 +44,8 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
         .create(SHADER_PATH "TileMap.vert.spv");
 
     fragmentShader.setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(SHADER_PATH "TileMap.frag.spv");
+    m_pShapeInfo = std::make_shared<ShapeInfo>();
+    m_pShapeInfo.get()->loadIndicies(indicies).loadVerticies(verticies);
 
     createDrawable(
         DrawableCreateInfo()
@@ -67,8 +69,7 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
                 )
             )
         )
-        .loadIndicies(indicies)
-        .loadVerticies(verticies)
+        .setShapeInfo(m_pShapeInfo)
         .addShader(vertexShader)
         .addShader(fragmentShader)
     );
@@ -80,8 +81,6 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
 void TileMap::destroy() {
     m_buffer.destroy();
     freeDescriptor(m_poolIndicies[1], m_descriptorSets[1]);
-    m_vertex.buffer.destroy();
-    m_index.buffer.destroy();
     destroyPipeline(m_pipeline);
 }
 
