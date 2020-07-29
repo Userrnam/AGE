@@ -12,9 +12,6 @@ namespace age::core {
 
 namespace age {
 
-extern Viewport currentViewport;
-
-
 // Fixme: same pipelines can be used with different descriptorSets
 // objects that use same shaders can use same pipeline
 void Drawable::createDrawable(const DrawableCreateInfo& info) {

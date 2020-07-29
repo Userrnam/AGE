@@ -8,11 +8,13 @@
 
 namespace age {
 
-// Use it for shared_ptr
 struct ShapeInfo {
     struct {
+
+        // Fixme: this is used only while creating pipeline move it somewhere else
         VkVertexInputBindingDescription bindingDescription;
         std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+
         Buffer buffer;
     } vertex;
 

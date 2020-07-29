@@ -48,7 +48,7 @@ public:
     }
 
     inline void create(T _data) {
-        m_counter++;
+        m_counter = 1;
         data = _data;
 #ifndef NDEBUG
         debug.created = true;
