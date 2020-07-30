@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "Graphics/Renderer.hpp"
+#include "Graphics/Sampler.hpp"
 
 #include "View.hpp"
 #include "Scene.hpp"
@@ -14,8 +15,10 @@ namespace age {
 // how to make transition?
 class Application {
     bool m_isRunning = true;
+    bool m_created = false;
+    Renderer m_renderer;
 
-    void update();
+    Shared<Sampler> defaultSampler;
 protected:
     Scene* pActiveScene = nullptr;
     // not sure if we need this
@@ -33,10 +36,16 @@ protected:
     virtual void onDestroy() {}
 
 public:
-    Renderer m_renderer;
-    Application() {}
+    inline Shared<Sampler> getDefaultSamplerCopy() {
+        return defaultSampler.copy();
+    }
 
-    ~Application();
+    inline void render(std::vector<Drawable>& targets) {
+        m_renderer.render(targets);
+    }
+
+    void destroy();
+    void create();
     void run();
     void stop() {
         m_isRunning = false;

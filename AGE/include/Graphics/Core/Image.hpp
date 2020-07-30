@@ -6,7 +6,6 @@ namespace age::core {
 
 class ImageCreateInfo {
     VkExtent2D m_extent;
-    uint32_t m_mipLevel;
     VkSampleCountFlagBits m_sampleCount;
     VkFormat m_format;
     VkImageUsageFlags m_imageUsage;
@@ -17,11 +16,6 @@ class ImageCreateInfo {
 public:
     inline ImageCreateInfo& setExtent(const VkExtent2D& extent) {
         m_extent = extent;
-        return *this;
-    }
-
-    inline ImageCreateInfo& setMipLevel(uint32_t mipLevel) {
-        m_mipLevel = mipLevel;
         return *this;
     }
 
@@ -57,18 +51,16 @@ class Image {
     VkDeviceMemory m_memory = VK_NULL_HANDLE;
     VkFormat m_format;
     VkExtent2D m_extent;
-    uint32_t m_mipLevel;
 public:
     VkImage getImage() const { return m_image; }
     VkImageView getView() const  { return m_imageView; }
     uint32_t getWidth() const { return m_extent.width; }
     uint32_t getHeight() const { return m_extent.height; }
-    uint32_t getMipLevel() const { return m_mipLevel; }
 
     void create(ImageCreateInfo& info);
     void destroy();
 
-    void generateMipmaps();
+    // void generateMipmaps();
 };
 
 } // namespace age::core

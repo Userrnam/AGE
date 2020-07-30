@@ -56,7 +56,7 @@ void Renderer::render(std::vector<Drawable>& targets) {
     updateCommandBuffers();
 }
 
-void Renderer::init() {
+void Renderer::create() {
     core::initCore();
 
     // clear screen

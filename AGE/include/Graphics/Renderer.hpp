@@ -12,11 +12,13 @@ class Renderer {
     // TODO: update command buffers only if needed
 
     void updateCommandBuffers();
-public:
-    void init();
-    void destroy();
+
     void draw(int i);
 
+    friend class Application;
+public:
+    void create();
+    void destroy();
     void render(std::vector<Drawable>& targets);
 };
 

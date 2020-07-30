@@ -332,8 +332,7 @@ void createSwapchain() {
 		apiCore.swapchain.imageViews[i] = createImageView(
 			apiCore.swapchain.images[i],
 			apiCore.swapchain.format,
-			VK_IMAGE_ASPECT_COLOR_BIT,
-			1
+			VK_IMAGE_ASPECT_COLOR_BIT
 		);
 	}
 }
@@ -343,7 +342,6 @@ void createDepthResources() {
 		ImageCreateInfo()
 			.setFormat(findDepthFormat())
 			.setExtent(apiCore.swapchain.extent)
-			.setMipLevel(1)
 			.setSampleCount(apiCore.multisampling.sampleCount)
 			.setImageUsage(VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
 			.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
@@ -360,7 +358,6 @@ void createMultisamplingResources() {
 		ImageCreateInfo()
 			.setFormat(apiCore.swapchain.format)
 			.setExtent(apiCore.swapchain.extent)
-			.setMipLevel(1)
 			.setSampleCount(apiCore.multisampling.sampleCount)
 			.setImageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT)
 			.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)

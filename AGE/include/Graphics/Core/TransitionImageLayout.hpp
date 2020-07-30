@@ -6,7 +6,6 @@ namespace age::core {
 
 struct TransitionInfo {
     VkImage image;
-    uint32_t mipLevel;
     VkImageLayout oldLayout;
     VkImageLayout newLayout;
     VkAccessFlags srcAccessMask;

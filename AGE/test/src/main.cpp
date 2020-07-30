@@ -51,7 +51,7 @@ class TestScene : public age::Scene {
     glm::vec2 move = {};
 
     virtual void onCreate() override {
-        font.load(age::getResourcePath("Courier.dfont"));
+        font.load(age::getResourcePath("Courier.dfont"), parent->getDefaultSamplerCopy());
 
         m_views.push_back(age::View());
         m_views[0].init();
@@ -75,7 +75,7 @@ class TestScene : public age::Scene {
         for (size_t i = 0; i < view.size(); ++i) {
             targets[i] = view.get(view[i]);
         }
-        parent->m_renderer.render(targets);
+        parent->render(targets);
     }
 
     virtual void onDestroy() override {
@@ -175,21 +175,23 @@ class Application : public age::Application {
 #include "Graphics/Components/ColorComponent.hpp"
 
 int main(int argc, char* argv[]) {
-    age::TransformComponent transform;
-    age::ColorComponent color;
+    // age::TransformComponent transform;
+    // age::ColorComponent color;
 
-    std::vector<age::IGraphicsComponent*> components = {
-        &transform,
-        &color
-    };
+    // std::vector<age::IGraphicsComponent*> components = {
+    //     &transform,
+    //     &color
+    // };
 
-    age::ShaderBuilder shaderBuilder;
-    // shaderBuilder.generateVertexShaderSource(components);
-    shaderBuilder.generateFragmentShaderSource(components);
-    shaderBuilder.saveShader("test.frag");
+    // age::ShaderBuilder shaderBuilder;
+    // // shaderBuilder.generateVertexShaderSource(components);
+    // shaderBuilder.generateFragmentShaderSource(components);
+    // shaderBuilder.saveShader("test.frag");
 
-    // Application app;
-    // app.run();
+    Application app;
+    app.create();
+    app.run();
+    app.destroy();
 
     return 0;
 }

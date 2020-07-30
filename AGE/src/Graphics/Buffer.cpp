@@ -59,7 +59,6 @@ void Buffer::copyTo(Buffer& buffer, VkDeviceSize size, VkDeviceSize srcOffset, V
 void Buffer::copyTo(core::Image& image, VkDeviceSize srcOffset) {
 	core::TransitionInfo transitionInfo;
 	transitionInfo.image = image.getImage();
-    transitionInfo.mipLevel = image.getMipLevel();
 	transitionInfo.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	transitionInfo.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
     transitionInfo.srcAccessMask = 0;
@@ -95,6 +94,15 @@ void Buffer::copyTo(core::Image& image, VkDeviceSize srcOffset) {
 	);
 
 	core::endSingleTimeCommands(commandBuffer);
+	
+	transitionInfo.image = image.getImage();
+	transitionInfo.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	transitionInfo.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    transitionInfo.srcAccessMask = 0;
+	transitionInfo.dstAccessMask = 0;
+	transitionInfo.srcStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+	transitionInfo.dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	transitionImageLayout(transitionInfo);
 }
 
 void Buffer::load(const void* data, VkDeviceSize size, VkDeviceSize offset) {

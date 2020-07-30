@@ -7,7 +7,6 @@ namespace age::core {
 
 void Image::create(ImageCreateInfo& info) {
 	m_extent = info.m_extent;
-	m_mipLevel = info.m_mipLevel;
 	m_format = info.m_format;
 
 	VkImageCreateInfo imageInfo = {};
@@ -16,7 +15,7 @@ void Image::create(ImageCreateInfo& info) {
 	imageInfo.extent.width = m_extent.width;
 	imageInfo.extent.height = m_extent.height;
 	imageInfo.extent.depth = 1;
-	imageInfo.mipLevels = info.m_mipLevel;
+	imageInfo.mipLevels = 1;
 	imageInfo.arrayLayers = 1;
 	imageInfo.format = info.m_format;
 	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
@@ -46,7 +45,7 @@ void Image::create(ImageCreateInfo& info) {
 
 	VkImageAspectFlags aspectFlags = 0;
 
-	m_imageView = createImageView(m_image, info.m_format, info.m_aspectFlags, info.m_mipLevel);
+	m_imageView = createImageView(m_image, info.m_format, info.m_aspectFlags);
 }
 
 void Image::destroy() {
@@ -54,103 +53,6 @@ void Image::destroy() {
 	vkDestroyImageView(apiCore.device, m_imageView, nullptr);
 	vkFreeMemory(apiCore.device, m_memory, nullptr);
 }
-
-void Image::generateMipmaps() {
-	// check if linear filtering supported
-	VkFormatProperties formatProperties;
-	vkGetPhysicalDeviceFormatProperties(core::apiCore.physicalDevice, m_format, &formatProperties);
-
-	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
-		throw std::runtime_error("texture format doesnt support linear blitting");
-	}
-
-	VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-
-	int32_t mipWidth = m_extent.width;
-	int32_t mipHeight = m_extent.height;
-
-	VkImageMemoryBarrier barrier = {};
-	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	barrier.image = m_image;
-	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	barrier.subresourceRange.baseArrayLayer = 0;
-	barrier.subresourceRange.layerCount = 1;
-	barrier.subresourceRange.levelCount = 1;
-
-	for (int32_t i = 1; i < m_mipLevel; ++i) {
-		barrier.subresourceRange.baseMipLevel = i - 1;
-		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-		barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-		barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-
-		vkCmdPipelineBarrier(
-			commandBuffer,
-			VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
-			0, nullptr,
-			0, nullptr,
-			1, &barrier
-		);
-
-		VkImageBlit blit = {};
-		blit.srcOffsets[0] = { 0, 0, 0 };
-		blit.srcOffsets[1] = { mipWidth, mipHeight, 1 };
-		blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		blit.srcSubresource.baseArrayLayer = 0;
-		blit.srcSubresource.layerCount = 1;
-		blit.srcSubresource.mipLevel = i - 1;
-
-		blit.dstOffsets[0] = { 0, 0, 0, };
-		blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 };
-
-		blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		blit.dstSubresource.baseArrayLayer = 0;
-		blit.dstSubresource.mipLevel = i;
-		blit.dstSubresource.layerCount = 1;
-
-		vkCmdBlitImage(
-			commandBuffer,
-			m_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-			m_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-			1, &blit,
-			VK_FILTER_LINEAR
-		);
-
-		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-		barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-		vkCmdPipelineBarrier(
-			commandBuffer,
-			VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
-			0, nullptr,
-			0, nullptr,
-			1, &barrier
-		);
-
-		if (mipWidth > 1)  mipWidth /= 2;
-		if (mipHeight > 1) mipHeight /= 2;
-	}
-
-	barrier.subresourceRange.baseMipLevel = m_mipLevel - 1;
-	barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-	barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-	barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-	vkCmdPipelineBarrier(
-		commandBuffer,
-		VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
-		0, nullptr,
-		0, nullptr,
-		1, &barrier
-	);
-
-	endSingleTimeCommands(commandBuffer);
-}
-    
+ 
 } // namespace age::core
 

@@ -18,22 +18,27 @@ audio::Core audioCore;
 
 std::chrono::steady_clock::time_point currentTime;
 
-Application::~Application() {
-    audioCore.destroy();
-    EventManager::destroy();
-    m_renderer.destroy();
-}
-
 inline void initFreetype() {
     if (FT_Init_FreeType(&ftLibrary)) {
         throw std::runtime_error("initFreeType: failed to init");
     }
 }
 
-void Application::run() {
+void Application::destroy() {
+    defaultSampler.destroy();
+
+    audioCore.destroy();
+    EventManager::destroy();
+    m_renderer.destroy();
+}
+
+// maybe pass coreConfig here
+void Application::create() {
+    m_created = true;
+
     onCoreConfig();
 
-    m_renderer.init();
+    m_renderer.create();
 
     // init freetype
     initFreetype();
@@ -41,9 +46,20 @@ void Application::run() {
     // init audio
     audioCore.init();
 
+    defaultSampler.create(
+        Sampler()
+        .create(SamplerInfo())
+    );
+
     EventManager::init();
 
     onCreate();
+}
+
+void Application::run() {
+    if (!m_created) {
+        throw std::runtime_error("Application has not been created");
+    }
 
     auto startTime = std::chrono::high_resolution_clock::now();
 

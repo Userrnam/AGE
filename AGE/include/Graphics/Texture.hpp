@@ -4,33 +4,22 @@
 #include <vulkan/vulkan.h>
 
 #include "Core/Image.hpp"
+#include "Sampler.hpp"
+#include "Containers/Shared.hpp"
 
 namespace age {
 
-#define IMAGE_MIP_LEVEL_AUTO UINT32_MAX
-
-struct TextureCreateInfo {
-    uint32_t mipLevel = 1;
-    struct {
-        VkFilter magFilter = VK_FILTER_LINEAR;
-        VkFilter minFilter = VK_FILTER_LINEAR;
-        VkSamplerAddressMode addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        VkSamplerAddressMode addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        float maxAnistropy = 0.0f;
-    } sampler;
-};
-
 class Texture {
-    VkSampler m_sampler = VK_NULL_HANDLE;
     core::Image m_image;
+    Shared<Sampler> m_sampler;
+
 public:
     void destroy();
-    VkSampler getSampler() const { return m_sampler; }
+    VkSampler getSampler() const { return m_sampler.data.getSampler(); }
     const core::Image& getImage() const { return m_image; }
-    void setImage(core::Image& image) { m_image = image; }
 
-    void create(const TextureCreateInfo& createInfo = TextureCreateInfo());
-    void create(const std::string& filename, const TextureCreateInfo& createInfo = TextureCreateInfo());
+    void create(const std::string& filename, Shared<Sampler> sampler);
+    void create(const core::Image& image, Shared<Sampler> sampler);
 };
 
 } // namespace age

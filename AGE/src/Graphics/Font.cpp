@@ -15,7 +15,7 @@ void initFreeType() {
     }
 }
 
-void Font::load(const std::string& fontPath, unsigned fontSize) {
+void Font::load(const std::string& fontPath, Shared<Sampler> sampler, unsigned fontSize) {
     FT_Face face;
     if (FT_New_Face(ftLibrary, fontPath.c_str(), 0, &face)) {
         throw std::runtime_error("Font::load: failed to load font");
@@ -101,14 +101,12 @@ void Font::load(const std::string& fontPath, unsigned fontSize) {
             .setFormat(VK_FORMAT_R8G8B8A8_SRGB)
             .setImageUsage(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT)
             .setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
-            .setMipLevel(1)
             .setSampleCount(VK_SAMPLE_COUNT_1_BIT)
     );
     stagingBuffer.copyTo(image);
     stagingBuffer.destroy();
 
-    m_atlas.setImage(image);
-    m_atlas.create();
+    m_atlas.create(image, sampler);
 }
 
 void Font::destroy() {

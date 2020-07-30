@@ -20,6 +20,6 @@ VkFormat findDepthFormat();
 VkCommandBuffer beginSingleTimeCommands();
 void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
-VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevel);
+VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 
 } // namespace age::core

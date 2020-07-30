@@ -23,7 +23,7 @@ class Font {
 
     friend class Text;
 public:
-    void load(const std::string& fontPath, unsigned fontSize = 100);
+    void load(const std::string& fontPath, Shared<Sampler> sampler, unsigned fontSize = 100);
     void destroy();
 };
 
