@@ -15,6 +15,8 @@
 #include "Scene.hpp"
 #include <GlFW/glfw3.h>
 
+#include "Graphics/ShaderBuilder.hpp"
+
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""
 #endif
@@ -169,9 +171,25 @@ class Application : public age::Application {
     }
 };
 
+#include "Graphics/Components/TransformComponent.hpp"
+#include "Graphics/Components/ColorComponent.hpp"
+
 int main(int argc, char* argv[]) {
-    Application app;
-    app.run();
+    age::TransformComponent transform;
+    age::ColorComponent color;
+
+    std::vector<age::IGraphicsComponent*> components = {
+        &transform,
+        &color
+    };
+
+    age::ShaderBuilder shaderBuilder;
+    // shaderBuilder.generateVertexShaderSource(components);
+    shaderBuilder.generateFragmentShaderSource(components);
+    shaderBuilder.saveShader("test.frag");
+
+    // Application app;
+    // app.run();
 
     return 0;
 }

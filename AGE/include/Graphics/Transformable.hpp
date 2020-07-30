@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include "Buffer.hpp"
+
 namespace age {
 
 class Transformable {
@@ -9,9 +11,9 @@ class Transformable {
     glm::vec2 m_position = {};
     glm::vec2 m_origin = {};
     float m_rotation = 0;
-    // maybe remove this
-    glm::mat4 m_transform;
     bool m_needUpdate = true;
+protected:
+    glm::mat4 m_transform;
 public:
     glm::mat4 getTransform();
 

@@ -10,7 +10,6 @@ namespace age {
 
 struct ShapeInfo {
     struct {
-
         // Fixme: this is used only while creating pipeline move it somewhere else
         VkVertexInputBindingDescription bindingDescription;
         std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
