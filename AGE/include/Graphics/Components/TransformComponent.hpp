@@ -30,15 +30,15 @@ public:
 // Interface
     virtual std::string getVertStartInsert(int binding, int& outLocation) override {
         std::stringstream ss;
-        ss << "layout(set=1,binding=" << binding << ") uniform TransformObject {";
-        ss << "mat4 transform;";
-        ss << "} transformObject;";
+        ss << "layout(set=1,binding=" << binding << ") uniform TransformObject {\n";
+        ss << "\tmat4 transform;\n";
+        ss << "} transformObject;\n";
 
         return ss.str();
     }
 
     virtual std::string getVertEndInsert() override {
-        return "gl_Position *= transformObject.transform;";
+        return "transform *= transformObject.transform;\n";
     }
 
     virtual std::string getFragStartInsert(int binding, int& inLocation) override {

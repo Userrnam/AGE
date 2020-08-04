@@ -173,25 +173,32 @@ class Application : public age::Application {
 
 #include "Graphics/Components/TransformComponent.hpp"
 #include "Graphics/Components/ColorComponent.hpp"
+#include "Graphics/Components/TextureComponent.hpp"
 
 int main(int argc, char* argv[]) {
-    // age::TransformComponent transform;
-    // age::ColorComponent color;
+    age::TransformComponent transform;
+    age::ColorComponent color;
+    age::TextureComponent tex;
+    age::TextureCoordComponent texCoord;
 
-    // std::vector<age::IGraphicsComponent*> components = {
-    //     &transform,
-    //     &color
-    // };
+    std::vector<age::IGraphicsComponent*> components = {
+        &transform,
+        &color,
+        &tex,
+        &texCoord
+    };
 
-    // age::ShaderBuilder shaderBuilder;
-    // // shaderBuilder.generateVertexShaderSource(components);
-    // shaderBuilder.generateFragmentShaderSource(components);
-    // shaderBuilder.saveShader("test.frag");
+    age::ShaderBuilder shaderBuilder;
+    shaderBuilder.generateVertexShaderSource(components);
+    shaderBuilder.saveShader("test.vert");
+    shaderBuilder.clear();
+    shaderBuilder.generateFragmentShaderSource(components);
+    shaderBuilder.saveShader("test.frag");
 
-    Application app;
-    app.create();
-    app.run();
-    app.destroy();
+    // Application app;
+    // app.create();
+    // app.run();
+    // app.destroy();
 
     return 0;
 }

@@ -47,15 +47,15 @@ public:
 
     virtual std::string getFragStartInsert(int binding, int& inLocation) override {
         std::stringstream ss;
-        ss << "layout(set=1, binding=" << binding << ") uniform ColorObject {";
-        ss << "vec4 color;";
-        ss << "} colorObject;";
+        ss << "layout(set=1, binding=" << binding << ") uniform ColorObject {\n";
+        ss << "\tvec4 color;\n";
+        ss << "} colorObject;\n";
 
         return ss.str();
     }
 
     virtual std::string getFragEndInsert() override {
-        return "fragColor *= colorObject.color;";
+        return "fragColor *= colorObject.color;\n";
     }
 
     virtual GraphicsComponentDescription getDescription() override {
