@@ -28,24 +28,34 @@ public:
     }
 
 // Interface
-    virtual std::string getVertStartInsert(int binding, int& outLocation) override {
+    virtual std::vector<Layout> getVertLayouts() override {
+        std::vector<Layout> layouts;
+        layouts.push_back(
+            Layout()
+            .setName("transformObject")
+            .setType("uniform", LayoutType::BUFFER)
+            .addBlockMember(
+                BlockMember()
+                .setName("transform")
+                .setType("mat4")
+            )
+        );
+        return layouts;
+    }
+
+    virtual std::string getVertMainInsert(const std::string& structName) override {
         std::stringstream ss;
-        ss << "layout(set=1,binding=" << binding << ") uniform TransformObject {\n";
-        ss << "\tmat4 transform;\n";
-        ss << "} transformObject;\n";
+        ss << "transform *= " << structName << ".transform;\n";
 
         return ss.str();
     }
 
-    virtual std::string getVertEndInsert() override {
-        return "transform *= transformObject.transform;\n";
+    virtual std::vector<Layout> getFragLayouts() override {
+        std::vector<Layout> layouts;
+        return layouts;
     }
 
-    virtual std::string getFragStartInsert(int binding, int& inLocation) override {
-        return "";
-    }
-
-    virtual std::string getFragEndInsert() override {
+    virtual std::string getFragMainInsert(const std::string& structName) override {
         return "";
     }
 
@@ -57,7 +67,6 @@ public:
 
         return description;
     }
-
 };
 
 } // namespace age

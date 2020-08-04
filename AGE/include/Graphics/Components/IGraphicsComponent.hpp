@@ -15,43 +15,84 @@ struct GraphicsComponentDescription {
     std::variant<Buffer*, Texture*> descriptor;
 };
 
+enum LayoutType {
+    UNDEFINED,
+    LOCATION,
+    BUFFER,
+    SAMPLER
+};
+
+struct BlockMember {
+    std::string m_name;
+    std::string m_type;
+
+    inline BlockMember& setName(const std::string& name) {
+        m_name = name;
+        return *this;
+    }
+
+    inline BlockMember& setType(const std::string& type) {
+        m_type = type;
+        return *this;
+    }
+};
+
+struct Layout {
+    std::string m_name;
+    std::string m_typeName;
+    std::vector<BlockMember> m_members;
+    LayoutType m_type = LayoutType::UNDEFINED;
+
+    inline Layout& setType(const std::string& typeName, LayoutType type) {
+        m_typeName = typeName;
+        m_type = type;
+        return *this;
+    }
+
+    inline Layout& addBlockMember(const BlockMember& blockMember) {
+        m_members.push_back(blockMember);
+        return *this;
+    }
+
+    inline Layout& setName(const std::string& name) {
+        m_name = name;
+        return *this;
+    }
+};
+
 // this is used to generate shaders and descriptors
 struct IGraphicsComponent {
-    // insert in global scope in vertex shader
-    // increment location if was used
-    virtual std::string getVertStartInsert(int binding, int& outLocatin) = 0;
-    // insert in main in vertex shader
-    virtual std::string getVertEndInsert() = 0;
+    // used to generate vertex shader
+    virtual std::vector<Layout> getVertLayouts() = 0;
+    virtual std::string getVertMainInsert(const std::string& structName) = 0;
 
-    // insert in global scope in fragment shader
-    // increment location if was used
-    virtual std::string getFragStartInsert(int binding, int& inLocation) = 0;
-    // insert in main in fragment shader
-    virtual std::string getFragEndInsert() = 0;
+    // used to generate fragment shader
+    virtual std::vector<Layout> getFragLayouts() = 0;
+    virtual std::string getFragMainInsert(const std::string& structName) = 0;
 
     // used in descriptorSet
     virtual GraphicsComponentDescription getDescription() = 0;
 };
 
 /*
-    virtual std::string getVertStartInsert(int binding, int& outLocatin) override {
-
-    }
-    
-    virtual std::string getVertEndInsert() override {
-
-    }
-    
-    virtual std::string getFragStartInsert(int binding, int& inLocation) override {
-
-    }
-    
-    virtual std::string getFragEndInsert() override {
-
+    virtual std::vector<Layout> getVertLayouts() override {
+        std::vector<Layout> layouts;
+        return layouts;
     }
 
-    virtual GraphicsComponentDescription getDescription() override {
+    virtual std::string getVertMainInsert(const std::string& structName) override {
+        std::stringstream ss;
+        return ss.str();
+    }
 
+    virtual std::vector<Layout> getFragLayouts() override {
+        std::vector<Layout> layouts;
+        return layouts;
+    }
+
+    virtual std::string getVertMainInsert(const std::string& structName) override {
+        std::stringstream ss;
+        return ss.str();
     }
 */
 

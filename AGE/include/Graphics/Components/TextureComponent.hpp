@@ -32,31 +32,43 @@ public:
     }
 
     // Interface
-    virtual std::string getVertStartInsert(int binding, int& outLocation) override {
+    virtual std::vector<Layout> getVertLayouts() override {
+        std::vector<Layout> layouts;
+        layouts.push_back(
+            Layout()
+            .setName("texCoordObject")
+            .setType("uniform", LayoutType::BUFFER)
+            .addBlockMember(
+                BlockMember()
+                .setName("texCoords")
+                .setType("vec2")
+            )
+        );
+        layouts.push_back(
+            Layout()
+            .setName("texCoords")
+            .setType("vec2", LayoutType::LOCATION)
+        );
+        return layouts;
+    }
+
+    virtual std::string getVertMainInsert(const std::string& structName) override {
         std::stringstream ss;
-        ss << "layout(set=1, binding=" << binding <<") uniform TexCoordObject {\n";
-        ss << "\tvec2 texCoords;\n";
-        ss << "} texCoordObject;\n";
-
-        ss << "layout(location=" << outLocation << ") out vec2 texCoords;\n";
-        outLocation++;
-
+        ss << "texCoords = " << structName << ".texCoords;\n";
         return ss.str();
     }
-    
-    virtual std::string getVertEndInsert() override {
-        return "texCoords = texCoordObject.texCoords;\n";
-    }
-    
-    virtual std::string getFragStartInsert(int binding, int& inLocation) override {
-        std::stringstream ss;
-        ss << "layout(location=" << inLocation << ") in vec2 texCoords;\n";
-        inLocation++;
 
-        return ss.str();
+    virtual std::vector<Layout> getFragLayouts() override {
+        std::vector<Layout> layouts;
+        layouts.push_back(
+            Layout()
+            .setName("texCoords")
+            .setType("vec2", LayoutType::LOCATION)
+        );
+        return layouts;
     }
-    
-    virtual std::string getFragEndInsert() override {
+
+    virtual std::string getFragMainInsert(const std::string& structName) override {
         return "";
     }
 
@@ -84,22 +96,27 @@ public:
     }
 
     // Interface
-    virtual std::string getVertStartInsert(int binding, int& outLocation) override {
-        return "";
+    virtual std::vector<Layout> getVertLayouts() override {
+        std::vector<Layout> layouts;
+        return layouts;
     }
-    
-    virtual std::string getVertEndInsert() override {
-        return "";
-    }
-    
-    virtual std::string getFragStartInsert(int binding, int& inLocation) override {
-        std::stringstream ss;
-        ss << "layout(set=1, binding=" << binding << ") uniform sampler2D textureSampler;\n";
 
+    virtual std::string getVertMainInsert(const std::string& structName) override {
+        std::stringstream ss;
         return ss.str();
     }
-    
-    virtual std::string getFragEndInsert() override {
+
+    virtual std::vector<Layout> getFragLayouts() override {
+        std::vector<Layout> layouts;
+        layouts.push_back(
+            Layout()
+            .setName("textureSampler")
+            .setType("uniform sampler2D", LayoutType::SAMPLER)
+        );
+        return layouts;
+    }
+
+    virtual std::string getFragMainInsert(const std::string& structName) override {
         return "fragColor *= texture(textureSampler, texCoords);\n";
     }
 

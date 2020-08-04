@@ -18,15 +18,43 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<IGraphicsCompon
     m_stream << "} camera;\n\n";
 
     // insert in global scope
-    int i = 0;
+    int binding = 0;
     int outLocation = 0;
+    std::vector<std::string> names;
+    names.resize(components.size());
     for (auto component : components) {
-        auto insert = component->getVertStartInsert(i, outLocation);
-        m_stream << insert;
-        if (insert.size() > 0) {
+        auto layouts = component->getVertLayouts();
+        bool bindingFound = false;
+        for (auto& layout : layouts) {
+            switch (layout.m_type) {
+            case LayoutType::BUFFER:
+                if (bindingFound) {
+                    throw std::runtime_error("[ShaderBuilder]: Graphics component can contain only 1 binding");
+                }
+                names[binding] = layout.m_name;
+                m_stream << "layout(set=1, binding=" << binding << ") " << layout.m_typeName << " XX" << layout.m_name << " {\n";
+                for (auto& member : layout.m_members) {
+                    m_stream << "\t" << member.m_type << " " << member.m_name << ";\n";
+                }
+                m_stream << "} " << layout.m_name << ";\n";
+                bindingFound = true;
+                break;
+            case LayoutType::LOCATION:
+                m_stream << "layout(location=" << outLocation << ") out " << layout.m_typeName << " " << layout.m_name << ";\n";
+                outLocation++;
+                break;
+            case LayoutType::SAMPLER:
+                throw std::runtime_error("[ShaderBuilder]: Sampler can only be in fragment shader");
+                break;
+            case LayoutType::UNDEFINED:
+                throw std::runtime_error("[ShaderBuilder]: Type was not set for GraphicsComponent");
+                break;
+            }
+        }
+        if (layouts.size()) {
             m_stream << "\n";
         }
-        i++;
+        binding++;
     }
 
     m_stream << "void main() {\n";
@@ -35,11 +63,13 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<IGraphicsCompon
     m_stream << "\tmat4 transform = camera.transform;\n";
 
     // insert in main
+    binding = 0;
     for (auto component : components) {
-        auto insert = component->getVertEndInsert();
+        auto insert = component->getVertMainInsert(names[binding]);
         if (insert.size() > 0) {
             m_stream << "\t" << insert;
         }
+        binding++;
     }
 
     // apply transform
@@ -53,26 +83,61 @@ void ShaderBuilder::generateFragmentShaderSource(const std::vector<IGraphicsComp
     m_stream << "layout(location=0) out vec4 fragColor;\n\n";
 
     // insert in global scope
-    int i = 0;
+    int binding = 0;
     int inLocation = 0;
+    // std::string name;
+    std::vector<std::string> names;
+    names.resize(components.size());
     for (auto component : components) {
-        auto insert = component->getFragStartInsert(i, inLocation);
-        m_stream << insert;
-        if (insert.size() > 0) {
+        auto layouts = component->getFragLayouts();
+        bool bindingFound = false;
+        for (auto& layout : layouts) {
+            switch (layout.m_type) {
+            case LayoutType::BUFFER:
+                if (bindingFound) {
+                    throw std::runtime_error("[ShaderBuilder]: Graphics component can contain only 1 binding");
+                }
+                names[binding] = layout.m_name;
+                m_stream << "layout(set=1, binding=" << binding << ") " << layout.m_typeName << " XX" << layout.m_name << " {\n";
+                for (auto& member : layout.m_members) {
+                    m_stream << "\t" << member.m_type << " " << member.m_name << ";\n";
+                }
+                m_stream << "} " << layout.m_name << ";\n";
+                bindingFound = true;
+                break;
+            case LayoutType::LOCATION:
+                m_stream << "layout(location=" << inLocation << ") in " << layout.m_typeName << " " << layout.m_name << ";\n";
+                inLocation++;
+                break;
+            case LayoutType::SAMPLER:
+                if (bindingFound) {
+                    throw std::runtime_error("[ShaderBuilder]: Graphics component can contain only 1 binding");
+                }
+                m_stream << "layout(set=1, binding=" << binding << ") " << layout.m_typeName << " " << layout.m_name << ";\n";
+                bindingFound = true;
+                break;
+            case LayoutType::UNDEFINED:
+                throw std::runtime_error("[ShaderBuilder]: Type was not set for GraphicsComponent");
+                break;
+            }
+        }
+        if (layouts.size()) {
             m_stream << "\n";
         }
-        i++;
+        binding++;
     }
 
     m_stream << "void main() {\n";
     m_stream << "\tfragColor = vec4(1.0,1.0,1.0,1.0);\n";
 
     // insert in main
+    binding = 0;
     for (auto component : components) {
-        auto insert = component->getFragEndInsert();
+        auto insert = component->getFragMainInsert(names[binding]);
         if (insert.size() > 0) {
-            m_stream << "\t" << component->getFragEndInsert();
+            m_stream << "\t" << insert;
         }
+        binding++;
     }
 
     m_stream << "}\n";

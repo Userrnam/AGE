@@ -37,25 +37,35 @@ public:
     }
 
 // Interface
-    virtual std::string getVertStartInsert(int binding, int& outLocation) override {
-        return "";
+    virtual std::vector<Layout> getVertLayouts() override {
+        std::vector<Layout> layouts;
+        return layouts;
     }
 
-    virtual std::string getVertEndInsert() override {
-        return "";
-    }
-
-    virtual std::string getFragStartInsert(int binding, int& inLocation) override {
+    virtual std::string getVertMainInsert(const std::string& structName) override {
         std::stringstream ss;
-        ss << "layout(set=1, binding=" << binding << ") uniform ColorObject {\n";
-        ss << "\tvec4 color;\n";
-        ss << "} colorObject;\n";
-
         return ss.str();
     }
 
-    virtual std::string getFragEndInsert() override {
-        return "fragColor *= colorObject.color;\n";
+    virtual std::vector<Layout> getFragLayouts() override {
+        std::vector<Layout> layouts;
+        layouts.push_back(
+            Layout()
+            .setName("colorObject")
+            .setType("uniform", LayoutType::BUFFER)
+            .addBlockMember(
+                BlockMember()
+                .setName("color")
+                .setType("vec4")
+            )
+        );
+        return layouts;
+    }
+
+    virtual std::string getFragMainInsert(const std::string& structName) override {
+        std::stringstream ss;
+        ss << "fragColor *= " << structName << ".color;\n";
+        return ss.str();
     }
 
     virtual GraphicsComponentDescription getDescription() override {
