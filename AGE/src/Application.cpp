@@ -25,6 +25,11 @@ inline void initFreetype() {
 }
 
 void Application::destroy() {
+    vkDeviceWaitIdle(core::apiCore.device);
+
+    pActiveScene->destroy();
+    onDestroy();
+    
     defaultSampler.destroy();
 
     audioCore.destroy();
@@ -84,11 +89,6 @@ void Application::run() {
 
         core::window::present();
     }
-
-    vkDeviceWaitIdle(core::apiCore.device);
-
-    pActiveScene->destroy();
-    onDestroy();
 }
 
 } // namespace age

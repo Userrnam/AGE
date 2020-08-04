@@ -176,6 +176,9 @@ class Application : public age::Application {
 #include "Graphics/Components/TextureComponent.hpp"
 
 int main(int argc, char* argv[]) {
+    Application app;
+    app.create();
+
     age::TransformComponent transform;
     age::ColorComponent color;
     age::TextureComponent tex;
@@ -189,16 +192,12 @@ int main(int argc, char* argv[]) {
     };
 
     age::ShaderBuilder shaderBuilder;
-    shaderBuilder.generateVertexShaderSource(components);
-    shaderBuilder.saveShader("test.vert");
-    shaderBuilder.clear();
-    shaderBuilder.generateFragmentShaderSource(components);
-    shaderBuilder.saveShader("test.frag");
 
-    // Application app;
-    // app.create();
+    auto shader = shaderBuilder.compileFragmentShader(components);
+    shader.destroy();
+
     // app.run();
-    // app.destroy();
+    app.destroy();
 
     return 0;
 }

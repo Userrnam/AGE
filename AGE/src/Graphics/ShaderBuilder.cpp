@@ -153,4 +153,40 @@ void ShaderBuilder::saveShader(const std::string& path) {
     f.close();
 }
 
+Shader ShaderBuilder::compileVertexShader(const std::vector<IGraphicsComponent*>& components) {
+    generateVertexShaderSource(components);
+    saveShader("tmp.vert");
+    if (std::system("glslc tmp.vert")) {
+        std::system("rm tmp.vert a.spv");
+        throw std::runtime_error("[ShaderBuilder]: failed to compile vertex shader");
+    }
+
+    Shader out;
+    out.create("a.spv");
+    out.setEntry("main");
+    out.setStage(VK_SHADER_STAGE_VERTEX_BIT);
+
+    std::system("rm tmp.vert a.spv");
+
+    return out;
+}
+
+Shader ShaderBuilder::compileFragmentShader(const std::vector<IGraphicsComponent*>& components) {
+    generateFragmentShaderSource(components);
+    saveShader("tmp.frag");
+    if (std::system("glslc tmp.frag")) {
+        std::system("rm tmp.frag a.spv");
+        throw std::runtime_error("[ShaderBuilder]: failed to compile fragment shader");
+    }
+
+    Shader out;
+    out.create("a.spv");
+    out.setEntry("main");
+    out.setStage(VK_SHADER_STAGE_FRAGMENT_BIT);
+
+    std::system("rm tmp.frag a.spv");
+
+    return out;
+}
+
 } // namespace age

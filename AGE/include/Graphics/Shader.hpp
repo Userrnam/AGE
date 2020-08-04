@@ -41,7 +41,7 @@ class Shader {
     VkShaderStageFlagBits m_stage;
     ShaderSpecialization m_specialization;
 
-#ifdef DEBUG
+#ifndef NDEBUG
     bool stageSet = false;
 #endif
 
@@ -58,7 +58,7 @@ public:
     }
 
     inline Shader& setStage(VkShaderStageFlagBits stage) {
-#ifdef DEBUG
+#ifndef NDEBUG
         stageSet = true;
 #endif
         m_stage = stage;
