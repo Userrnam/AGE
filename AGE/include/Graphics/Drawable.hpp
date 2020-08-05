@@ -62,7 +62,7 @@ class Drawable {
 protected:
     VkPipelineLayout m_pipelineLayout;
     VkPipeline m_pipeline;
-    std::vector<uint32_t> m_poolIndicies;
+    std::vector<uint32_t> m_poolIndicies; // used to free descriptor set
     std::vector<VkDescriptorSet> m_descriptorSets;
 
     Shared<ShapeInfo> m_shapeInfo;

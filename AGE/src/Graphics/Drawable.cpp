@@ -13,7 +13,7 @@ namespace age::core {
 namespace age {
 
 // Fixme: same pipelines can be used with different descriptorSets
-// objects that use same shaders can use same pipeline
+// objects that use same shaders, have same descriptors and same vertex type can use same pipeline
 void Drawable::createDrawable(const DrawableCreateInfo& info) {
     m_shapeInfo = *info.m_pShapeInfo;
     m_instanceCount = info.m_instanceCount;

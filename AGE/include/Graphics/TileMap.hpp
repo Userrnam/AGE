@@ -22,21 +22,6 @@ struct MapData {
     glm::vec4 color;
 };
 
-template<typename T>
-struct InstancedComponent {
-    std::vector<T> m_instances;
-    Buffer buffer;
-    uint32_t maxSize = 0;
-
-    void upload() {
-        buffer.load(m_instances.data(), m_instances.size());
-    }
-
-    inline void addInstance(T instance) {
-        m_instances.push_back(instance);
-    }
-};
-
 /*
 
 tilemap = registry.create();

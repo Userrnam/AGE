@@ -174,6 +174,7 @@ class Application : public age::Application {
 #include "Graphics/Components/TransformComponent.hpp"
 #include "Graphics/Components/ColorComponent.hpp"
 #include "Graphics/Components/TextureComponent.hpp"
+#include "Containers/DynamicBuffer.hpp"
 
 int main(int argc, char* argv[]) {
     Application app;
@@ -196,7 +197,7 @@ int main(int argc, char* argv[]) {
     auto shader = shaderBuilder.compileFragmentShader(components);
     shader.destroy();
 
-    // app.run();
+    app.run();
     app.destroy();
 
     return 0;
