@@ -9,10 +9,13 @@ struct Tile {
 };
 
 layout(set = 0, binding = 0) uniform CameraObject {
-    mat4 transform;
-    vec4 time;
-} camera;
+    mat4 cameraTransform;
+    vec2 resolution;
+    float time;
+    float deltaTime;
+} globals;
 
+// maybe load atlas here and use indicies for letters
 layout(set = 1, binding = 0) readonly buffer UboBlock {
     mat4 transform;
     vec4 color;
@@ -31,7 +34,7 @@ void main() {
         vec4(uboBlock.tiles[gl_InstanceIndex].position.x, uboBlock.tiles[gl_InstanceIndex].position.y, 0.0, 1.0)
     );
 
-    gl_Position = camera.transform * uboBlock.transform * tileTransform * vec4(inPosition, -1.0, 1.0);
+    gl_Position = globals.cameraTransform * uboBlock.transform * tileTransform * vec4(inPosition, -1.0, 1.0);
 
     if (gl_VertexIndex == 0) {
         texCoord = uboBlock.tiles[gl_InstanceIndex].bottomLeftTexCoord;

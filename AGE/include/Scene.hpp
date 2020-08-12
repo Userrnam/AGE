@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "entt.hpp"
-#include "View.hpp"
+#include "Graphics/View.hpp"
 #include "Event.hpp"
 
 namespace age {

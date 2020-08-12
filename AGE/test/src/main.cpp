@@ -47,21 +47,33 @@ everything depends on position
 class TestScene : public age::Scene {
     TestTriangle triangle;
     age::Text text;
+    age::Text text2;
     age::Font font;
     glm::vec2 move = {};
+    float rotate = 0.0f;
 
     virtual void onCreate() override {
         font.load(age::getResourcePath("Courier.dfont"), parent->getDefaultSamplerCopy());
 
+        // create view
         m_views.push_back(age::View());
-        m_views[0].init();
+        m_views[0].create();
 
         text.create(m_views[0], font);
         text.setText("Hello world");
         text.setColor({1, 1, 1, 1});
         text.uploadMapData();
 
+        text2.create(m_views[0], font);
+        text2.setText("Hell");
+        text2.setColor({1, 0, 0, 1});
+        text2.move(1200, 800);
+        text2.uploadMapData();
+
         triangle.create(m_views[0]);
+
+        auto entity3 = registry.create();
+        registry.emplace<age::Drawable>(entity3, text2);
 
         auto entity = registry.create();
         registry.emplace<age::Drawable>(entity, text);
@@ -82,6 +94,7 @@ class TestScene : public age::Scene {
         triangle.destroy();
         text.destroy();
         font.destroy();
+        text2.destroy();
     }
 
     virtual void onEvent(age::Event event) override {
@@ -93,6 +106,9 @@ class TestScene : public age::Scene {
                 case GLFW_KEY_S: move.y = -10; break;
                 case GLFW_KEY_D: move.x = 10; break;
                 case GLFW_KEY_A: move.x = -10; break;
+
+                case GLFW_KEY_J: rotate = 0.05; break;
+                case GLFW_KEY_K: rotate = -0.05; break;
                 
                 default:
                     break;
@@ -101,6 +117,7 @@ class TestScene : public age::Scene {
                 switch (e.key) {
                 case GLFW_KEY_W: case GLFW_KEY_S: move.y = 0; break;
                 case GLFW_KEY_D: case GLFW_KEY_A: move.x = 0; break;
+                case GLFW_KEY_J: case GLFW_KEY_K: rotate = 0; break;
                 
                 default:
                     break;
@@ -110,8 +127,9 @@ class TestScene : public age::Scene {
     }
 
     virtual void onUpdate(float elapsedTime) override {
-        if (move != glm::vec2(0,0)) {
+        if (move != glm::vec2(0,0) || rotate != 0) {
             text.move(move);
+            text.rotate(rotate);
             text.uploadMapData();
         }
     }
@@ -163,17 +181,13 @@ class Application : public age::Application {
             break;
         }
     }
-
-    virtual void onDestroy() override {
-        for (auto view : m_views) {
-            view.destroy();
-        }
-    }
 };
 
 #include "Graphics/Components/TransformComponent.hpp"
 #include "Graphics/Components/ColorComponent.hpp"
 #include "Graphics/Components/TextureComponent.hpp"
+#include "Graphics/Components/InstancedComponent.hpp"
+#include "Graphics/Components/TexCoordsComponent.hpp"
 #include "Containers/DynamicBuffer.hpp"
 
 int main(int argc, char* argv[]) {
@@ -183,19 +197,25 @@ int main(int argc, char* argv[]) {
     age::TransformComponent transform;
     age::ColorComponent color;
     age::TextureComponent tex;
-    age::TextureCoordComponent texCoord;
+    age::TexCoordsComponent texCoord;
 
-    std::vector<age::IGraphicsComponent*> components = {
+    std::vector<age::Conditional<age::IGraphicsComponent*>> components = {
         &transform,
-        &color,
+        { &color, age::INSTANCED },
         &tex,
         &texCoord
     };
 
     age::ShaderBuilder shaderBuilder;
 
-    auto shader = shaderBuilder.compileFragmentShader(components);
-    shader.destroy();
+    // shaderBuilder.generateVertexShaderSource(components);
+    shaderBuilder.generateFragmentShaderSource(components);
+    shaderBuilder.saveShader("temp.frag");
+    shaderBuilder.generateVertexShaderSource(components);
+    shaderBuilder.saveShader("temp.vert");
+
+    // auto shader = shaderBuilder.compileFragmentShader(components);
+    // shader.destroy();
 
     app.run();
     app.destroy();

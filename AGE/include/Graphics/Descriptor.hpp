@@ -9,6 +9,8 @@
 
 #include "Debug.hpp"
 
+#include "Components/IGraphicsComponent.hpp"
+
 namespace age {
 
 class DescriptorBinding {
@@ -37,6 +39,11 @@ public:
         return *this;
     }
 
+    inline DescriptorBinding& add(std::variant<Buffer*, Texture*> bt) {
+        m_descriptors.push_back(bt);
+        return *this;
+    }
+
     inline DescriptorBinding& add(Texture& texture) {
         m_descriptors.push_back(&texture);
         return *this;
@@ -56,15 +63,32 @@ public:
         return *this;
     }
 
+    // number of descriptor sets that will be allocated
     inline DescriptorSetInfo& setSetCount(uint32_t count) {
         m_setCount = count;
         return *this;
     }
+
+    DescriptorSetInfo& getBasedOnComponents(const std::vector<IGraphicsComponent*>& components) {
+        for (auto component : components) {
+            auto description = component->getDescription();
+
+            this->addBinding(
+                DescriptorBinding()
+                .setDescriptorType(description.m_type)
+                .setStage(description.m_stage)
+                .add(description.m_descriptor)
+            );
+        }
+        return *this;
+    }
 };
+
+void freeDescriptor(uint32_t poolIndex, VkDescriptorSet descriptor);
 
 class DescriptorSet {
     uint32_t m_poolIndex = 0;
-    VkDescriptorSetLayout m_layout = VK_NULL_HANDLE;
+    VkDescriptorSetLayout m_layout = VK_NULL_HANDLE; // used to create pipeline
     VkDescriptorSet m_set = VK_NULL_HANDLE;
 
     VkDescriptorSet requestDescriptorSet(const DescriptorSetInfo& info);
@@ -76,8 +100,9 @@ public:
     VkDescriptorSet getSet() { return m_set; }
 
     DescriptorSet& get(const DescriptorSetInfo& info);
+    inline void free() {
+        freeDescriptor(m_poolIndex, m_set);
+    }
 };
-
-void freeDescriptor(uint32_t poolIndex, VkDescriptorSet descriptor);
 
 } // namespace age

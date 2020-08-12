@@ -10,6 +10,7 @@
 #include "Graphics/Core/Core.hpp"
 #include "Core/Command.hpp"
 #include "Audio/Core.hpp"
+#include "BasicShape.hpp"
 
 namespace age {
 
@@ -29,6 +30,8 @@ void Application::destroy() {
 
     pActiveScene->destroy();
     onDestroy();
+
+    destroyBasicShapes();
     
     defaultSampler.destroy();
 
@@ -44,6 +47,8 @@ void Application::create() {
     onCoreConfig();
 
     m_renderer.create();
+
+    initBasicShapes();
 
     // init freetype
     initFreetype();

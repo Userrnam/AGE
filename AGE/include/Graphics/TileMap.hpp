@@ -23,7 +23,6 @@ struct MapData {
 };
 
 /*
-
 tilemap = registry.create();
 registry.emplace<ColorComponent>(tilemap);
 registry.emplace<TextureComponent>(tilemap);
@@ -77,7 +76,6 @@ class TileMap : public Drawable, public Transformable {
     Buffer m_buffer;                    // this is for multiple Instances
     uint32_t m_maxSize = 0;             // this is for multiple Instances
 
-    Shared<ShapeInfo> m_shapeInfo;      // this is temporary
     MapData m_mapData;                  // this is extra data (transform, color) maybe divide it in transform + color components
 public:
     void create(View& view, Texture& texture, uint32_t maxSize, bool blendEnable);

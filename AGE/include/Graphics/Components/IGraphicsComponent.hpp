@@ -10,9 +10,29 @@
 namespace age {
 
 struct GraphicsComponentDescription {
-    VkShaderStageFlags stage;
-    VkDescriptorType type;
-    std::variant<Buffer*, Texture*> descriptor;
+    VkShaderStageFlags m_stage;
+    VkDescriptorType m_type;
+    std::variant<Buffer*, Texture*> m_descriptor;
+
+    inline GraphicsComponentDescription& setStage(VkShaderStageFlags stage) {
+        m_stage = stage;
+        return *this;
+    }
+
+    inline GraphicsComponentDescription& setType(VkDescriptorType type) {
+        m_type = type;
+        return *this;
+    }
+
+    inline GraphicsComponentDescription& setBuffer(Buffer& buffer) {
+        m_descriptor = &buffer;
+        return *this;
+    }
+
+    inline GraphicsComponentDescription& setTexture(Texture& texture) {
+        m_descriptor = &texture;
+        return *this;
+    }
 };
 
 enum LayoutType {
@@ -22,25 +42,10 @@ enum LayoutType {
     SAMPLER
 };
 
-struct BlockMember {
-    std::string m_name;
-    std::string m_type;
-
-    inline BlockMember& setName(const std::string& name) {
-        m_name = name;
-        return *this;
-    }
-
-    inline BlockMember& setType(const std::string& type) {
-        m_type = type;
-        return *this;
-    }
-};
-
 struct Layout {
     std::string m_name;
     std::string m_typeName;
-    std::vector<BlockMember> m_members;
+    std::vector<std::string> m_members;
     LayoutType m_type = LayoutType::UNDEFINED;
 
     inline Layout& setType(const std::string& typeName, LayoutType type) {
@@ -49,7 +54,7 @@ struct Layout {
         return *this;
     }
 
-    inline Layout& addBlockMember(const BlockMember& blockMember) {
+    inline Layout& addBlockMember(const std::string& blockMember) {
         m_members.push_back(blockMember);
         return *this;
     }
@@ -63,12 +68,32 @@ struct Layout {
 // this is used to generate shaders and descriptors
 struct IGraphicsComponent {
     // used to generate vertex shader
-    virtual std::vector<Layout> getVertLayouts() = 0;
-    virtual std::string getVertMainInsert(const std::string& structName) = 0;
+    virtual std::vector<Layout> getVertLayouts() {
+        std::vector<Layout> layouts;
+        return layouts;
+    }
+
+    virtual std::string getVertMainInsert(const std::string& structName) {
+        return "";
+    }
+
+    virtual std::string getVertRawInsert() {
+        return "";
+    }
 
     // used to generate fragment shader
-    virtual std::vector<Layout> getFragLayouts() = 0;
-    virtual std::string getFragMainInsert(const std::string& structName) = 0;
+    virtual std::vector<Layout> getFragLayouts() {
+        std::vector<Layout> layouts;
+        return layouts;
+    }
+
+    virtual std::string getFragRawInsert() {
+        return "";
+    }
+
+    virtual std::string getFragMainInsert(const std::string& structName) {
+        return "";
+    }
 
     // used in descriptorSet
     virtual GraphicsComponentDescription getDescription() = 0;

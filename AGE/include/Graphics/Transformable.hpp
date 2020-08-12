@@ -15,6 +15,7 @@ class Transformable {
 protected:
     glm::mat4 m_transform;
 public:
+    inline bool needUpdate() { return m_needUpdate; }
     glm::mat4 getTransform();
 
     glm::vec2 getScale() const { return m_scale; }

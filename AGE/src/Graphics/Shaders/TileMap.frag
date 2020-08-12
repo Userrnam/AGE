@@ -10,9 +10,6 @@ layout(location = 0) out vec4 outColor;
 
 void main() {
     vec4 sampledColor = texture(texSampler, texCoord);
-    if (sampledColor == vec4(0.0)) {
-        discard;
-    }
 
     outColor = color * sampledColor;
 }

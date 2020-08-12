@@ -37,15 +37,6 @@ public:
     }
 
 // Interface
-    virtual std::vector<Layout> getVertLayouts() override {
-        std::vector<Layout> layouts;
-        return layouts;
-    }
-
-    virtual std::string getVertMainInsert(const std::string& structName) override {
-        std::stringstream ss;
-        return ss.str();
-    }
 
     virtual std::vector<Layout> getFragLayouts() override {
         std::vector<Layout> layouts;
@@ -54,9 +45,7 @@ public:
             .setName("colorObject")
             .setType("uniform", LayoutType::BUFFER)
             .addBlockMember(
-                BlockMember()
-                .setName("color")
-                .setType("vec4")
+                "vec4 color"
             )
         );
         return layouts;
@@ -70,9 +59,9 @@ public:
 
     virtual GraphicsComponentDescription getDescription() override {
         GraphicsComponentDescription description;
-        description.stage = VK_SHADER_STAGE_VERTEX_BIT;
-        description.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        description.descriptor = &m_buffer;
+        description.m_stage = VK_SHADER_STAGE_VERTEX_BIT;
+        description.m_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        description.m_descriptor = &m_buffer;
         
         return description;
     }

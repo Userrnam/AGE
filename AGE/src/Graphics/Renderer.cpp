@@ -71,7 +71,7 @@ void Renderer::create() {
 			throw std::runtime_error("failed to begin recording command buffer");
 		}
 
-        core::cmd::clear(i, {});
+        core::cmd::clear(i, {1,0,0,1});
 
 		if (vkEndCommandBuffer(core::apiCore.commandBuffers.active[i]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to record command buffer");

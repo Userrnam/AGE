@@ -24,7 +24,7 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     m_descriptorSets.reserve(info.m_descriptors.size() + 1);
 
     // add camera descriptor
-    auto cameraDescriptor = info.m_view->camera.getDescriptor();
+    auto cameraDescriptor = info.m_view->getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
     m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
     layouts.push_back(cameraDescriptor.m_layout);
@@ -59,6 +59,7 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
         }
     }
 
+    // shape info (vertex data) only required here
     VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo = {};
     vertexInputCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputCreateInfo.vertexBindingDescriptionCount = 1;

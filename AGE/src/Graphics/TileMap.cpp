@@ -1,27 +1,12 @@
 #include "TileMap.hpp"
 
+#include "BasicShape.hpp"
+
 #ifndef CMAKE_DEFINITION
 #define SHADER_PATH ""
 #endif
 
 namespace age {
-
-typedef glm::vec2 VType;
-
-static std::vector<Vertex<VType>> verticies = {
-    VType({ 0.0, 0.0 }),
-    VType({ 1.0, 0.0 }),
-    VType({ 1.0, 1.0 }),
-    VType({ 0.0, 1.0 }),
-};
-
-VERTEX_ATTRIBUTES(VType) = {
-    VK_FORMAT_R32G32_SFLOAT
-};
-
-// static std::vector<Index16> indicies = { 0, 3, 2, 2, 1, 0 };
-static std::vector<Index16> indicies = { 0, 1, 2, 2, 3, 0 };
-
 
 void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendEnable) {
     m_maxSize = maxSize;
@@ -44,9 +29,8 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
         .create(SHADER_PATH "TileMap.vert.spv");
 
     fragmentShader.setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(SHADER_PATH "TileMap.frag.spv");
-    m_shapeInfo.create(
-        ShapeInfo().loadIndicies(indicies).loadVerticies(verticies)
-    );
+
+    auto shape = getRectangleShape();
 
     createDrawable(
         DrawableCreateInfo()
@@ -70,7 +54,7 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
                 )
             )
         )
-        .setShapeInfo(m_shapeInfo)
+        .setShapeInfo(shape)
         .addShader(vertexShader)
         .addShader(fragmentShader)
     );
@@ -80,7 +64,6 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
 }
 
 void TileMap::destroy() {
-    m_shapeInfo.destroy();
     m_buffer.destroy();
     freeDescriptor(m_poolIndicies[1], m_descriptorSets[1]);
     destroyPipeline(m_pipeline);

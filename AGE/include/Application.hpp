@@ -5,7 +5,6 @@
 #include "Graphics/Renderer.hpp"
 #include "Graphics/Sampler.hpp"
 
-#include "View.hpp"
 #include "Scene.hpp"
 #include "EventManager.hpp"
 #include "Event.hpp"
@@ -21,9 +20,6 @@ class Application {
     Shared<Sampler> defaultSampler;
 protected:
     Scene* pActiveScene = nullptr;
-    // not sure if we need this
-    std::vector<View> m_views;
-
 
     void setActiveScene(Scene* scene) {
         pActiveScene = scene;

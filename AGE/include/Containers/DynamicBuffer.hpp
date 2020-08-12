@@ -16,21 +16,23 @@ class DynamicBuffer {
     void* m_data;
     uint32_t m_index = 0;
     uint32_t m_count = 0;
+    uint32_t m_allocSize = 0;
+
 public:
     template<typename T>
     inline void create(uint32_t count = 8) {
         m_count = count;
-        m_data = malloc(m_count * sizeof(T));
+        m_allocSize = m_count * sizeof(T);
+        m_data = malloc(m_allocSize);
     }
 
-    template<typename T>
     DynamicBuffer copy() {
-        auto size = m_count * sizeof(T);
-
         DynamicBuffer buffer;
-        buffer.create<T>(m_count);
         buffer.m_index = m_index;
-        memcpy(buffer.m_data, m_data, size);
+        buffer.m_count = m_count;
+        buffer.m_allocSize = m_allocSize;
+        m_data = malloc(m_allocSize);
+        memcpy(buffer.m_data, m_data, m_allocSize);
 
         return buffer;
     }
@@ -45,7 +47,7 @@ public:
         return ((T*)m_data)[pos];
     }
 
-    template<typename T>
+    template<typename T = void>
     inline T* data() {
         return (T*)m_data;
     }
@@ -58,17 +60,23 @@ public:
         return m_index;
     }
 
+    inline uint32_t size() {
+        return m_allocSize;
+    }
+
     template<typename T>
     inline void reserve(uint32_t count) {
         m_count = count;
-        m_data = realloc(m_data, m_count * sizeof(T));
+        m_allocSize = m_count * sizeof(T);
+        m_data = realloc(m_data, m_allocSize);
     }
 
     template<typename T>
     inline void resize(uint32_t count) {
         m_index = count;
         m_count = count;
-        m_data = realloc(m_data, m_count * sizeof(T));
+        m_allocSize = m_count * sizeof(T);
+        m_data = realloc(m_data, m_allocSize);
     }
 
     inline uint32_t capacity() {
@@ -78,7 +86,8 @@ public:
     template<typename T>
     inline void shrink() {
         m_count = m_index;
-        m_data = realloc(m_data, m_count * sizeof(T));
+        m_allocSize = m_count * sizeof(T);
+        m_data = realloc(m_data, m_allocSize);
     }
 
     inline void clear() {
@@ -87,9 +96,11 @@ public:
 
     template<typename T>
     void insert(uint32_t pos, const T& elem) {
+        // !! unsafe should be checking allocSize
         if (m_index == m_count) {
             m_count *= 2;
-            m_data = realloc(m_data, m_count * sizeof(T));
+            m_allocSize *= 2;
+            m_data = realloc(m_data, m_allocSize);
         }
         auto data = (T*)m_data;
         memmove(data + 1, data, m_count - pos);
@@ -100,7 +111,8 @@ public:
     void append(const T& elem) {
         if (m_index == m_count) {
             m_count *= 2;
-            m_data = realloc(m_data, m_count * sizeof(T));
+            m_allocSize *= 2;
+            m_data = realloc(m_data, m_allocSize);
         }
 
         auto data = (T*)m_data;
