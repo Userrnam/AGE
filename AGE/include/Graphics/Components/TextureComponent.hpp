@@ -34,7 +34,7 @@ public:
         return layouts;
     }
 
-    virtual std::string getFragMainInsert(const std::string& structName) override {
+    virtual std::string getFragMainInsert() override {
         return "fragColor *= texture(textureSampler, texCoords);\n";
     }
 

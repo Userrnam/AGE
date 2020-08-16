@@ -9,8 +9,10 @@ namespace age {
 
 class TransformComponent : public Transformable, public IGraphicsComponent {
     Buffer buffer;
+    uint32_t m_bufferOffset;
 public:
     void create() {
+        m_bufferOffset = 0;
         buffer.create(
             BufferCreateInfo()
             .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
@@ -20,7 +22,7 @@ public:
     }
 
     void upload() {
-        buffer.load(&m_transform, sizeof(glm::mat4));
+        buffer.load(&m_transform, sizeof(glm::mat4), m_bufferOffset);
     }
 
     void destroy() {
@@ -39,10 +41,8 @@ public:
         return layouts;
     }
 
-    virtual std::string getVertMainInsert(const std::string& structName) override {
-        std::stringstream ss;
-        ss << "transform *= " << structName << ".transform;\n";
-        return ss.str();
+    virtual std::string getVertMainInsert() override {
+        return "transform *= ?.transform;\n";
     }
 
     virtual GraphicsComponentDescription getDescription() override {

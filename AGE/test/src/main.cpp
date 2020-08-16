@@ -186,7 +186,6 @@ class Application : public age::Application {
 #include "Graphics/Components/TransformComponent.hpp"
 #include "Graphics/Components/ColorComponent.hpp"
 #include "Graphics/Components/TextureComponent.hpp"
-#include "Graphics/Components/InstancedComponent.hpp"
 #include "Graphics/Components/TexCoordsComponent.hpp"
 #include "Containers/DynamicBuffer.hpp"
 
@@ -211,7 +210,7 @@ int main(int argc, char* argv[]) {
     // shaderBuilder.generateVertexShaderSource(components);
     shaderBuilder.generateFragmentShaderSource(components);
     shaderBuilder.saveShader("temp.frag");
-    shaderBuilder.generateVertexShaderSource(components);
+    shaderBuilder.generateVertexShaderSource(transform, tex, texCoord);
     shaderBuilder.saveShader("temp.vert");
 
     // auto shader = shaderBuilder.compileFragmentShader(components);

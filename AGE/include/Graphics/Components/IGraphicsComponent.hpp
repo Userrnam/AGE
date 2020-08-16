@@ -14,6 +14,7 @@ struct GraphicsComponentDescription {
     VkDescriptorType m_type;
     std::variant<Buffer*, Texture*> m_descriptor;
 
+    // we dont need this all buffers go to vertex shader, all textures to fragment
     inline GraphicsComponentDescription& setStage(VkShaderStageFlags stage) {
         m_stage = stage;
         return *this;
@@ -73,7 +74,7 @@ struct IGraphicsComponent {
         return layouts;
     }
 
-    virtual std::string getVertMainInsert(const std::string& structName) {
+    virtual std::string getVertMainInsert() {
         return "";
     }
 
@@ -91,7 +92,7 @@ struct IGraphicsComponent {
         return "";
     }
 
-    virtual std::string getFragMainInsert(const std::string& structName) {
+    virtual std::string getFragMainInsert() {
         return "";
     }
 

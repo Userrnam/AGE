@@ -9,14 +9,15 @@
 namespace age {
 
 class TexCoordsComponent : public IGraphicsComponent {
-    std::vector<glm::vec2> texCoords;
-    Buffer buffer;
-
+    std::vector<glm::vec2> m_texCoords;
+    Buffer m_buffer;
+    uint32_t m_bufferOffset;
 public:
     void create(uint32_t coordCount)  {
-        texCoords.resize(coordCount);
+        m_texCoords.resize(coordCount);
+        m_bufferOffset = 0;
 
-        buffer.create(
+        m_buffer.create(
             BufferCreateInfo()
             .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
             .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
@@ -24,8 +25,12 @@ public:
         );
     }
 
-    void destroy() {
-        buffer.destroy();
+    inline void upload() {
+        m_buffer.load(m_texCoords.data(), sizeof(glm::vec2) * m_texCoords.size(), m_bufferOffset);
+    }
+
+    inline void destroy() {
+        m_buffer.destroy();
     }
 
     // Interface
@@ -45,10 +50,8 @@ public:
         return layouts;
     }
 
-    virtual std::string getVertMainInsert(const std::string& structName) override {
-        std::stringstream ss;
-        ss << "texCoords = " << structName << ".texCoords;\n";
-        return ss.str();
+    virtual std::string getVertMainInsert() override {
+        return "texCoords = ?.texCoords;\n";
     }
 
     virtual std::vector<Layout> getFragLayouts() override {
@@ -65,7 +68,7 @@ public:
         GraphicsComponentDescription description;
         description.m_stage = VK_SHADER_STAGE_VERTEX_BIT;
         description.m_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        description.m_descriptor = &buffer;
+        description.m_descriptor = &m_buffer;
 
         return description;
     }

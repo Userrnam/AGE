@@ -10,6 +10,7 @@ namespace age {
 class ColorComponent : public IGraphicsComponent {
     glm::vec4 m_color;
     Buffer m_buffer;
+    uint32_t m_bufferOffset;
 public:
     void setColor(const glm::vec4 color) {
         m_color = color;
@@ -20,6 +21,7 @@ public:
     }
 
     void create() {
+        m_bufferOffset = 0;
         m_buffer.create(
             BufferCreateInfo()
             .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
@@ -29,7 +31,7 @@ public:
     }
 
     void upload() {
-        m_buffer.load(&m_color, sizeof(glm::vec4));
+        m_buffer.load(&m_color, sizeof(glm::vec4), m_bufferOffset);
     }
 
     void destroy() {
@@ -51,10 +53,8 @@ public:
         return layouts;
     }
 
-    virtual std::string getFragMainInsert(const std::string& structName) override {
-        std::stringstream ss;
-        ss << "fragColor *= " << structName << ".color;\n";
-        return ss.str();
+    virtual std::string getFragMainInsert() override {
+        return "fragColor *= ?.color;\n";
     }
 
     virtual GraphicsComponentDescription getDescription() override {

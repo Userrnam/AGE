@@ -20,9 +20,12 @@ struct Tile {
 class TileMapComponent : public IGraphicsComponent {
     std::vector<Tile> m_tiles;
     Buffer m_buffer;
+    uint32_t m_bufferOffset;
 
 public:
     void create(uint32_t tileCount) {
+        m_bufferOffset = 0;
+        
         m_buffer.create(
             BufferCreateInfo()
             .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
@@ -48,19 +51,20 @@ public:
         return layouts;
     }
 
-    virtual std::string getVertMainInsert(const std::string& structName) override {
+    virtual std::string getVertMainInsert() override {
         std::stringstream ss;
 
+        // vec2 tiles[];
         // texCoords = structName.tiles[id * 4 + gl_InstanceIndex]
 
         ss << "if (gl_VertexIndex == 0) {\n"
-            "texCoords = " << structName << ".bottomLeftTexCoord;\n"
+            "texCoords = ?.bottomLeftTexCoord;\n"
             "else if (gl_VertexIndex == 1) {\n"
-            "texCoords = vec2(" << structName << ".topRightTexCoord.x, " << structName << ".bottomLeftTexCoord.y);\n"
+            "texCoords = vec2(?.topRightTexCoord.x, ?.bottomLeftTexCoord.y);\n"
             "else if (gl_VertexIndex == 2) {\n"
-            "texCoords = " << structName << ".topRightTexCoord;\n"
+            "texCoords = ?.topRightTexCoord;\n"
             "else {\n"
-            "texCoords = vec2(" << structName << ".bottomLeftTexCoord.x, " << structName << ".topRightTexCoord.y);\n";
+            "texCoords = vec2(?.bottomLeftTexCoord.x, ?.topRightTexCoord.y);\n";
 
         return ss.str();
     }

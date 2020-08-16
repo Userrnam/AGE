@@ -5,6 +5,34 @@
 
 namespace age {
 
+/*
+
+maybe automatically generate struct and pass it to fragment shader via layout?
+so all buffers are only accessed in vertex shader
+use some global name for this layout (for example globals)
+
+struct {
+
+} unknown;
+
+? is replaced by shaderBuilder
+// in main
+fragment.color = ?.color;
+
+*/
+
+inline std::string insertStructName(const std::string& mainInsert, const std::string& structName) {
+    std::stringstream ss;
+	for (char c : mainInsert) {
+		if (c == '?') {
+			ss << structName;
+		} else {
+			ss << c;
+		}
+	}
+	return ss.str();
+}
+
 void ShaderBuilder::generateVertexShaderSource(const std::vector<Conditional<IGraphicsComponent*>>& components) {
     m_stream.str(std::string());
     
@@ -14,31 +42,18 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<Conditional<IGr
     m_stream << "layout(location=0) in vec2 inPosition;\n";
     m_stream << m_vertexAttribs.str() << "\n";
 
-    // pass instance index to fragment shader
-    m_stream << "layout(location=0) out flat uint instanceIndex;\n\n";
-
-    // insert camera        
+    // insert globals
     m_stream << "layout(set = 0, binding = 0) uniform CameraObject {\n";
-    m_stream << "\tmat4 transform;\n";
-    m_stream << "\tvec4 time;\n";
-    m_stream << "} camera;\n\n";
-    /*
-    replace camera with
-    // 16 bytes
-
-    layout(set=0, binding=0) uniform GlobalObject {
-        mat4 cameraTransform;
-        Mouse mouse;
-        vec2 viewResolution;
-        float time;
-        float timeDelta;
-    } global;
-
-    */
+    m_stream << "\tmat4 cameraTransform;\n";
+    // maybe pass it to fragment shader via location layout?
+    m_stream << "\tvec2 resolution;\n";
+    m_stream << "\tfloat time;\n";
+    m_stream << "\tfloat deltaTime;\n";
+    m_stream << "} globals;\n\n";
 
     // insert in global scope
     int binding = 0;
-    int outLocation = 1; // location 0 reserved for instance
+    int outLocation = 0;
     // names that will be used in main
     std::vector<std::string> names;
     names.resize(components.size());
@@ -81,6 +96,7 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<Conditional<IGr
                 bindingFound = true;
                 break;
             case LayoutType::LOCATION:
+                // change: append typename and name to struct that will be generated
                 m_stream << "layout(location=" << outLocation << ") out " << layout.m_typeName << " " << layout.m_name << ";\n";
                 outLocation++;
                 break;
@@ -101,17 +117,15 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<Conditional<IGr
     m_stream << "void main() {\n";
 
     // apply camera transform
-    m_stream << "\tmat4 transform = camera.transform;\n";
-
-    // pass instance index
-    m_stream << "\tinstanceIndex = gl_InstanceIndex;\n";
+    m_stream << "\tmat4 transform = globals.cameraTransform;\n";
 
     // insert in main
     binding = 0;
     for (auto component : components) {
-        auto insert = component.data->getVertMainInsert(names[binding]);
+        // auto insert = component.data->getVertMainInsert(names[binding]);
+        auto insert = component.data->getVertMainInsert();
         if (insert.size() > 0) {
-            m_stream << "\t" << insert;
+            m_stream << "\t" << insertStructName(insert, names[binding]);
         }
         binding++;
     }
@@ -129,10 +143,17 @@ void ShaderBuilder::generateFragmentShaderSource(const std::vector<Conditional<I
     m_stream << "layout(location=0) out vec4 fragColor;\n\n";
     m_stream << "layout(location=0) in flat uint instanceIndex;\n\n";
 
+    // insert globals
+    m_stream << "layout(set = 0, binding = 0) uniform CameraObject {\n";
+    m_stream << "\tmat4 cameraTransform;\n";
+    m_stream << "\tvec2 resolution;\n";
+    m_stream << "\tfloat time;\n";
+    m_stream << "\tfloat deltaTime;\n";
+    m_stream << "} globals;\n\n";
+
     // insert in global scope
     int binding = 0;
-    int inLocation = 1; // location 0 is reserved for instanceIndex
-    // std::string name;
+    int inLocation = 0;
     std::vector<std::string> names;
     names.resize(components.size());
     for (auto component : components) {
@@ -200,9 +221,10 @@ void ShaderBuilder::generateFragmentShaderSource(const std::vector<Conditional<I
     // insert in main
     binding = 0;
     for (auto component : components) {
-        auto insert = component.data->getFragMainInsert(names[binding]);
+        // auto insert = component.data->getFragMainInsert(names[binding]);
+        auto insert = component.data->getFragMainInsert();
         if (insert.size() > 0) {
-            m_stream << "\t" << insert;
+            m_stream << "\t" << insertStructName(insert, names[binding]);
         }
         binding++;
     }

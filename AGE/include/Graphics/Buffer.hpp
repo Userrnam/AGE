@@ -85,6 +85,10 @@ public:
     }
 };
 
+// all information, except VkBuffer is not used in drawing and used only for creating something
+// maybe make some structure, that will hold this data in dynamic memory?
+// than move some extra information to this structure, so creating
+// descriptor sets for example is much easier
 class Buffer {
 protected:
     VkBuffer m_buffer = VK_NULL_HANDLE;
