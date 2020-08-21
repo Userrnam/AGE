@@ -67,8 +67,15 @@ void Font::load(const std::string& fontPath, Shared<Sampler> sampler, unsigned f
         character.bearing.y = face->glyph->bitmap_top;
         character.size.x = face->glyph->bitmap.width;
         character.size.y = face->glyph->bitmap.rows;
-        character.bottomLeftTexCoord = { static_cast<float>(curX) / textureWidth, static_cast<float>(bitmap->rows) / textureHeight };
-        character.topRightTexCoord = { static_cast<float>(curX + bitmap->width) / textureWidth, 0.0f };
+
+        float leftX = static_cast<float>(curX) / textureWidth;
+        float rightX = static_cast<float>(curX + bitmap->width) / textureWidth;
+        float lowY = static_cast<float>(bitmap->rows) / textureHeight;
+        float highY = 0.0f;
+        character.texCoords[0] = { leftX, lowY };
+        character.texCoords[1] = { rightX, lowY };
+        character.texCoords[2] = { rightX, highY };
+        character.texCoords[3] = { leftX, highY };
 
         curX += bitmap->width + 1;
     }

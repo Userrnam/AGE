@@ -13,63 +13,13 @@ namespace age {
 struct Tile {
     glm::vec2 size;
     glm::vec2 position;
-    glm::vec2 bottomLeftTexCoord;
-    glm::vec2 topRightTexCoord;
+    glm::vec2 texCoords[4];
 };
 
 struct MapData {
     glm::mat4 transform;
     glm::vec4 color;
 };
-
-/*
-tilemap = registry.create();
-registry.emplace<ColorComponent>(tilemap);
-registry.emplace<TextureComponent>(tilemap);
-registry.emplace<TransformComponent>(tilemap);
-registry.emplace<InstancedComponent<Tile>>(tilemap);
-Rectangle.create based on components
-registry.emplace<Drawable>(tilemap, Rectangle);
-
-Drawable: descriptorSet, shader
-
-for shader
-generate shader automatically
-each component can have some virtual function that will tell what to insert in shader
-
-// insert in global scope
-void getVertStartInsert() {
-    // Example:
-    return "layout(set=1, binding = ..) uniform ColorObject {vec4 color;} colorObject; layout(location=..) out vec4 color;"
-}
-
-// insert in main
-void getVertEndInsert() {
-    // Example:
-    return "color = colorObject.color;"
-}
-
-// same for frag
-
-for descriptor set also some virtual function but its different for buffer and Texture
-stage, type, buffer/texture
-getDescription() {
-    Description.type = ...
-    stage 
-    variant<Texture/buffer> 
-}
-
-getDescriptorSet(std::vector<Component*>) {
-    DescriptorSetInfo info;
-    for c in components {
-        data = c->getDescription();
-        info.set()
-        ...
-    }
-    return DescriptorSet.get();
-}
-
-*/
 
 class TileMap : public Drawable, public Transformable {
     std::vector<Tile> m_tiles;          // this is for multiple Instances

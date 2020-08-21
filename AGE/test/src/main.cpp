@@ -204,8 +204,8 @@ int main(int argc, char* argv[]) {
     shaderBuilder.generateFragmentShaderSource(transform, color, texCoord, tex);
     shaderBuilder.saveShader("temp.frag");
 
-    // app.run();
-    // app.destroy();
+    app.run();
+    app.destroy();
 
     return 0;
 }

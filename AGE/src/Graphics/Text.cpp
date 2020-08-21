@@ -15,8 +15,7 @@ void Text::setText(const std::string& text) {
         auto& character = m_font->m_characters[c];
 
         Tile tile;
-        tile.bottomLeftTexCoord = character.bottomLeftTexCoord;
-        tile.topRightTexCoord = character.topRightTexCoord;
+        memcpy(tile.texCoords, character.texCoords, sizeof(glm::vec2) * 4);
         tile.position = { (move + character.bearing.x), (character.bearing.y - character.size.y) };
         tile.size = character.size;
 

@@ -9,9 +9,7 @@
 namespace age {
 
 struct Character {
-    // glm::vec2 texCoords[4];
-    glm::vec2 bottomLeftTexCoord;
-    glm::vec2 topRightTexCoord;
+    glm::vec2 texCoords[4];
     glm::ivec2 size;
     glm::ivec2 bearing;
     unsigned advance;
