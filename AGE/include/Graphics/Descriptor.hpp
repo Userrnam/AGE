@@ -9,7 +9,7 @@
 
 #include "Debug.hpp"
 
-#include "Components/IGraphicsComponent.hpp"
+#include "Components/ShaderComponent.hpp"
 
 namespace age {
 
@@ -69,9 +69,9 @@ public:
         return *this;
     }
 
-    DescriptorSetInfo& getBasedOnComponents(const std::vector<IGraphicsComponent*>& components) {
+    DescriptorSetInfo& getBasedOnComponents(const std::vector<ShaderComponentInfo>& components) {
         for (auto component : components) {
-            auto description = component->getDescription();
+            auto description = component.m_description;
 
             this->addBinding(
                 DescriptorBinding()

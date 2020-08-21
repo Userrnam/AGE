@@ -3,11 +3,11 @@
 #include <sstream>
 #include <glm/glm.hpp>
 
-#include "IGraphicsComponent.hpp"
+#include "ShaderComponent.hpp"
 
 namespace age {
 
-class ColorComponent : public IGraphicsComponent {
+class ColorComponent {
     glm::vec4 m_color;
     Buffer m_buffer;
     uint32_t m_bufferOffset;
@@ -38,32 +38,28 @@ public:
         m_buffer.destroy();
     }
 
-// Interface
-
-    virtual std::vector<Layout> getFragLayouts() override {
-        std::vector<Layout> layouts;
-        layouts.push_back(
-            Layout()
-            .setName("colorObject")
-            .setType("uniform", LayoutType::BUFFER)
-            .addBlockMember(
-                "vec4 color"
+    ShaderComponentInfo getInfo() {
+        ShaderComponentInfo info;
+        info.setVertInsert(
+            ShaderComponentInsert()
+            .addLayout(
+                Layout()
+                .setName("colorObject")
+                .setType("uniform", LayoutType::BUFFER)
+                .addBlockMember("vec4 color", true)
             )
         );
-        return layouts;
-    }
-
-    virtual std::string getFragMainInsert() override {
-        return "fragColor *= ?.color;\n";
-    }
-
-    virtual GraphicsComponentDescription getDescription() override {
-        GraphicsComponentDescription description;
-        description.m_stage = VK_SHADER_STAGE_VERTEX_BIT;
-        description.m_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        description.m_descriptor = &m_buffer;
-        
-        return description;
+        info.setFragInsert(
+            ShaderComponentInsert()
+            .setMainInsert("\tfragColor *= globals.color;\n")
+        );
+        info.setDescription(
+            ShaderComponentDescription()
+            .setStage(VK_SHADER_STAGE_VERTEX_BIT)
+            .setType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+            .setBuffer(m_buffer)
+        );
+        return info;
     }
 };
 

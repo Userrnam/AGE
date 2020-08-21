@@ -4,11 +4,11 @@
 #include <glm/glm.hpp>
 #include <sstream>
 
-#include "IGraphicsComponent.hpp"
+#include "ShaderComponent.hpp"
 
 namespace age {
 
-class TexCoordsComponent : public IGraphicsComponent {
+class TexCoordsComponent {
     std::vector<glm::vec2> m_texCoords;
     Buffer m_buffer;
     uint32_t m_bufferOffset;
@@ -33,44 +33,24 @@ public:
         m_buffer.destroy();
     }
 
-    // Interface
-    virtual std::vector<Layout> getVertLayouts() override {
-        std::vector<Layout> layouts;
-        layouts.push_back(
-            Layout()
-            .setName("texCoordObject")
-            .setType("uniform", LayoutType::BUFFER)
-            .addBlockMember("vec2 texCoords")
+    ShaderComponentInfo getInfo() {
+        ShaderComponentInfo info;
+        info.setVertInsert(
+            ShaderComponentInsert()
+            .addLayout(
+                Layout()
+                .setName("texCoordObject")
+                .setType("uniform", LayoutType::BUFFER)
+                .addBlockMember("vec2 texCoords", true)
+            )
         );
-        layouts.push_back(
-            Layout()
-            .setName("texCoords")
-            .setType("vec2", LayoutType::LOCATION)
+        info.setDescription(
+            ShaderComponentDescription()
+            .setType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+            .setStage(VK_SHADER_STAGE_VERTEX_BIT)
+            .setBuffer(m_buffer)
         );
-        return layouts;
-    }
-
-    virtual std::string getVertMainInsert() override {
-        return "texCoords = ?.texCoords;\n";
-    }
-
-    virtual std::vector<Layout> getFragLayouts() override {
-        std::vector<Layout> layouts;
-        layouts.push_back(
-            Layout()
-            .setName("texCoords")
-            .setType("vec2", LayoutType::LOCATION)
-        );
-        return layouts;
-    }
-
-    virtual GraphicsComponentDescription getDescription() override {
-        GraphicsComponentDescription description;
-        description.m_stage = VK_SHADER_STAGE_VERTEX_BIT;
-        description.m_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        description.m_descriptor = &m_buffer;
-
-        return description;
+        return info;
     }
 };
     

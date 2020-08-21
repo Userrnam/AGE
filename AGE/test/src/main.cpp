@@ -198,20 +198,22 @@ int main(int argc, char* argv[]) {
     age::TextureComponent tex;
     age::TexCoordsComponent texCoord;
 
-    std::vector<age::Conditional<age::IGraphicsComponent*>> components = {
-        &transform,
-        { &color, age::INSTANCED },
-        &tex,
-        &texCoord
-    };
+    // std::vector<age::Conditional<age::ShaderComponent*>> components = {
+    //     &transform,
+    //     { &color, age::INSTANCED },
+    //     &tex,
+    //     &texCoord
+    // };
 
     age::ShaderBuilder shaderBuilder;
+    shaderBuilder.generateVertexShaderSource(transform, color);
+    shaderBuilder.saveShader("temp.vert");
 
     // shaderBuilder.generateVertexShaderSource(components);
-    shaderBuilder.generateFragmentShaderSource(components);
-    shaderBuilder.saveShader("temp.frag");
-    shaderBuilder.generateVertexShaderSource(transform, tex, texCoord);
-    shaderBuilder.saveShader("temp.vert");
+    // shaderBuilder.generateFragmentShaderSource(components);
+    // shaderBuilder.saveShader("temp.frag");
+    // shaderBuilder.generateVertexShaderSource(transform, tex, texCoord);
+    // shaderBuilder.saveShader("temp.vert");
 
     // auto shader = shaderBuilder.compileFragmentShader(components);
     // shader.destroy();
