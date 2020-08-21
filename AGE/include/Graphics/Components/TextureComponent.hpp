@@ -25,21 +25,12 @@ public:
 
     ShaderComponentInfo getInfo() {
         ShaderComponentInfo info;
-        info.setFragInsert(
-            ShaderComponentInsert()
-            .addLayout(
-                Layout()
-                .setName("textureSampler")
-                .setType("uniform sampler2D", LayoutType::SAMPLER)
-            )
-            .setMainInsert("\tfragColor *= texture(textureSampler, globals.texCoords);\n")
-        );
-        info.setDescription(
-            ShaderComponentDescription()
-            .setStage(VK_SHADER_STAGE_FRAGMENT_BIT)
-            .setType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+        info.add(
+            ShaderComponentTexture()
+            .setName("textureSampler")
             .setTexture(m_texture)
         );
+        info.setFragMainInsert("\tfragColor *= texture(textureSampler, globals.texCoords);\n");
         return info;
     }
 };

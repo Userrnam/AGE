@@ -37,13 +37,6 @@ struct ShaderComponentDescription {
     }
 };
 
-enum LayoutType {
-    UNDEFINED,
-    LOCATION,
-    BUFFER,
-    SAMPLER
-};
-
 struct BlockMember {
     std::string m_member;
     bool m_forward;
@@ -52,104 +45,105 @@ struct BlockMember {
         : m_member(member), m_forward(forward) {} 
 };
 
-struct Layout {
-    std::string m_name;
-    std::string m_typeName;
+struct ShaderComponentBuffer {
     std::vector<BlockMember> m_members;
-    LayoutType m_type = LayoutType::UNDEFINED;
-    // this is needed only if layout is bufferblock
-    bool m_instanced = false;
+    Buffer* m_buffer;
 
-    inline Layout& setType(const std::string& typeName, LayoutType type) {
-        m_typeName = typeName;
-        m_type = type;
+    inline ShaderComponentBuffer& addBlockMember(std::string member, bool forward = false) {
+        m_members.push_back( { member, forward } );
         return *this;
     }
 
-    inline Layout& addBlockMember(const std::string& blockMember, bool forward = false) {
-        m_members.push_back( { blockMember, forward } );
+    inline ShaderComponentBuffer& setBuffer(Buffer& buffer) {
+        m_buffer = &buffer;
         return *this;
     }
+};
 
-    inline Layout& setName(const std::string& name) {
+struct ShaderComponentTexture {
+    std::string m_name;
+    Texture* m_texture;
+
+    inline ShaderComponentTexture& setName(const std::string& name) {
         m_name = name;
         return *this;
     }
-};
 
-struct TempTexture {
-    void setName();
-};
-struct TempBuffer {
-    void setInstanced();
-    void addMember();
-};
-struct TempForward {};
-
-struct Temp {
-    std::vector<std::variant<TempTexture, TempBuffer, TempForward>> m_data;
-    std::string rawInsert;
-    std::string mainInsert;
-};
-
-struct Layouts {
-    std::vector<Layout> m_layouts;
-
-    inline Layouts& addLayout(Layout layout) {
-        m_layouts.push_back(layout);
+    inline ShaderComponentTexture& setTexture(Texture& texture) {
+        m_texture = &texture;
         return *this;
     }
 };
 
-struct ShaderComponentInsert {
-    std::vector<Layout> m_layouts;
-    std::string m_rawInsert;
-    std::string m_mainInsert;
-
-    inline ShaderComponentInsert& addLayout(Layout layout) {
-        m_layouts.push_back(layout);
-        return *this;
-    }
-
-    inline ShaderComponentInsert& setLayouts(Layouts _layouts) {
-        m_layouts = _layouts.m_layouts;
-        return *this;
-    }
-
-    inline ShaderComponentInsert& setRawInsert(std::string s) {
-        m_rawInsert = s;
-        return *this;
-    }
-
-    inline ShaderComponentInsert& setMainInsert(std::string s) {
-        m_mainInsert = s;
-        return *this;
-    }
+struct ShaderComponentForward {
+    std::string m_data;
+    ShaderComponentForward(const std::string& data)
+        : m_data(data) {}
 };
 
 struct ShaderComponentInfo {
-    ShaderComponentInsert m_vert;
-    ShaderComponentInsert m_frag;
+    std::vector<std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>> m_data;
     ShaderComponentDescription m_description;
-    bool m_instanced = false;
+    bool m_instanced = false; // this can be changed by Instanced template
 
-    inline ShaderComponentInfo& setVertInsert(ShaderComponentInsert vert) {
-        m_vert = vert;
+    struct {
+        std::string rawInsert;
+        std::string mainInsert;
+    } m_vert;
+
+    struct {
+        std::string rawInsert;
+        std::string mainInsert;
+    } m_frag;
+
+    inline ShaderComponentInfo& setTexture(Texture& t) {
+        m_description.m_descriptor = &t;
         return *this;
     }
 
-    inline ShaderComponentInfo& setFragInsert(ShaderComponentInsert frag) {
-        m_frag = frag;
+    inline ShaderComponentInfo& setBuffer(Buffer& b) {
+        m_description.m_descriptor = &b;
         return *this;
     }
 
-    inline ShaderComponentInfo& setDescription(ShaderComponentDescription description) {
-        m_description = description;
+    inline ShaderComponentInfo& add(ShaderComponentTexture t) {
+        m_description.setStage(VK_SHADER_STAGE_FRAGMENT_BIT);
+        m_description.setType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+        m_description.setTexture(*t.m_texture);
+        m_data.push_back(t);
         return *this;
     }
 
-    inline ShaderComponentInfo& setInstanced(bool instanced) {
-        m_instanced = instanced;
+    inline ShaderComponentInfo& add(ShaderComponentBuffer b) {
+        m_description.setStage(VK_SHADER_STAGE_VERTEX_BIT);
+        m_description.setBuffer(*b.m_buffer);
+        m_description.setType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); // can be changed by Instanced template
+        m_data.push_back(b);
+        return *this;
+    }
+
+    inline ShaderComponentInfo& add(ShaderComponentForward f) {
+        m_data.push_back(f);
+        return *this;
+    }
+
+    inline ShaderComponentInfo& setVertRawInsert(const std::string& s) {
+        m_vert.rawInsert = s;
+        return *this;
+    }
+
+    inline ShaderComponentInfo& setVertMainInsert(const std::string& s) {
+        m_vert.mainInsert = s;
+        return *this;
+    }
+
+    inline ShaderComponentInfo& setFragRawInsert(const std::string& s) {
+        m_frag.rawInsert = s;
+        return *this;
+    }
+
+    inline ShaderComponentInfo& setFragMainInsert(const std::string& s) {
+        m_frag.mainInsert = s;
         return *this;
     }
 };

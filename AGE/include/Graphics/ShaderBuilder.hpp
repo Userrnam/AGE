@@ -7,8 +7,6 @@
 #include "Components/ShaderComponent.hpp"
 #include "Shader.hpp"
 
-// #include "Containers/Conditional.hpp"
-
 namespace age {
 
 // Generates shader source code
@@ -16,6 +14,16 @@ class ShaderBuilder {
     std::stringstream m_stream;
     std::stringstream m_vertexAttribs;
     std::vector<ShaderComponentInfo> m_components;
+
+    template<typename Head, typename...Tail>
+    void collectComponents(Head head, Tail... tail) {
+        m_components.push_back(head.getInfo());
+        collectComponents(tail...);
+    }
+    template<typename Head>
+    void collectComponents(Head head) {
+        m_components.push_back(head.getInfo());
+    }
 public:
     void addVertexAttribute(const std::string& attr) {
         m_vertexAttribs << attr << "\n";
@@ -23,14 +31,32 @@ public:
 
     template<typename Head, typename...Tail>
     void generateVertexShaderSource(Head head, Tail... tail) {
-        m_components.push_back(head.getInfo());
-        generateVertexShaderSource(tail...);
-    }
-    template<typename Head>
-    void generateVertexShaderSource(Head head) {
-        m_components.push_back(head.getInfo());
+        collectComponents(head, tail...);
         generateVertexShaderSource(m_components);
         m_components.clear();
+    }
+
+    template<typename Head, typename...Tail>
+    Shader compileVertexShaderSource(Head head, Tail... tail) {
+        collectComponents(head, tail...);
+        auto shader = compileVertexShaderSource(m_components);
+        m_components.clear();
+        return shader;
+    }
+
+    template<typename Head, typename...Tail>
+    void generateFragmentShaderSource(Head head, Tail... tail) {
+        collectComponents(head, tail...);
+        generateFragmentShaderSource(m_components);
+        m_components.clear();
+    }
+
+    template<typename Head, typename...Tail>
+    Shader compileFragmentShaderSource(Head head, Tail... tail) {
+        collectComponents(head, tail...);
+        auto shader = compileFragmentShaderSource(m_components);
+        m_components.clear();
+        return shader;
     }
 
     void generateVertexShaderSource(const std::vector<ShaderComponentInfo>& components);

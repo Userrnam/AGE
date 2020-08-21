@@ -5,53 +5,30 @@
 #include <sstream>
 
 #include "ShaderComponent.hpp"
+#include "StorageComponent.hpp"
 
 namespace age {
 
-class TexCoordsComponent {
-    std::vector<glm::vec2> m_texCoords;
-    Buffer m_buffer;
-    uint32_t m_bufferOffset;
+class TexCoordsComponent : public StorageComponent<glm::vec2[4]> {
 public:
-    void create(uint32_t coordCount)  {
-        m_texCoords.resize(coordCount);
-        m_bufferOffset = 0;
-
-        m_buffer.create(
-            BufferCreateInfo()
-            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
-            .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
-            .setSize(coordCount * sizeof(glm::vec2))
+    static ShaderComponentInfo __getInfo() {
+        ShaderComponentInfo info;
+        info.add(
+            ShaderComponentBuffer()
+            .addBlockMember("vec2 texCoords[4]")
         );
-    }
-
-    inline void upload() {
-        m_buffer.load(m_texCoords.data(), sizeof(glm::vec2) * m_texCoords.size(), m_bufferOffset);
-    }
-
-    inline void destroy() {
-        m_buffer.destroy();
+        info.add(
+            ShaderComponentForward("vec2 texCoords")
+        );
+        info.setVertMainInsert("\tglobals.texCoords = ?.texCoords[gl_VertexIndex];\n");
+        return info;
     }
 
     ShaderComponentInfo getInfo() {
-        ShaderComponentInfo info;
-        info.setVertInsert(
-            ShaderComponentInsert()
-            .addLayout(
-                Layout()
-                .setName("texCoordObject")
-                .setType("uniform", LayoutType::BUFFER)
-                .addBlockMember("vec2 texCoords", true)
-            )
-        );
-        info.setDescription(
-            ShaderComponentDescription()
-            .setType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
-            .setStage(VK_SHADER_STAGE_VERTEX_BIT)
-            .setBuffer(m_buffer)
-        );
+        auto info = __getInfo();
+        info.setBuffer(getBuffer());
         return info;
     }
 };
-    
+
 } // namespace age
