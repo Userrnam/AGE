@@ -13,7 +13,7 @@ namespace age {
 struct ShaderComponentDescription {
     VkShaderStageFlags m_stage;
     VkDescriptorType m_type;
-    std::variant<Buffer*, Texture*> m_descriptor;
+    std::variant<Buffer, Texture> m_descriptor;
 
     // we dont need this all buffers go to vertex shader, all textures to fragment
     inline ShaderComponentDescription& setStage(VkShaderStageFlags stage) {
@@ -27,12 +27,12 @@ struct ShaderComponentDescription {
     }
 
     inline ShaderComponentDescription& setBuffer(Buffer& buffer) {
-        m_descriptor = &buffer;
+        m_descriptor = buffer;
         return *this;
     }
 
     inline ShaderComponentDescription& setTexture(Texture& texture) {
-        m_descriptor = &texture;
+        m_descriptor = texture;
         return *this;
     }
 };
@@ -47,7 +47,7 @@ struct BlockMember {
 
 struct ShaderComponentBuffer {
     std::vector<BlockMember> m_members;
-    Buffer* m_buffer;
+    Buffer m_buffer;
 
     inline ShaderComponentBuffer& addBlockMember(std::string member, bool forward = false) {
         m_members.push_back( { member, forward } );
@@ -55,14 +55,14 @@ struct ShaderComponentBuffer {
     }
 
     inline ShaderComponentBuffer& setBuffer(Buffer& buffer) {
-        m_buffer = &buffer;
+        m_buffer = buffer;
         return *this;
     }
 };
 
 struct ShaderComponentTexture {
     std::string m_name;
-    Texture* m_texture;
+    Texture m_texture;
 
     inline ShaderComponentTexture& setName(const std::string& name) {
         m_name = name;
@@ -70,7 +70,7 @@ struct ShaderComponentTexture {
     }
 
     inline ShaderComponentTexture& setTexture(Texture& texture) {
-        m_texture = &texture;
+        m_texture = texture;
         return *this;
     }
 };
@@ -97,26 +97,26 @@ struct ShaderComponentInfo {
     } m_frag;
 
     inline ShaderComponentInfo& setTexture(Texture& t) {
-        m_description.m_descriptor = &t;
+        m_description.m_descriptor = t;
         return *this;
     }
 
     inline ShaderComponentInfo& setBuffer(Buffer& b) {
-        m_description.m_descriptor = &b;
+        m_description.m_descriptor = b;
         return *this;
     }
 
     inline ShaderComponentInfo& add(ShaderComponentTexture t) {
         m_description.setStage(VK_SHADER_STAGE_FRAGMENT_BIT);
         m_description.setType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
-        m_description.setTexture(*t.m_texture);
+        m_description.setTexture(t.m_texture);
         m_data.push_back(t);
         return *this;
     }
 
     inline ShaderComponentInfo& add(ShaderComponentBuffer b) {
         m_description.setStage(VK_SHADER_STAGE_VERTEX_BIT);
-        m_description.setBuffer(*b.m_buffer);
+        m_description.setBuffer(b.m_buffer);
         m_description.setType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); // can be changed by Instanced template
         m_data.push_back(b);
         return *this;

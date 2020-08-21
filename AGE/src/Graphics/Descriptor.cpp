@@ -160,13 +160,13 @@ DescriptorSet& DescriptorSet::get(const DescriptorSetInfo& info) {
 		descriptorWrites[i].descriptorType = info.m_bindings[i].getDescriptorType();
 		descriptorWrites[i].descriptorCount = info.m_bindings[i].getDescriptors().size();
 
-		if (std::holds_alternative<Buffer*>(info.m_bindings[i].getDescriptors()[0])) {
+		if (std::holds_alternative<Buffer>(info.m_bindings[i].getDescriptors()[0])) {
 			auto pInfos = &bufferInfos[bufferIndex];
 			for (size_t j = 0; j < info.m_bindings[i].getDescriptors().size(); ++j) {
-				auto buffer = std::get<Buffer*>(info.m_bindings[i].getDescriptors()[j]);
+				auto buffer = std::get<Buffer>(info.m_bindings[i].getDescriptors()[j]);
 				VkDescriptorBufferInfo bufferInfo = {};
-				bufferInfo.buffer = buffer->getBuffer();
-				bufferInfo.range = buffer->getSize();
+				bufferInfo.buffer = buffer.getBuffer();
+				bufferInfo.range = buffer.getSize();
 
 				bufferInfos[bufferIndex] = bufferInfo;
 				bufferIndex++;
@@ -175,12 +175,12 @@ DescriptorSet& DescriptorSet::get(const DescriptorSetInfo& info) {
 		} else {
 			auto pInfos = &imageInfos[imageIndex];
 			for (size_t j = 0; j < info.m_bindings[i].getDescriptors().size(); ++j) {
-				auto image = std::get<Texture*>(info.m_bindings[i].getDescriptors()[j]);
+				auto image = std::get<Texture>(info.m_bindings[i].getDescriptors()[j]);
 
 				VkDescriptorImageInfo imageInfo = {};
 				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				imageInfo.imageView = image->getImage().getView();
-				imageInfo.sampler = image->getSampler();
+				imageInfo.imageView = image.getImage().getView();
+				imageInfo.sampler = image.getSampler();
 
 				imageInfos[imageIndex] = imageInfo;
 				imageIndex++;

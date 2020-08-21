@@ -37,9 +37,9 @@ public:
     }
 
     template<typename Head, typename...Tail>
-    Shader compileVertexShaderSource(Head head, Tail... tail) {
+    Shader compileVertexShader(Head head, Tail... tail) {
         collectComponents(head, tail...);
-        auto shader = compileVertexShaderSource(m_components);
+        auto shader = compileVertexShader(m_components);
         m_components.clear();
         return shader;
     }
@@ -52,9 +52,9 @@ public:
     }
 
     template<typename Head, typename...Tail>
-    Shader compileFragmentShaderSource(Head head, Tail... tail) {
+    Shader compileFragmentShader(Head head, Tail... tail) {
         collectComponents(head, tail...);
-        auto shader = compileFragmentShaderSource(m_components);
+        auto shader = compileFragmentShader(m_components);
         m_components.clear();
         return shader;
     }

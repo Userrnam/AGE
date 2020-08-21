@@ -16,11 +16,11 @@ namespace age {
 class DescriptorBinding {
     VkShaderStageFlags m_stage = 0;
     VkDescriptorType m_descriptorType;
-    std::vector<std::variant<Buffer*, Texture*>> m_descriptors;
+    std::vector<std::variant<Buffer, Texture>> m_descriptors;
 public:
     inline VkShaderStageFlags getStage() const { return m_stage; }
     inline VkDescriptorType getDescriptorType() const { return m_descriptorType; }
-    inline const std::vector<std::variant<Buffer*, Texture*>>& getDescriptors() const {
+    inline const std::vector<std::variant<Buffer, Texture>>& getDescriptors() const {
         return m_descriptors;
     }
 
@@ -35,17 +35,17 @@ public:
     }
 
     inline DescriptorBinding& add(Buffer& buffer) {
-        m_descriptors.push_back(&buffer);
+        m_descriptors.push_back(buffer);
         return *this;
     }
 
-    inline DescriptorBinding& add(std::variant<Buffer*, Texture*> bt) {
+    inline DescriptorBinding& add(std::variant<Buffer, Texture> bt) {
         m_descriptors.push_back(bt);
         return *this;
     }
 
     inline DescriptorBinding& add(Texture& texture) {
-        m_descriptors.push_back(&texture);
+        m_descriptors.push_back(texture);
         return *this;
     }
 };
@@ -69,17 +69,26 @@ public:
         return *this;
     }
 
-    DescriptorSetInfo& getBasedOnComponents(const std::vector<ShaderComponentInfo>& components) {
-        for (auto component : components) {
-            auto description = component.m_description;
-
-            this->addBinding(
-                DescriptorBinding()
-                .setDescriptorType(description.m_type)
-                .setStage(description.m_stage)
-                .add(description.m_descriptor)
-            );
-        }
+    template<typename Head, typename...Tail>
+    DescriptorSetInfo get(Head head, Tail... tail) {
+        auto description = head.getInfo().m_description;
+        this->addBinding(
+            DescriptorBinding()
+            .setDescriptorType(description.m_type)
+            .setStage(description.m_stage)
+            .add(description.m_descriptor)
+        );
+        return get(tail...);
+    }
+    template<typename Head>
+    DescriptorSetInfo& get(Head head) {
+        auto description = head.getInfo().m_description;
+        this->addBinding(
+            DescriptorBinding()
+            .setDescriptorType(description.m_type)
+            .setStage(description.m_stage)
+            .add(description.m_descriptor)
+        );
         return *this;
     }
 };
@@ -96,6 +105,8 @@ class DescriptorSet {
 
     friend class Drawable;
 public:
+
+
     VkDescriptorSetLayout getLayout() { return m_layout; }
     VkDescriptorSet getSet() { return m_set; }
 

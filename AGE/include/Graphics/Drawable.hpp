@@ -47,7 +47,7 @@ public:
         return *this;
     }
 
-    inline DrawableCreateInfo& addShader(Shader& shader) {
+    inline DrawableCreateInfo& addShader(const Shader& shader) {
         m_shaders.push_back(shader);
         return *this;
     }

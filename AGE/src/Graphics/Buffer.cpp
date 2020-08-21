@@ -27,13 +27,14 @@ void Buffer::create(const BufferCreateInfo& info) {
 		throw std::runtime_error("failed to create vertex buffer");
 	}
 
+	// Fixme: do not create memory for each buffer. Use 1 big allocation
 	VkMemoryRequirements memRequirements;
 	vkGetBufferMemoryRequirements(core::apiCore.device, m_buffer, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	allocInfo.allocationSize = memRequirements.size;
-	// TODO: store memory type indicies in core or smth to reduce host - device calls
+	allocInfo.allocationSize = memRequirements.size; // for me required size always was equal to buffersize
+	// TODO: store memory type indicies
 	allocInfo.memoryTypeIndex = core::findMemoryType(memRequirements.memoryTypeBits, info.m_memoryProperties);
 
 	if (vkAllocateMemory(core::apiCore.device, &allocInfo, nullptr, &m_memory) != VK_SUCCESS) {
