@@ -194,6 +194,7 @@ class Application : public age::Application {
 #include "Graphics/Components/ColorComponent.hpp"
 #include "Graphics/Components/TextureComponent.hpp"
 #include "Graphics/Components/TexCoordsComponent.hpp"
+#include "Graphics/Components/TileMapComponent.hpp"
 #include "Containers/DynamicBuffer.hpp"
 
 int main(int argc, char* argv[]) {
@@ -204,11 +205,12 @@ int main(int argc, char* argv[]) {
     age::ColorComponent color;
     age::TextureComponent tex;
     age::TexCoordsComponent texCoord;
+    age::TileMapComponent tilemap;
 
     age::ShaderBuilder shaderBuilder;
-    shaderBuilder.generateVertexShaderSource(transform, color, texCoord, tex);
+    shaderBuilder.generateVertexShaderSource(transform, color, tex, tilemap);
     shaderBuilder.saveShader("temp.vert");
-    shaderBuilder.generateFragmentShaderSource(transform, color, texCoord, tex);
+    shaderBuilder.generateFragmentShaderSource(transform, color, tex, tilemap);
     shaderBuilder.saveShader("temp.frag");
 
     app.run();

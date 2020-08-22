@@ -10,6 +10,7 @@ void Text::create(View& view, Font& font, uint32_t maxSize) {
 
 void Text::setText(const std::string& text) {
     TileMap::clearTiles();
+
     int move = 0;
     for (char c : text) {
         auto& character = m_font->m_characters[c];

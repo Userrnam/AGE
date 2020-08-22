@@ -15,10 +15,11 @@ template <class T, class M> M __getMemberType(M T:: *);
 // T's field holding data must be named m_data
 // T must have a static method __getInfo() that returns ShaderComponentInfo
 template<typename T>
-struct Instanced {
+class Instanced {
     std::vector<GET_TYPE_OF(T::m_data)> m_instances;
     Buffer m_buffer;
 
+public:
     const GET_TYPE_OF(T::m_data)& operator[](size_t i) const {
         return m_instances[i];
     }
@@ -52,7 +53,7 @@ struct Instanced {
         ShaderComponentInfo info = T::__getInfo();
         info.m_instanced = true;
         info.m_description.m_type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-        info.m_description.m_descriptor = &m_buffer;
+        info.m_description.m_descriptor = m_buffer;
         info.setId<Instanced<T>>();
         return info;
     }

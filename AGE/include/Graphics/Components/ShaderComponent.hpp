@@ -5,12 +5,25 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-#include "../Core/PipelineManager.hpp"
-
 #include "../Buffer.hpp"
 #include "../Texture.hpp"
 
 namespace age {
+
+typedef uint64_t ShaderComponentId;
+
+inline ShaderComponentId __nextId() {
+    static ShaderComponentId id = 1;
+    id <<= 1; // first bit reserved for color blend (1 enable, 0 disable)
+    ShaderComponentId result = id;
+    return result;
+}
+
+template <typename T>
+ShaderComponentId getShaderComponentId() {
+	static ShaderComponentId id = __nextId();
+	return id;
+}
 
 struct ShaderComponentDescription {
     VkShaderStageFlags m_stage;

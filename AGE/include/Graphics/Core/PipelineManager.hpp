@@ -3,31 +3,17 @@
 #include <vulkan/vulkan.h>
 #include <utility>
 
-namespace age {
+#include "../Components/ShaderComponent.hpp"
 
-typedef uint64_t ShaderComponentId;
+namespace age::core {
 
-namespace core {
+struct PipelineInfo {
+    bool blendEnable;
+    // shaders
+};
 
-    typedef uint64_t PipelineInfo;
+std::pair<VkPipeline, VkPipelineLayout> requestPipeline(PipelineInfo requirements);
 
-    inline ShaderComponentId __nextId() {
-        static ShaderComponentId id = 1;
-        id <<= 1; // first bit reserved for color blend (1 enable, 0 disable)
-        ShaderComponentId result = id;
-        return result;
-    }
+VkPipelineLayout requestPipelineLayout(const std::vector<VkDescriptorSetLayout>& layouts);
 
-    std::pair<VkPipeline, VkPipelineLayout> requestPipeline(PipelineInfo requirements);
-
-    VkPipelineLayout requestPipelineLayout(const std::vector<VkDescriptorSetLayout>& layouts);
-
-} // namespace core
-
-template <typename T>
-ShaderComponentId getShaderComponentId() {
-	static ShaderComponentId id = core::__nextId();
-	return id;
-}
-
-} // namespace age
+} // namespace age::core
