@@ -91,6 +91,8 @@ public:
 };
 
 class Drawable {
+    void getPipelineLayout(const DrawableCreateInfo& createInfo);
+    void getShaderStageCreateInfos(const std::vector<Shader>&, std::vector<VkPipelineShaderStageCreateInfo>&, std::vector<VkSpecializationInfo>&);
 protected:
     VkPipelineLayout m_pipelineLayout;
     VkPipeline m_pipeline;
