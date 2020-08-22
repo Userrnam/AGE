@@ -24,6 +24,11 @@ public:
     } debug;
 #endif
 
+    Shared() {}
+    inline Shared(T _data) {
+        this->create(_data);
+    }
+
     inline Shared<T> copy() {
 #ifndef NDEBUG
         if (!debug.created) {

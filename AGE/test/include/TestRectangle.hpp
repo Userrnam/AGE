@@ -37,7 +37,7 @@ struct TestRectangle : public age::Drawable {
                 age::DescriptorSet()
                 .get(
                     age::DescriptorSetInfo()
-                    .get(color, transform)
+                    .getBasedOnComponents(color, transform)
                 )
             )
             .addShader(vs)

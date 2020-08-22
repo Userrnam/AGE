@@ -37,7 +37,7 @@ void Application::destroy() {
 
     audioCore.destroy();
     EventManager::destroy();
-    m_renderer.destroy();
+    Renderer::destroy();
 }
 
 // maybe pass coreConfig here
@@ -46,7 +46,7 @@ void Application::create() {
 
     onCoreConfig();
 
-    m_renderer.create();
+    Renderer::create();
 
     initBasicShapes();
 

@@ -75,20 +75,13 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     VkPipelineDepthStencilStateCreateInfo depthStencil = {};
     depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 
-    VkViewport viewport = {};
-    viewport.x = info.m_view->getViewport().x;
-    viewport.y = info.m_view->getViewport().y;
-    viewport.width = info.m_view->getViewport().width;
-    viewport.height = info.m_view->getViewport().height;
-
     VkRect2D scissors = {};
-    scissors.offset = { static_cast<int32_t>(viewport.x), static_cast<int32_t>(viewport.y) };
-    scissors.extent = { static_cast<uint32_t>(viewport.width), static_cast<uint32_t>(viewport.height) };
+    scissors.offset = { 0, 0 };
+    scissors.extent = core::apiCore.swapchain.extent;
 
     VkPipelineViewportStateCreateInfo viewportState = {};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
     viewportState.viewportCount = 1;
-    viewportState.pViewports = &viewport;
     viewportState.scissorCount = 1;
     viewportState.pScissors = &scissors;
 
@@ -138,7 +131,14 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
 
     m_pipelineLayout = core::requestPipelineLayout(layouts);
 
+    VkDynamicState dynamicStates[] = { VK_DYNAMIC_STATE_VIEWPORT };
+    VkPipelineDynamicStateCreateInfo dynamicState = {};
+    dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamicState.dynamicStateCount = 1;
+    dynamicState.pDynamicStates = dynamicStates;
+
     VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
+    pipelineCreateInfo.pDynamicState = &dynamicState;
     pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     pipelineCreateInfo.stageCount = shaderStages.size();
     pipelineCreateInfo.pStages = shaderStages.data();
@@ -147,7 +147,6 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     pipelineCreateInfo.pViewportState = &viewportState;
     pipelineCreateInfo.pRasterizationState = &rasterizer;
     pipelineCreateInfo.pColorBlendState = &colorBlending;
-    pipelineCreateInfo.pDynamicState = nullptr;
     pipelineCreateInfo.pDepthStencilState = &depthStencil;
     pipelineCreateInfo.pMultisampleState = &multisampling;
     pipelineCreateInfo.layout = m_pipelineLayout;
@@ -162,7 +161,7 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     }
 }
 
-void Drawable::draw(int i) {
+void Drawable::draw(int i) const {
     VkDeviceSize offsets[] = { 0 };
 
     VkBuffer vertexBuffer = m_shapeInfo.data.vertex.buffer.getBuffer();

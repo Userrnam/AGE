@@ -70,7 +70,7 @@ public:
     }
 
     template<typename Head, typename...Tail>
-    DescriptorSetInfo get(Head head, Tail... tail) {
+    DescriptorSetInfo getBasedOnComponents(Head head, Tail... tail) {
         auto description = head.getInfo().m_description;
         this->addBinding(
             DescriptorBinding()
@@ -78,10 +78,10 @@ public:
             .setStage(description.m_stage)
             .add(description.m_descriptor)
         );
-        return get(tail...);
+        return getBasedOnComponents(tail...);
     }
     template<typename Head>
-    DescriptorSetInfo& get(Head head) {
+    DescriptorSetInfo& getBasedOnComponents(Head head) {
         auto description = head.getInfo().m_description;
         this->addBinding(
             DescriptorBinding()
@@ -89,6 +89,19 @@ public:
             .setStage(description.m_stage)
             .add(description.m_descriptor)
         );
+        return *this;
+    }
+
+    DescriptorSetInfo& getBasedOnComponents(const std::vector<ShaderComponentInfo>& components) {
+        for (auto& component : components) {
+            auto& description = component.m_description;
+            this->addBinding(
+                DescriptorBinding()
+                .setDescriptorType(description.m_type)
+                .setStage(description.m_stage)
+                .add(description.m_descriptor)
+            );
+        }
         return *this;
     }
 };

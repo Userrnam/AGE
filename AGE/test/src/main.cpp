@@ -12,6 +12,7 @@
 #include "Math.hpp"
 
 #include "TestTriangle.hpp"
+#include "TestRectangle.hpp"
 #include "Scene.hpp"
 #include <GlFW/glfw3.h>
 
@@ -46,6 +47,7 @@ everything depends on position
 // it's scene + game logic, maybe change it?
 class TestScene : public age::Scene {
     TestTriangle triangle;
+    TestRectangle rect;
     age::Text text;
     age::Text text2;
     age::Font font;
@@ -71,6 +73,7 @@ class TestScene : public age::Scene {
         text2.uploadMapData();
 
         triangle.create(m_views[0]);
+        rect.create(m_views[0]);
 
         auto entity3 = registry.create();
         registry.emplace<age::Drawable>(entity3, text2);
@@ -81,17 +84,21 @@ class TestScene : public age::Scene {
         auto entity2 = registry.create();
         registry.emplace<age::Drawable>(entity2, triangle);
 
+        auto e = registry.create();
+        registry.emplace<age::Drawable>(e, rect);
+
         auto view = registry.view<age::Drawable>();
         std::vector<age::Drawable> targets;
         targets.resize(view.size());
         for (size_t i = 0; i < view.size(); ++i) {
             targets[i] = view.get(view[i]);
         }
-        parent->render(targets);
+        parent->render({ age::RenderPack(m_views[0], targets) });
     }
 
     virtual void onDestroy() override {
         triangle.destroy();
+        rect.destroy();
         text.destroy();
         font.destroy();
         text2.destroy();

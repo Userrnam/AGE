@@ -5,7 +5,9 @@
 
 namespace age {
 
-void Renderer::updateCommandBuffers() {
+void Renderer::render(const std::vector<RenderPack>& packs) {
+    // TODO: update only if something changed
+
     // update active commandBuffer
     if (core::apiCore.commandBuffers.active == core::apiCore.commandBuffers.data.data()) {
         core::apiCore.commandBuffers.active += core::apiCore.swapchain.images.size();
@@ -34,7 +36,13 @@ void Renderer::updateCommandBuffers() {
 
         vkCmdBeginRenderPass(core::apiCore.commandBuffers.active[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-        draw(i);
+        for (const auto& pack : packs) {
+            vkCmdSetViewport(core::apiCore.commandBuffers.active[i], 0, 1, &pack.m_viewport);
+
+            for (auto& target : pack.m_targets) {
+                target.draw(i);
+            }
+        }
 
         vkCmdEndRenderPass(core::apiCore.commandBuffers.active[i]);
 
@@ -42,18 +50,6 @@ void Renderer::updateCommandBuffers() {
 			throw std::runtime_error("failed to record command buffer");
 		}
 	}
-}
-
-void Renderer::draw(int j) {
-    for (size_t i = 0; i < pTargets->size(); ++i) {
-        (*pTargets)[i].draw(j);
-    }
-}
-
-void Renderer::render(std::vector<Drawable>& targets) {
-    // deside if we need update
-    this->pTargets = &targets;
-    updateCommandBuffers();
 }
 
 void Renderer::create() {

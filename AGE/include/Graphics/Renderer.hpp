@@ -6,20 +6,21 @@
 
 namespace age {
 
-class Renderer {
-    std::vector<Drawable>* pTargets = nullptr;
-
-    // TODO: update command buffers only if needed
-
-    void updateCommandBuffers();
-
-    void draw(int i);
-
-    friend class Application;
+class RenderPack {
+    VkViewport m_viewport;
+    const std::vector<Drawable>& m_targets;
+    friend class Renderer;
 public:
-    void create();
-    void destroy();
-    void render(std::vector<Drawable>& targets);
+    RenderPack(const View& view, const std::vector<Drawable>& targets)
+        : m_viewport(view.getViewport()), m_targets(targets) {}
+};
+
+class Renderer {
+    friend class Application;
+    static void create();
+    static void destroy();
+public:
+    static void render(const std::vector<RenderPack>& packs);
 };
 
 } // namespace age

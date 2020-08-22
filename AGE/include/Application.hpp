@@ -15,7 +15,6 @@ namespace age {
 class Application {
     bool m_isRunning = true;
     bool m_created = false;
-    Renderer m_renderer;
 
     Shared<Sampler> defaultSampler;
 protected:
@@ -36,8 +35,8 @@ public:
         return defaultSampler.copy();
     }
 
-    inline void render(std::vector<Drawable>& targets) {
-        m_renderer.render(targets);
+    inline void render(const std::vector<RenderPack>& packs) {
+        Renderer::render(packs);
     }
 
     void destroy();
