@@ -18,36 +18,76 @@
 
 #include "Graphics/ShaderBuilder.hpp"
 
+#include "Graphics/Components/TransformComponent.hpp"
+#include "Graphics/Components/ColorComponent.hpp"
+#include "Graphics/Components/TextureComponent.hpp"
+#include "Graphics/Components/TexCoordsComponent.hpp"
+#include "Graphics/Components/TileMapComponent.hpp"
+#include "Containers/DynamicBuffer.hpp"
+
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""
 #endif
 
-// how to update position for physics, renderer, audio simultaniously?
-// positions are updated by physics engine, so everything has outdated data
-// 1. run physics simulation
-// 2. update positions for audio and drawable
+struct RectController : public age::ScriptComponent {
+    glm::vec2 move = {};
+    age::Transformable transformable;
+    age::TransformComponent tc;
+    const float speed = 1.0f;
 
-/*
+    virtual void onCreate() override {
+        transformable.setScale(100, 100);
 
-all entities for scene created at once, than I can use
+        tc = getComponent<age::TransformComponent>();
+        tc.set(transformable.getTransform());
+        tc.upload();
+    }
 
-physics component -> position, events
-position, size (used by renderer and audio)
-drawable
-[pd] sound
-[pd] ubo component.update()
-descriptor
+    virtual void onEvent(age::Event event) override {
+        if (event == age::event::KEY) {
+            auto e = event.getStructure<age::event::Key>();
+            if (e.action == GLFW_PRESS) {
+                switch (e.key) {
+                    case GLFW_KEY_UP: move.y = 10; break;
+                    case GLFW_KEY_DOWN: move.y = -10; break;
+                    case GLFW_KEY_RIGHT: move.x = 10; break;
+                    case GLFW_KEY_LEFT: move.x = -10; break;
+                    default:
+                    break;
+                }
+            } else if (e.action == GLFW_RELEASE) {
+                switch (e.key) {
+                case GLFW_KEY_UP: case GLFW_KEY_DOWN: move.y = 0; break;
+                case GLFW_KEY_LEFT: case GLFW_KEY_RIGHT: move.x = 0; break;
+                
+                default:
+                    break;
+                }
+            }
+        }
+    }
 
-some extra data (texture)
+    virtual void onUpdate(float elapsedTime) override {
+        if (move != glm::vec2(0.0)) {
+            transformable.move(move.x * speed, move.y * speed);
+            tc.set(transformable.getTransform());
+            tc.upload();
+        }
+    }
 
-everything depends on position
+    // Fixme: this is temporary, find better way to do this
+    virtual void onDestroy() override {
+        auto& transform = getComponent<age::TransformComponent>();
+        transform.destroy();
+        auto& color = getComponent<age::ColorComponent>();
+        color.destroy();
+        auto& drawable = getComponent<age::Drawable>();
+        drawable.destroy();
+    }
+};
 
-*/
-
-// it's scene + game logic, maybe change it?
 class TestScene : public age::Scene {
     TestTriangle triangle;
-    TestRectangle rect;
     age::Text text;
     age::Text text2;
     age::Font font;
@@ -55,8 +95,11 @@ class TestScene : public age::Scene {
     float rotate = 0.0f;
 
     virtual void onCreate() override {
+        auto e = createEntity();
+
         font.load(age::getResourcePath("Courier.dfont"), parent->getDefaultSamplerCopy());
 
+        // Fixme
         // create view
         m_views.push_back(age::View());
         m_views[0].create();
@@ -73,21 +116,57 @@ class TestScene : public age::Scene {
         text2.uploadMapData();
 
         triangle.create(m_views[0]);
-        rect.create(m_views[0]);
 
-        auto entity3 = registry.create();
-        registry.emplace<age::Drawable>(entity3, text2);
+        auto entity = createEntity();
+        entity.addComponent<age::Drawable>(text2);
 
-        auto entity = registry.create();
-        registry.emplace<age::Drawable>(entity, text);
+        entity = createEntity();
+        entity.addComponent<age::Drawable>(text);
 
-        auto entity2 = registry.create();
-        registry.emplace<age::Drawable>(entity2, triangle);
+        entity = createEntity();
+        entity.addComponent<age::Drawable>(triangle);
 
-        auto e = registry.create();
-        registry.emplace<age::Drawable>(e, rect);
+        // create rectangle
+        entity = createEntity();
+        // add transform
+        auto& transform = entity.addComponent<age::TransformComponent>();
+        transform.create();
+        // add color
+        auto& color = entity.addComponent<age::ColorComponent>();
+        color.create();
+        color.set( { 1, 0, 1, 1 } );
+        color.upload();
+        // compile shaders
+        age::ShaderBuilder builder;
+        auto vs = builder.compileVertexShader(color, transform);
+        auto fs = builder.compileFragmentShader(color, transform);
+        // get drawable
+        auto& drawable = entity.addComponent<age::Drawable>();
+        auto shape = age::getRectangleShape();
+        drawable.create(
+            age::DrawableCreateInfo()
+            .setColorBlendEnable(false)
+            .setIstanceCount(1)
+            .setView(m_views[0])
+            .setShapeInfo(shape)
+            .addDescriptorSet(
+                age::DescriptorSet()
+                .get(
+                    age::DescriptorSetInfo()
+                    .getBasedOnComponents(color, transform)
+                )
+            )
+            .addShader(vs)
+            .addShader(fs)
+        );
+        // destroy shaders
+        vs.destroy();
+        fs.destroy();
 
-        auto view = registry.view<age::Drawable>();
+        auto script = entity.addComponent<age::ScriptComponent*>(new RectController());
+        script->create(entity);
+
+        auto view = m_registry.view<age::Drawable>();
         std::vector<age::Drawable> targets;
         targets.resize(view.size());
         for (size_t i = 0; i < view.size(); ++i) {
@@ -98,7 +177,6 @@ class TestScene : public age::Scene {
 
     virtual void onDestroy() override {
         triangle.destroy();
-        rect.destroy();
         text.destroy();
         font.destroy();
         text2.destroy();
@@ -129,7 +207,7 @@ class TestScene : public age::Scene {
                 default:
                     break;
                 }
-            }            
+            }
         }
     }
 
@@ -140,12 +218,8 @@ class TestScene : public age::Scene {
             text.uploadMapData();
         }
     }
-
-public:
-    TestScene(age::Application* app) : age::Scene(app) {}
 };
 
-// dont know why but mac says app quit unexpectedly on exit
 class Application : public age::Application {
     virtual void onCoreConfig() override {
         age::setResourcePath(RESOURCE_PATH);
@@ -163,7 +237,9 @@ class Application : public age::Application {
     }
 
     virtual void onCreate() override {
-        setActiveScene(new TestScene(this));
+        auto scene = new TestScene();
+        scene->create(this);
+        setActiveScene(scene);
     }
 
     virtual void onEvent(age::Event e) override {
@@ -189,13 +265,6 @@ class Application : public age::Application {
         }
     }
 };
-
-#include "Graphics/Components/TransformComponent.hpp"
-#include "Graphics/Components/ColorComponent.hpp"
-#include "Graphics/Components/TextureComponent.hpp"
-#include "Graphics/Components/TexCoordsComponent.hpp"
-#include "Graphics/Components/TileMapComponent.hpp"
-#include "Containers/DynamicBuffer.hpp"
 
 int main(int argc, char* argv[]) {
     Application app;

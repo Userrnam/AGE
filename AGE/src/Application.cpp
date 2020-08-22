@@ -86,7 +86,7 @@ void Application::run() {
         auto events = EventManager::getEvents();
         for (auto event : events) {
             this->onEvent(event);
-            pActiveScene->onEvent(event);
+            pActiveScene->handleEvent(event);
         }
         EventManager::clearEvents();
 

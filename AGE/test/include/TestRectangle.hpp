@@ -27,7 +27,7 @@ struct TestRectangle : public age::Drawable {
         age::ShaderBuilder builder;
         auto vs = builder.compileVertexShader(color, transform);
         auto fs = builder.compileFragmentShader(color, transform);
-        createDrawable(
+        Drawable::create(
             age::DrawableCreateInfo()
             .setColorBlendEnable(false)
             .setIstanceCount(1)

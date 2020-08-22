@@ -111,7 +111,7 @@ void Drawable::getShaderStageCreateInfos(const std::vector<Shader>& shaders, std
 
 // Fixme: same pipelines can be used with different descriptorSets
 // objects that use same shaders, have same descriptors and same vertex type can use same pipeline
-void Drawable::createDrawable(const DrawableCreateInfo& info) {
+void Drawable::create(const DrawableCreateInfo& info) {
     m_shapeInfo = *info.m_pShapeInfo;
     m_instanceCount = info.m_instanceCount;
 
@@ -182,6 +182,13 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     if (vkCreateGraphicsPipelines(core::apiCore.device, VK_NULL_HANDLE, 1, &pipelineCreateInfo,
     nullptr, reinterpret_cast<VkPipeline*>(&m_pipeline)) != VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline");
+    }
+}
+
+void Drawable::destroy() {
+    destroyPipeline(m_pipeline);
+    for (int i = 1; i < m_descriptorSets.size(); ++i) {
+        freeDescriptor(m_poolIndicies[i], m_descriptorSets[i]);
     }
 }
 

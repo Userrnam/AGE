@@ -49,7 +49,7 @@ public:
             age::ShapeInfo().loadIndicies(indicies).loadVerticies(verticies)
         );
 
-        createDrawable(
+        Drawable::create(
             age::DrawableCreateInfo()
             .setColorBlendEnable(false)
             .setIstanceCount(1)

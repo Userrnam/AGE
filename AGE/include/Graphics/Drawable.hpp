@@ -96,15 +96,17 @@ class Drawable {
 protected:
     VkPipelineLayout m_pipelineLayout;
     VkPipeline m_pipeline;
-    std::vector<uint32_t> m_poolIndicies; // used to free descriptor set
+    std::vector<uint32_t> m_poolIndicies;
     std::vector<VkDescriptorSet> m_descriptorSets;
 
     Shared<ShapeInfo> m_shapeInfo;
 
     uint32_t m_instanceCount;
 
-    void createDrawable(const DrawableCreateInfo& createInfo);
 public:
+    void create(const DrawableCreateInfo& createInfo);
+    void destroy();
+
     void draw(int i) const;
 };
 

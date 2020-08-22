@@ -22,7 +22,6 @@ protected:
 
     void setActiveScene(Scene* scene) {
         pActiveScene = scene;
-        scene->onCreate();
     }
 
     virtual void onEvent(Event event) {}

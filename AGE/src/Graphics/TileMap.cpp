@@ -32,7 +32,7 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
 
     auto shape = getRectangleShape();
 
-    createDrawable(
+    Drawable::create(
         DrawableCreateInfo()
         .setColorBlendEnable(blendEnable)
         .setView(view)
