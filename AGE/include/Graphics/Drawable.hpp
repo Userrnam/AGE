@@ -12,6 +12,7 @@
 #include "Index.hpp"
 #include "ShapeInfo.hpp"
 #include "Containers/Shared.hpp"
+#include "ShaderBuilder.hpp"
 
 namespace age {
 
@@ -26,7 +27,38 @@ class DrawableCreateInfo {
     Shared<ShapeInfo> *m_pShapeInfo;
 
     friend class Drawable;
+
+    template<typename Head, typename...Tail>
+    void collectComponents(std::vector<ShaderComponentInfo>& components, Head head, Tail... tail) {
+        components.push_back(head.getInfo());
+        collectComponents(tail...);
+    }
+    template<typename Head>
+    void collectComponents(std::vector<ShaderComponentInfo>& components, Head head) {
+        components.push_back(head.getInfo());
+    }
 public:
+    template<typename... Components>
+    DrawableCreateInfo& createBasedOnComponents(Components... components) {
+        // std::vector<ShaderComponentInfo> _components;
+        // collectComponents(_components, components...);
+
+        // // generate shaders
+        // ShaderBuilder sb;
+
+        // m_shaders.push_back(sb.compileVertexShader(_components));
+        // m_shaders.push_back(sb.compileFragmentShader(_components));
+
+        // // add descriptorSet
+        // m_descriptors.push_back(
+        //     DescriptorSet()
+        //     .get(
+        //         DescriptorSetInfo()
+        //         .getBasedOnComponents(_components)
+        //     )
+        // );
+    }
+
     inline DrawableCreateInfo& setShapeInfo(Shared<ShapeInfo>& shape) {
         m_pShapeInfo = &shape;
         return *this;
@@ -71,7 +103,7 @@ protected:
 
     void createDrawable(const DrawableCreateInfo& createInfo);
 public:
-    void draw(int i);
+    void draw(int i) const;
 };
 
 void destroyPipeline(VkPipeline pipeline);

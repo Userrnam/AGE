@@ -3,8 +3,9 @@
 #include "Core/Core.hpp"
 #include "CoreConfig.hpp"
 #include "Core/RenderPassManager.hpp"
-#include "PipelineLayoutManager.hpp"
+#include "PipelineManager.hpp"
 #include "Core/Pool.hpp"
+
 
 namespace age::core {
     extern CoreConfig coreConfig;
@@ -34,6 +35,8 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
         m_poolIndicies.push_back(d.m_poolIndex);
         layouts.push_back(d.m_layout);
     }
+
+    m_pipelineLayout = core::requestPipelineLayout(layouts);
 
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
     shaderStages.resize(info.m_shaders.size());
@@ -128,8 +131,6 @@ void Drawable::createDrawable(const DrawableCreateInfo& info) {
     colorBlending.logicOpEnable = VK_FALSE;
     colorBlending.attachmentCount = 1;
     colorBlending.pAttachments = &colorBlendAttachment;
-
-    m_pipelineLayout = core::requestPipelineLayout(layouts);
 
     VkDynamicState dynamicStates[] = { VK_DYNAMIC_STATE_VIEWPORT };
     VkPipelineDynamicStateCreateInfo dynamicState = {};

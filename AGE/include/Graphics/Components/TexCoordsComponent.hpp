@@ -27,6 +27,7 @@ public:
     ShaderComponentInfo getInfo() {
         auto info = __getInfo();
         info.setBuffer(getBuffer());
+        info.setId<TexCoordsComponent>();
         return info;
     }
 };

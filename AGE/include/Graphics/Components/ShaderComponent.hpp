@@ -5,6 +5,8 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
+#include "../Core/PipelineManager.hpp"
+
 #include "../Buffer.hpp"
 #include "../Texture.hpp"
 
@@ -84,6 +86,7 @@ struct ShaderComponentForward {
 struct ShaderComponentInfo {
     std::vector<std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>> m_data;
     ShaderComponentDescription m_description;
+    ShaderComponentId id = 0;
     bool m_instanced = false; // this can be changed by Instanced template
 
     struct {
@@ -95,6 +98,12 @@ struct ShaderComponentInfo {
         std::string rawInsert;
         std::string mainInsert;
     } m_frag;
+
+    template<typename T>
+    inline ShaderComponentInfo& setId() {
+        id = getShaderComponentId<T>();
+        return *this;
+    }
 
     inline ShaderComponentInfo& setTexture(Texture& t) {
         m_description.m_descriptor = t;

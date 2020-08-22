@@ -31,6 +31,7 @@ public:
             .setTexture(m_texture)
         );
         info.setFragMainInsert("\tfragColor *= texture(textureSampler, globals.texCoords);\n");
+        info.setId<TextureComponent>();
         return info;
     }
 };

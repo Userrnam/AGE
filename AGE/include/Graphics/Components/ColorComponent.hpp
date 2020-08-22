@@ -23,6 +23,7 @@ public:
 
     ShaderComponentInfo getInfo() {
         ShaderComponentInfo info = __getInfo();
+        info.setId<ColorComponent>();
         info.setBuffer(getBuffer());
         return info;
     }

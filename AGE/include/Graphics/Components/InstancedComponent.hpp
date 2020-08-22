@@ -53,6 +53,7 @@ struct Instanced {
         info.m_instanced = true;
         info.m_description.m_type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
         info.m_description.m_descriptor = &m_buffer;
+        info.setId<Instanced<T>>();
         return info;
     }
 };

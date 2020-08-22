@@ -1,6 +1,6 @@
 #include "Core.hpp"
 
-#include "PipelineLayoutManager.hpp"
+#include "PipelineManager.hpp"
 
 namespace age::core {
 
