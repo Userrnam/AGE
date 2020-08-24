@@ -54,10 +54,8 @@ inline VkPipelineMultisampleStateCreateInfo getMultisampleStateCreateInfo() {
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     if (core::coreConfig.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
         multisampling.rasterizationSamples = core::apiCore.multisampling.sampleCount;
-        if (core::coreConfig.multisampling.minSampleShading) {
-            multisampling.sampleShadingEnable = VK_TRUE;
-            multisampling.minSampleShading = core::coreConfig.multisampling.minSampleShading;
-        }
+        multisampling.sampleShadingEnable = core::coreConfig.multisampling.sampleRateShading;
+        multisampling.minSampleShading = core::coreConfig.multisampling.minSampleShading;
     } else {
         multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
     }
@@ -193,10 +191,11 @@ void Drawable::destroy() {
 }
 
 void Drawable::draw(int i) const {
-    VkDeviceSize offsets[] = { 0 };
-
     VkBuffer vertexBuffer = m_shapeInfo.data.vertex.buffer.getBuffer();
     VkBuffer indexBuffer = m_shapeInfo.data.index.buffer.getBuffer();
+
+    VkDeviceSize offsets[] = { m_shapeInfo.data.vertex.buffer.getBufferOffset() };
+
     vkCmdBindPipeline(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
     vkCmdBindVertexBuffers(core::apiCore.commandBuffers.active[i], 0, 1, &vertexBuffer, offsets);
     vkCmdBindIndexBuffer(core::apiCore.commandBuffers.active[i], indexBuffer, 0, m_shapeInfo.data.index.type);

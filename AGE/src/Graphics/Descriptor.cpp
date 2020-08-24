@@ -164,9 +164,11 @@ DescriptorSet& DescriptorSet::get(const DescriptorSetInfo& info) {
 			auto pInfos = &bufferInfos[bufferIndex];
 			for (size_t j = 0; j < info.m_bindings[i].getDescriptors().size(); ++j) {
 				auto buffer = std::get<Buffer>(info.m_bindings[i].getDescriptors()[j]);
+
 				VkDescriptorBufferInfo bufferInfo = {};
 				bufferInfo.buffer = buffer.getBuffer();
 				bufferInfo.range = buffer.getSize();
+				bufferInfo.offset = buffer.getBufferOffset();
 
 				bufferInfos[bufferIndex] = bufferInfo;
 				bufferIndex++;

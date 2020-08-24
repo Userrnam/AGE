@@ -16,7 +16,6 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
 
     m_buffer.create(
         BufferCreateInfo()
-        .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
         .setUsage(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT)
         .setSize(sizeof(Tile) * m_maxSize + sizeof(MapData))
     );

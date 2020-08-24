@@ -4,6 +4,7 @@
 #include "Core.hpp"
 #include "VulkanDebug.hpp"
 #include "RenderPassManager.hpp"
+#include "DeviceAlloc.hpp"
 
 namespace age::core {
 
@@ -25,6 +26,8 @@ void initCore() {
 }
 
 void destroyCore() {
+	deviceAlloc::destroy();
+
 	vkFreeCommandBuffers(apiCore.device, apiCore.commandPools.graphicsPool,
 		apiCore.commandBuffers.data.size(), apiCore.commandBuffers.data.data());
 
@@ -50,7 +53,7 @@ void destroyCore() {
 	apiCore.renderPass.destroy();
 
 	apiCore.multisampling.image.destroy();
-	apiCore.depth.image.destroy();
+	// apiCore.depth.image.destroy();
 
 	// destroy swapChain Views
 	for (auto imageView : apiCore.swapchain.imageViews) {

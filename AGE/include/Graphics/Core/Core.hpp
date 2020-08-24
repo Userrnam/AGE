@@ -86,6 +86,9 @@ struct Core {
         uint32_t size = 0;
     } commandBuffers;
 
+    VkPhysicalDeviceProperties deviceProperties;
+    VkPhysicalDeviceFeatures deviceFeatures;
+
     bool framebufferResized = false;
 
 	VkInstance instance = VK_NULL_HANDLE;

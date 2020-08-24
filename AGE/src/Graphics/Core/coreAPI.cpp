@@ -121,29 +121,17 @@ void pickPhysicalDevice() {
 	}
 
 	// update features
-	VkPhysicalDeviceFeatures deviceFeatures;
-	vkGetPhysicalDeviceFeatures(apiCore.physicalDevice, &deviceFeatures);
-	
-	if (coreConfig.features.geometryShader && !deviceFeatures.geometryShader) {
-		std::cerr << "warning: geometry shader unavailable\n";
-		coreConfig.features.geometryShader = false;
-	}
-	if (coreConfig.features.tesselationShader && !deviceFeatures.tessellationShader) {
-		std::cerr << "warning: tesselation shader unavailable\n";
-		coreConfig.features.tesselationShader = false;
-	}
-	if (coreConfig.features.samplerAnistropy && !deviceFeatures.samplerAnisotropy) {
-		std::cerr << "warning: sampler anistropy unavailable\n";
-		coreConfig.features.samplerAnistropy = false;
-	}
-	if (coreConfig.features.sampleRateShading && !deviceFeatures.sampleRateShading) {
+	vkGetPhysicalDeviceFeatures(apiCore.physicalDevice, &apiCore.deviceFeatures);
+	if (coreConfig.multisampling.sampleRateShading && !apiCore.deviceFeatures.sampleRateShading) {
 		std::cerr << "warning: sample rate shading unavailable\n";
-		coreConfig.features.sampleRateShading = false;
+		coreConfig.multisampling.sampleRateShading = false;
 	}
-
 	if (apiCore.physicalDevice == VK_NULL_HANDLE) {
 		throw std::runtime_error("failed to find suitable GPU");
 	}
+
+	// load device properties
+	vkGetPhysicalDeviceProperties(apiCore.physicalDevice, &apiCore.deviceProperties);
 
 	// set multisampling
 	VkSampleCountFlagBits maxSamples = getMaxSampleCount();
@@ -233,8 +221,7 @@ void createLogicalDevice() {
 	}
 
 	VkPhysicalDeviceFeatures deviceFeatures = {};
-	deviceFeatures.samplerAnisotropy = VK_TRUE;
-	deviceFeatures.sampleRateShading = VK_TRUE;
+	deviceFeatures.sampleRateShading = coreConfig.multisampling.sampleRateShading;
 
 	VkDeviceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -344,7 +331,6 @@ void createDepthResources() {
 			.setExtent(apiCore.swapchain.extent)
 			.setSampleCount(apiCore.multisampling.sampleCount)
 			.setImageUsage(VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
-			.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
 			.setAspectFlags(VK_IMAGE_ASPECT_DEPTH_BIT)
 	);
 }
@@ -360,7 +346,6 @@ void createMultisamplingResources() {
 			.setExtent(apiCore.swapchain.extent)
 			.setSampleCount(apiCore.multisampling.sampleCount)
 			.setImageUsage(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT)
-			.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
 			.setAspectFlags(VK_IMAGE_ASPECT_COLOR_BIT)
 	);
 }

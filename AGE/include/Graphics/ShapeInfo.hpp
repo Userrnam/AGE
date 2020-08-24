@@ -28,7 +28,7 @@ struct ShapeInfo {
         vertex.buffer.create(
             VertexBufferCreateInfo().setSize(verticies.size() * sizeof(T))
         );
-        vertex.buffer.loadDeviceLocal(verticies.data(), verticies.size() * sizeof(T));
+        vertex.buffer.load(verticies.data(), verticies.size() * sizeof(T));
         Vertex<T>::fillBinding(vertex.bindingDescription);
         Vertex<T>::fillAttributes(vertex.attributeDescriptions);
 
@@ -39,7 +39,8 @@ struct ShapeInfo {
         index.buffer.create(
             IndexBufferCreateInfo().setSize(indicies.size() * sizeof(Index16))
         );
-        index.buffer.loadDeviceLocal(indicies.data(), indicies.size() * sizeof(Index16));
+
+        index.buffer.load(indicies.data(), indicies.size() * sizeof(Index16));
 
         index.type = VK_INDEX_TYPE_UINT16;
         index.count = indicies.size();
@@ -51,7 +52,7 @@ struct ShapeInfo {
         index.buffer.create(
             IndexBufferCreateInfo().setSize(indicies.size() * sizeof(Index32))
         );
-        index.buffer.loadDeviceLocal(indicies.data(), indicies.size() * sizeof(Index32));
+        index.buffer.load(indicies.data(), indicies.size() * sizeof(Index32));
 
         index.type = VK_INDEX_TYPE_UINT32;
         index.count = indicies.size();

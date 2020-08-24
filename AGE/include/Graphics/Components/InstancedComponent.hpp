@@ -43,7 +43,6 @@ public:
     void create(int instanceCount) {
         m_buffer.create(
             BufferCreateInfo()
-            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
             .setUsage(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT)
             .setSize(sizeof(GET_TYPE_OF(T::m_data)) * instanceCount)
         );

@@ -51,8 +51,6 @@ int deviceSupportedFeatures(VkPhysicalDevice device) {
 		SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
 		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
-	VkPhysicalDeviceFeatures supportedFeatures;
-	vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
 
 	// always required
 	if (!indicies.isComplete() || !swapChainAdequate) {
@@ -60,16 +58,7 @@ int deviceSupportedFeatures(VkPhysicalDevice device) {
 	}
 
 	int out = 0;
-	if (coreConfig.features.geometryShader && supportedFeatures.geometryShader) {
-		out += 1;
-	}
-	if (coreConfig.features.tesselationShader && supportedFeatures.tessellationShader) {
-		out += 1;
-	}
-	if (coreConfig.features.samplerAnistropy && supportedFeatures.samplerAnisotropy) {
-		out += 1;
-	}
-	if (coreConfig.features.sampleRateShading && supportedFeatures.sampleRateShading) {
+	if (coreConfig.multisampling.sampleRateShading && apiCore.deviceFeatures.sampleRateShading) {
 		out += 1;
 	}
 
@@ -77,10 +66,7 @@ int deviceSupportedFeatures(VkPhysicalDevice device) {
 }
 
 VkSampleCountFlagBits getMaxSampleCount() {
-	VkPhysicalDeviceProperties properties;
-	vkGetPhysicalDeviceProperties(apiCore.physicalDevice, &properties);
-
-	VkSampleCountFlags count = properties.limits.framebufferColorSampleCounts & properties.limits.framebufferDepthSampleCounts;
+	VkSampleCountFlags count = apiCore.deviceProperties.limits.framebufferColorSampleCounts & apiCore.deviceProperties.limits.framebufferDepthSampleCounts;
 
 	if (count & VK_SAMPLE_COUNT_64_BIT) return VK_SAMPLE_COUNT_64_BIT;
 	if (count & VK_SAMPLE_COUNT_32_BIT) return VK_SAMPLE_COUNT_32_BIT;

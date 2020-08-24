@@ -8,17 +8,8 @@ namespace age::core {
 namespace age::config {
 
 void enableFeatures(Features features) {
-    if (features & GEOMETRY_SHADER) {
-        core::coreConfig.features.geometryShader = true;
-    }
-    if (features & TESSELATION_SHADER) {
-        core::coreConfig.features.tesselationShader = true;
-    }
-    if (features & SAMPLER_ANISTROPY) {
-        core::coreConfig.features.samplerAnistropy = true;
-    }
     if (features & SAMPLE_RATE_SHADING) {
-        core::coreConfig.features.sampleRateShading = true;
+        core::coreConfig.multisampling.sampleRateShading = true;
     }
 }
 

@@ -8,12 +8,6 @@ namespace age::core {
 
 struct CoreConfig {
     std::vector<const char*> deviceExtensions = { "VK_KHR_swapchain" };
-    struct {
-        bool geometryShader = false;
-        bool tesselationShader = false;
-        bool samplerAnistropy = false;
-        bool sampleRateShading = false;
-    } features;
 
     struct {
         std::string name = "appName";
@@ -29,6 +23,7 @@ struct CoreConfig {
 
     struct {
         VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
+        bool sampleRateShading = false;
         float minSampleShading = 0.2;
     } multisampling;
 

@@ -1,15 +1,17 @@
 #pragma once
 
 #include "vulkan/vulkan.h"
+#include "DeviceAlloc.hpp"
 
 namespace age::core {
+
+// Images are always device local
 
 class ImageCreateInfo {
     VkExtent2D m_extent;
     VkSampleCountFlagBits m_sampleCount;
     VkFormat m_format;
     VkImageUsageFlags m_imageUsage;
-    VkMemoryPropertyFlags m_memoryProperties;
     VkImageAspectFlags m_aspectFlags;
 
     friend class Image;
@@ -34,11 +36,6 @@ public:
         return *this;
     }
 
-    inline ImageCreateInfo& setMemoryProperties(VkMemoryPropertyFlags properties) {
-        m_memoryProperties = properties;
-        return *this;
-    }
-
     inline ImageCreateInfo& setAspectFlags(VkImageAspectFlags aspectFlags) {
         m_aspectFlags = aspectFlags;
         return *this;
@@ -59,8 +56,6 @@ public:
 
     void create(ImageCreateInfo& info);
     void destroy();
-
-    // void generateMipmaps();
 };
 
 } // namespace age::core

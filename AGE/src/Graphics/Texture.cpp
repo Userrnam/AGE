@@ -22,7 +22,6 @@ void Texture::create(const std::string& filename, Shared<Sampler> sampler) {
     Buffer stagingBuffer;
     stagingBuffer.create(
         BufferCreateInfo()
-            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
             .setSize(imageSize)
             .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
     );
@@ -35,7 +34,6 @@ void Texture::create(const std::string& filename, Shared<Sampler> sampler) {
             .setExtent({static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight)})
             .setFormat(VK_FORMAT_R8G8B8A8_SRGB)
             .setImageUsage(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT)
-            .setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
             .setSampleCount(VK_SAMPLE_COUNT_1_BIT)
     );
     stagingBuffer.copyTo(m_image);

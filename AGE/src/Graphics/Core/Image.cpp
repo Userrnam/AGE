@@ -35,7 +35,7 @@ void Image::create(ImageCreateInfo& info) {
 	VkMemoryAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, info.m_memoryProperties);
+	allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 	if (vkAllocateMemory(apiCore.device, &allocInfo, nullptr, &m_memory) != VK_SUCCESS) {
 		throw std::runtime_error("failed to allocate image memory");
@@ -44,7 +44,6 @@ void Image::create(ImageCreateInfo& info) {
 	vkBindImageMemory(apiCore.device, m_image, m_memory, 0);
 
 	VkImageAspectFlags aspectFlags = 0;
-
 	m_imageView = createImageView(m_image, info.m_format, info.m_aspectFlags);
 }
 
@@ -55,4 +54,3 @@ void Image::destroy() {
 }
  
 } // namespace age::core
-

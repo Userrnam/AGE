@@ -93,7 +93,6 @@ void Font::load(const std::string& fontPath, Shared<Sampler> sampler, unsigned f
     Buffer stagingBuffer;
     stagingBuffer.create(
         BufferCreateInfo()
-            .setMemoryProperties(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
             .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
             .setSize(maxHeight * totalWidth * sizeof(uint32_t))
     );
@@ -107,7 +106,6 @@ void Font::load(const std::string& fontPath, Shared<Sampler> sampler, unsigned f
             .setExtent({static_cast<uint32_t>(textureWidth), static_cast<uint32_t>(textureHeight)})
             .setFormat(VK_FORMAT_R8G8B8A8_SRGB)
             .setImageUsage(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT)
-            .setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
             .setSampleCount(VK_SAMPLE_COUNT_1_BIT)
     );
     stagingBuffer.copyTo(image);

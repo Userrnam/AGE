@@ -5,13 +5,13 @@
 #include <cstring>
 
 #include "Core/Image.hpp"
+#include "Core/DeviceAlloc.hpp"
 
 namespace age {
 
 class BufferCreateInfo {
     VkDeviceSize m_size;
     VkBufferUsageFlags m_usage;
-    VkMemoryPropertyFlags m_memoryProperties;
 
     friend class Buffer;
 public:
@@ -24,19 +24,13 @@ public:
         m_usage = usage;
         return *this;
     }
-
-    inline BufferCreateInfo& setMemoryProperties(VkMemoryPropertyFlags properties) {
-        m_memoryProperties = properties;
-        return *this;
-    }
 };
 
 class VertexBufferCreateInfo {
     BufferCreateInfo createInfo;
 public:
     VertexBufferCreateInfo() {
-        createInfo.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-        createInfo.setUsage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+        createInfo.setUsage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
     }
 
     inline VertexBufferCreateInfo& setSize(VkDeviceSize size) {
@@ -53,8 +47,7 @@ class IndexBufferCreateInfo {
     BufferCreateInfo createInfo;
 public:
     IndexBufferCreateInfo() {
-        createInfo.setMemoryProperties(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-        createInfo.setUsage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+        createInfo.setUsage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
     }
 
     inline IndexBufferCreateInfo& setSize(VkDeviceSize size) {
@@ -71,7 +64,6 @@ class UniformBufferCreateInfo {
     BufferCreateInfo createInfo;
 public:
     UniformBufferCreateInfo() {
-        createInfo.setMemoryProperties(VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
         createInfo.setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
     }
 
@@ -87,22 +79,19 @@ public:
 
 class Buffer {
 protected:
-    VkBuffer m_buffer = VK_NULL_HANDLE;
-    VkDeviceMemory m_memory = VK_NULL_HANDLE;
     VkDeviceSize m_size = VK_NULL_HANDLE;
+    core::deviceAlloc::MemoryId m_memoryId;
 public:
     void destroy();
 
-    VkBuffer getBuffer() const { return m_buffer; }
-    VkDeviceMemory getMemory() const { return m_memory; }
-    VkDeviceSize getSize() const { return m_size; }
+    inline VkBuffer getBuffer() const { return m_memoryId.buffer; }
+    inline uint32_t getBufferOffset() const { return m_memoryId.address; }
+    inline VkDeviceSize getSize() const { return m_size; }
 
     void create(const BufferCreateInfo& info);
 
-    void copyTo(Buffer& buffer, VkDeviceSize size, VkDeviceSize srcOffset=0, VkDeviceSize dstOffset=0);
     void copyTo(core::Image& image, VkDeviceSize srcOffset=0);
     void load(const void* data, VkDeviceSize size, VkDeviceSize offset=0);
-    void loadDeviceLocal(const void* data, VkDeviceSize size, VkDeviceSize offset=0);
 };
 
 } // namespace age
