@@ -31,7 +31,7 @@ void Application::destroy() {
     pActiveScene->destroy();
     onDestroy();
 
-    destroyBasicShapes();
+    Shape::destroyManager();
     
     defaultSampler.destroy();
 
@@ -49,7 +49,7 @@ void Application::create() {
     Renderer::create();
 
     core::deviceAlloc::init();
-    initBasicShapes();
+    Shape::createManager();
 
     // init freetype
     initFreetype();

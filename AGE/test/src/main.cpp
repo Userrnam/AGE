@@ -144,13 +144,12 @@ class TestScene : public age::Scene {
         auto fs = builder.compileFragmentShader(color, transform);
         // get drawable
         auto& drawable = entity.addComponent<age::Drawable>();
-        auto shape = age::getRectangleShape();
         drawable.create(
             age::DrawableCreateInfo()
             // .setColorBlendEnable(false)
             // .setIstanceCount(1)
             .setView(m_views[0])
-            .setShapeInfo(shape)
+            .setShapeId(age::RECTANGLE_SHAPE)
             .addDescriptorSet(
                 age::DescriptorSet()
                 .get(

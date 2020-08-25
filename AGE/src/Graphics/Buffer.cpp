@@ -66,6 +66,25 @@ void Buffer::copyTo(core::Image& image, VkDeviceSize srcOffset) {
 	transitionImageLayout(transitionInfo);
 }
 
+void Buffer::copyTo(VkBuffer buffer, VkDeviceSize offset) {
+	auto commandBuffer = core::beginSingleTimeCommands();
+
+	VkBufferCopy copy;
+	copy.size = m_size;
+	copy.srcOffset = m_memoryId.address;
+	copy.dstOffset = offset;
+
+	vkCmdCopyBuffer(
+		commandBuffer,
+		m_memoryId.buffer,
+		buffer,
+		1,
+		&copy
+	);
+
+	core::endSingleTimeCommands(commandBuffer);
+}
+
 void Buffer::load(const void* data, VkDeviceSize size, VkDeviceSize offset) {
 	void* mapped;
 	vkMapMemory(core::apiCore.device, m_memoryId.memory, m_memoryId.address + offset, size, 0, &mapped);

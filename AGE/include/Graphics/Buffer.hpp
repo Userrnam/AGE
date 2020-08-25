@@ -91,6 +91,8 @@ public:
     void create(const BufferCreateInfo& info);
 
     void copyTo(core::Image& image, VkDeviceSize srcOffset=0);
+    // used only for staging buffer
+    void copyTo(VkBuffer buffer, VkDeviceSize offset);
     void load(const void* data, VkDeviceSize size, VkDeviceSize offset=0);
 };
 

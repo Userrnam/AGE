@@ -22,8 +22,6 @@ struct TestRectangle : public age::Drawable {
         transform.set(glm::scale(glm::mat4(1), glm::vec3(1000, 1000, 1)));
         transform.upload();
 
-        auto shape = age::getRectangleShape();
-
         age::ShaderBuilder builder;
         auto vs = builder.compileVertexShader(color, transform);
         auto fs = builder.compileFragmentShader(color, transform);
@@ -32,7 +30,7 @@ struct TestRectangle : public age::Drawable {
             .setColorBlendEnable(false)
             .setIstanceCount(1)
             .setView(view)
-            .setShapeInfo(shape)
+            .setShapeId(age::RECTANGLE_SHAPE)
             .addDescriptorSet(
                 age::DescriptorSet()
                 .get(

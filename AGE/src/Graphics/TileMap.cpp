@@ -29,8 +29,6 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
 
     fragmentShader.setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(SHADER_PATH "TileMap.frag.spv");
 
-    auto shape = getRectangleShape();
-
     Drawable::create(
         DrawableCreateInfo()
         .setColorBlendEnable(blendEnable)
@@ -53,7 +51,7 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
                 )
             )
         )
-        .setShapeInfo(shape)
+        .setShapeId(RECTANGLE_SHAPE)
         .addShader(vertexShader)
         .addShader(fragmentShader)
     );
