@@ -88,6 +88,7 @@ struct RectController : public age::ScriptComponent {
 
 class TestScene : public age::Scene {
     TestTriangle triangle;
+    age::Font font2;
     age::Text text;
     age::Text text2;
     age::Font font;
@@ -97,6 +98,7 @@ class TestScene : public age::Scene {
     virtual void onCreate() override {
         auto e = createEntity();
 
+        font2.load(age::getResourcePath("Courier.dfont"), parent->getDefaultSamplerCopy());
         font.load(age::getResourcePath("Courier.dfont"), parent->getDefaultSamplerCopy());
 
         // Fixme
@@ -145,8 +147,8 @@ class TestScene : public age::Scene {
         auto shape = age::getRectangleShape();
         drawable.create(
             age::DrawableCreateInfo()
-            .setColorBlendEnable(false)
-            .setIstanceCount(1)
+            // .setColorBlendEnable(false)
+            // .setIstanceCount(1)
             .setView(m_views[0])
             .setShapeInfo(shape)
             .addDescriptorSet(
@@ -179,6 +181,7 @@ class TestScene : public age::Scene {
         triangle.destroy();
         text.destroy();
         font.destroy();
+        font2.destroy();
         text2.destroy();
     }
 

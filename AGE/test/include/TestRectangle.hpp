@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Graphics.hpp"
-#include "Graphics/BasicShape.hpp"
+#include "Graphics/ShapeManager.hpp"
 #include "Graphics/Components/ColorComponent.hpp"
 #include "Graphics/Components/TransformComponent.hpp"
 #include "Graphics/ShaderBuilder.hpp"

@@ -1,6 +1,6 @@
 #include "TileMap.hpp"
 
-#include "BasicShape.hpp"
+#include "ShapeManager.hpp"
 
 #ifndef CMAKE_DEFINITION
 #define SHADER_PATH ""

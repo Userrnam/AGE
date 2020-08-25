@@ -10,7 +10,7 @@
 #include "Graphics/Core/Core.hpp"
 #include "Core/Command.hpp"
 #include "Audio/Core.hpp"
-#include "BasicShape.hpp"
+#include "ShapeManager.hpp"
 
 namespace age {
 
@@ -48,6 +48,7 @@ void Application::create() {
 
     Renderer::create();
 
+    core::deviceAlloc::init();
     initBasicShapes();
 
     // init freetype

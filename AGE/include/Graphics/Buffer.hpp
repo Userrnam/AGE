@@ -80,7 +80,7 @@ public:
 class Buffer {
 protected:
     VkDeviceSize m_size = VK_NULL_HANDLE;
-    core::deviceAlloc::MemoryId m_memoryId;
+    core::MemoryId m_memoryId;
 public:
     void destroy();
 

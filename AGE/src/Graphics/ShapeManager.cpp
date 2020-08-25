@@ -1,7 +1,9 @@
 #include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
+#include <unordered_map>
+#include <assert.h>
 
-#include "BasicShape.hpp"
+#include "ShapeManager.hpp"
 
 namespace age {
 
@@ -35,5 +37,32 @@ void destroyBasicShapes() {
 Shared<ShapeInfo> getRectangleShape() {
     return rectangle;
 }
+
+uint32_t idCounter = 1;
+std::unordered_map<uint32_t, ShapeRenderInfo> shapesMap;
+
+void Shape::createManager() {
+    // init basic shapes here
+}
+
+void Shape::destroyManager() {
+    // maybe create here different 'Buffer Pool for Vertex and Index Buffers'
+    // and buffers here are always local
+}
+
+ShapeId Shape::create(const ShapeCreateInfo& info) {
+    
+
+    ShapeId id;
+    id.m_id = idCounter;
+    idCounter++;
+    return id;
+}
+
+ShapeRenderInfo Shape::get(ShapeId id) {
+    assert(shapesMap.find(id.m_id) != shapesMap.end());
+    // return shapesMap[id];
+}
+
 
 } // namespace age
