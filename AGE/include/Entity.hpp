@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "entt.hpp"
 
 namespace age {
@@ -18,14 +20,22 @@ public:
     }
 
     template<typename T>
-    inline T& addComponent() {
+    inline T& addComponentNoCreate() {
         T component;
         m_registry->emplace<T>(m_entityId, component);
         return m_registry->get<T>(m_entityId);
     }
 
+    template<typename T, typename... Args>
+    inline T& addComponent(Args... args) {
+        m_registry->emplace<T>(m_entityId, T());
+        auto& component = m_registry->get<T>(m_entityId);
+        component.create(std::forward<Args>(args)...);
+        return component;
+    }
+
     template<typename T>
-    inline T& addComponent(T component) {
+    inline T& addComponentNoCreate(T component) {
         m_registry->emplace<T>(m_entityId, component);
         return m_registry->get<T>(m_entityId);
     }

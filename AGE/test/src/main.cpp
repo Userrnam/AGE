@@ -36,8 +36,9 @@ struct RectController : public age::ScriptComponent {
     const float speed = 1.0f;
 
     virtual void onCreate() override {
-        transformable.setScale(100, 100);
+        getComponent<age::ColorComponent>().set({ 1, 0, 1, 1 });
 
+        transformable.setScale(100, 100);
         tc = getComponent<age::TransformComponent>();
         tc.set(transformable.getTransform());
     }
@@ -118,45 +119,35 @@ class TestScene : public age::Scene {
         triangle.create(m_views[0]);
 
         auto entity = createEntity();
-        entity.addComponent<age::Drawable>(text2);
+        entity.addComponentNoCreate<age::Drawable>(text2);
 
         entity = createEntity();
-        entity.addComponent<age::Drawable>(text);
+        entity.addComponentNoCreate<age::Drawable>(text);
 
         // create rectangle
         entity = createEntity();
-        // add transform
-        auto& transform = entity.addComponent<age::TransformComponent>();
-        transform.create();
-        // add color
-        auto& color = entity.addComponent<age::ColorComponent>();
-        color.create();
-        color.set( { 1, 0, 1, 1 } );
-
-        auto& drawable = entity.addComponent<age::Drawable>();
-        drawable.create(m_views[0], age::RECTANGLE_SHAPE, color, transform);
-
-        auto script = entity.addComponent<age::ScriptComponent*>(new RectController());
+        entity.addComponent<age::Drawable>(m_views[0],
+            age::RECTANGLE_SHAPE,
+            entity.addComponent<age::ColorComponent>(),
+            entity.addComponent<age::TransformComponent>()
+        );
+        auto script = entity.addComponentNoCreate<age::ScriptComponent*>(new RectController());
         script->create(entity);
 
         entity = createEntity();
-        entity.addComponent<age::Drawable>(triangle);
+        entity.addComponentNoCreate<age::Drawable>(triangle);
 
         // add background
         {
             auto background = createEntity();
-            // TODO: maybe addComponent will call create function and pass to it specified args
             auto& transform = background.addComponent<age::TransformComponent>();
-            transform.create();
             transform.set(age::Transformable().setScale(1600, 1200).getTransform());
 
             auto& color = background.addComponent<age::ColorComponent>();
-            color.create();
             color.set({1, 0, 0, 1});
 
-            auto& drawable = background.addComponent<age::Drawable>();
             // FIXME: if we swap color and transform it will not be rendered
-            drawable.create(m_views[0], age::RECTANGLE_SHAPE, color, transform);
+            background.addComponent<age::Drawable>(m_views[0], age::RECTANGLE_SHAPE, color, transform);
         }
 
         auto view = m_registry.view<age::Drawable>();
