@@ -11,9 +11,9 @@ VkDescriptorSetLayout createDescriptorSetLayout(DescriptorLayout& info) {
 	for (auto& binding : info.layoutInfo) {
 		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
 		uboLayoutBinding.binding = bindingIndex;
-		uboLayoutBinding.descriptorCount = binding.info.count;
+		uboLayoutBinding.descriptorCount = binding.info.count; // I think for age it's always 1
 		uboLayoutBinding.descriptorType = static_cast<VkDescriptorType>(binding.info.type);
-		uboLayoutBinding.stageFlags = binding.info.stage;
+		uboLayoutBinding.stageFlags = binding.info.stage; // for age stage is determined by the type
 		uboLayoutBinding.pImmutableSamplers = nullptr;
 		bindings.push_back(uboLayoutBinding);
 
@@ -29,6 +29,7 @@ VkDescriptorSetLayout createDescriptorSetLayout(DescriptorLayout& info) {
 		throw std::runtime_error("failed to create descriptor set layout");
 	}
 
+	// TODO: simplify stored info about layout
 	core::apiCore.descriptor.layouts.push_back(info);
 
     return core::apiCore.descriptor.layouts[core::apiCore.descriptor.layouts.size()-1].layout;

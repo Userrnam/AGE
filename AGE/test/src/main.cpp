@@ -138,34 +138,33 @@ class TestScene : public age::Scene {
         color.create();
         color.set( { 1, 0, 1, 1 } );
         color.upload();
-        // compile shaders
-        age::ShaderBuilder builder;
-        auto vs = builder.compileVertexShader(color, transform);
-        auto fs = builder.compileFragmentShader(color, transform);
-        // get drawable
+
         auto& drawable = entity.addComponent<age::Drawable>();
-        drawable.create(
-            age::DrawableCreateInfo()
-            // .setColorBlendEnable(false)
-            // .setIstanceCount(1)
-            .setView(m_views[0])
-            .setShapeId(age::RECTANGLE_SHAPE)
-            .addDescriptorSet(
-                age::DescriptorSet()
-                .get(
-                    age::DescriptorSetInfo()
-                    .getBasedOnComponents(color, transform)
-                )
-            )
-            .addShader(vs)
-            .addShader(fs)
-        );
-        // destroy shaders
-        vs.destroy();
-        fs.destroy();
+        drawable.create(m_views[0], age::RECTANGLE_SHAPE, color, transform);
 
         auto script = entity.addComponent<age::ScriptComponent*>(new RectController());
         script->create(entity);
+
+        // add background
+        {
+            auto background = createEntity();
+            // TODO: maybe addComponent will call create function and pass to it specified args
+            auto& transform = background.addComponent<age::TransformComponent>();
+            transform.create();
+            age::Transformable t;
+            t.setScale(1600, 1200);
+            transform.set(t.getTransform());
+            transform.upload();
+
+            auto& color = background.addComponent<age::ColorComponent>();
+            color.create();
+            color.set({1, 0, 0, 1});
+            color.upload();
+
+            auto& drawable = background.addComponent<age::Drawable>();
+            // FIXME: if we swap color and transform it will not be rendered
+            drawable.create(m_views[0], age::RECTANGLE_SHAPE, color, transform);
+        }
 
         auto view = m_registry.view<age::Drawable>();
         std::vector<age::Drawable> targets;

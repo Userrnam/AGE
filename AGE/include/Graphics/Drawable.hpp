@@ -14,6 +14,8 @@
 #include "ShaderBuilder.hpp"
 #include "ShapeManager.hpp"
 
+#include "ComponentCollector.hpp"
+
 namespace age {
 
 class DrawableCreateInfo {
@@ -27,38 +29,7 @@ class DrawableCreateInfo {
     ShapeId m_shapeId;
 
     friend class Drawable;
-
-    template<typename Head, typename...Tail>
-    void collectComponents(std::vector<ShaderComponentInfo>& components, Head head, Tail... tail) {
-        components.push_back(head.getInfo());
-        collectComponents(tail...);
-    }
-    template<typename Head>
-    void collectComponents(std::vector<ShaderComponentInfo>& components, Head head) {
-        components.push_back(head.getInfo());
-    }
 public:
-    template<typename... Components>
-    DrawableCreateInfo& createBasedOnComponents(Components... components) {
-        // std::vector<ShaderComponentInfo> _components;
-        // collectComponents(_components, components...);
-
-        // // generate shaders
-        // ShaderBuilder sb;
-
-        // m_shaders.push_back(sb.compileVertexShader(_components));
-        // m_shaders.push_back(sb.compileFragmentShader(_components));
-
-        // // add descriptorSet
-        // m_descriptors.push_back(
-        //     DescriptorSet()
-        //     .get(
-        //         DescriptorSetInfo()
-        //         .getBasedOnComponents(_components)
-        //     )
-        // );
-    }
-
     inline DrawableCreateInfo& setShapeId(ShapeId shapeId) {
         m_shapeId = shapeId;
         return *this;
@@ -96,14 +67,23 @@ class Drawable {
 protected:
     VkPipelineLayout m_pipelineLayout;
     VkPipeline m_pipeline;
+
     std::vector<uint32_t> m_poolIndicies;
     std::vector<VkDescriptorSet> m_descriptorSets;
 
     ShapeRenderInfo m_shapeRenderInfo;
 
-    uint32_t m_instanceCount;
+    uint32_t m_instanceCount = 1;
 
+    void __create(const View& view, ShapeId, const std::vector<ShaderComponentInfo>&);
 public:
+    template<typename... Args>
+    void create(const View& view, ShapeId shapeId, Args... components) {
+        std::vector<ShaderComponentInfo> _components;
+        collectComponents(_components, components...);
+        __create(view, shapeId, _components);
+    }
+
     void create(const DrawableCreateInfo& createInfo);
     void destroy();
 

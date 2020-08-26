@@ -107,8 +107,6 @@ void Drawable::getShaderStageCreateInfos(const std::vector<Shader>& shaders, std
     }
 }
 
-// Fixme: same pipelines can be used with different descriptorSets
-// objects that use same shaders, have same descriptors and same vertex type can use same pipeline
 void Drawable::create(const DrawableCreateInfo& info) {
     m_shapeRenderInfo = Shape::get(info.m_shapeId);
     m_instanceCount = info.m_instanceCount;
@@ -182,6 +180,53 @@ void Drawable::create(const DrawableCreateInfo& info) {
     nullptr, reinterpret_cast<VkPipeline*>(&m_pipeline)) != VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline");
     }
+}
+
+void Drawable::__create(const View& view, ShapeId shapeId, const std::vector<ShaderComponentInfo>& compoents) {
+    m_shapeRenderInfo = Shape::get(shapeId);
+
+    std::vector<VkDescriptorSetLayout> layouts;
+    // add camera descriptor
+    auto cameraDescriptor = view.getDescriptor();
+    m_descriptorSets.push_back(cameraDescriptor.m_set);
+    m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
+    layouts.push_back(cameraDescriptor.m_layout);
+
+    auto descriptor = DescriptorSet().get(
+        DescriptorSetInfo().getBasedOnComponents(compoents)
+    );
+
+    m_descriptorSets.push_back(descriptor.m_set);
+    m_poolIndicies.push_back(descriptor.m_poolIndex);
+    layouts.push_back(descriptor.m_layout);
+
+    // color blend is always true
+    // TODO: remove color blend option from everywhere
+    core::PipelineInfo pipelineInfo = 1;
+    for (auto& component : compoents) {
+        pipelineInfo |= component.m_id;
+    }
+    auto pipeline = core::requestPipeline(pipelineInfo);
+    if (!pipeline.first) {
+        ShaderBuilder builder;
+        auto vertexShader = builder.compileVertexShader(compoents);
+        auto fragmentShader = builder.compileFragmentShader(compoents);
+
+        pipeline = core::createPipeline(
+            core::PipelineCreateInfo()
+            .setInfo(pipelineInfo)
+            .setShapeId(shapeId)
+            .setLayouts(layouts)
+            .addShader(vertexShader)
+            .addShader(fragmentShader)
+        );
+
+        vertexShader.destroy();
+        fragmentShader.destroy();
+    }
+    
+    m_pipeline = pipeline.first;
+    m_pipelineLayout = pipeline.second;
 }
 
 void Drawable::destroy() {

@@ -99,7 +99,7 @@ struct ShaderComponentForward {
 struct ShaderComponentInfo {
     std::vector<std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>> m_data;
     ShaderComponentDescription m_description;
-    ShaderComponentId id = 0;
+    ShaderComponentId m_id = 0;
     bool m_instanced = false; // this can be changed by Instanced template
 
     struct {
@@ -114,7 +114,7 @@ struct ShaderComponentInfo {
 
     template<typename T>
     inline ShaderComponentInfo& setId() {
-        id = getShaderComponentId<T>();
+        m_id = getShaderComponentId<T>();
         return *this;
     }
 

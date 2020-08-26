@@ -15,6 +15,8 @@ class ShaderSpecialization {
 
     friend class Drawable;
 public:
+    inline const std::vector<uint8_t>& getData() const { return m_data; }
+    inline const std::vector<VkSpecializationMapEntry>& getEntries() const { return m_entries; }
 
     template<typename T>
     ShaderSpecialization& add(T val) {
