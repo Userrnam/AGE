@@ -15,12 +15,10 @@ struct TestRectangle : public age::Drawable {
     void create(age::View& view) {
         color.create();
         color.set({1, 1, 0, 1});
-        color.upload();
 
         transform.create();
         auto& t = transform.get();
         transform.set(glm::scale(glm::mat4(1), glm::vec3(1000, 1000, 1)));
-        transform.upload();
 
         age::ShaderBuilder builder;
         auto vs = builder.compileVertexShader(color, transform);

@@ -40,7 +40,6 @@ struct RectController : public age::ScriptComponent {
 
         tc = getComponent<age::TransformComponent>();
         tc.set(transformable.getTransform());
-        tc.upload();
     }
 
     virtual void onEvent(age::Event event) override {
@@ -71,7 +70,6 @@ struct RectController : public age::ScriptComponent {
         if (move != glm::vec2(0.0)) {
             transformable.move(move.x * speed, move.y * speed);
             tc.set(transformable.getTransform());
-            tc.upload();
         }
     }
 
@@ -125,9 +123,6 @@ class TestScene : public age::Scene {
         entity = createEntity();
         entity.addComponent<age::Drawable>(text);
 
-        entity = createEntity();
-        entity.addComponent<age::Drawable>(triangle);
-
         // create rectangle
         entity = createEntity();
         // add transform
@@ -137,7 +132,6 @@ class TestScene : public age::Scene {
         auto& color = entity.addComponent<age::ColorComponent>();
         color.create();
         color.set( { 1, 0, 1, 1 } );
-        color.upload();
 
         auto& drawable = entity.addComponent<age::Drawable>();
         drawable.create(m_views[0], age::RECTANGLE_SHAPE, color, transform);
@@ -145,21 +139,20 @@ class TestScene : public age::Scene {
         auto script = entity.addComponent<age::ScriptComponent*>(new RectController());
         script->create(entity);
 
+        entity = createEntity();
+        entity.addComponent<age::Drawable>(triangle);
+
         // add background
         {
             auto background = createEntity();
             // TODO: maybe addComponent will call create function and pass to it specified args
             auto& transform = background.addComponent<age::TransformComponent>();
             transform.create();
-            age::Transformable t;
-            t.setScale(1600, 1200);
-            transform.set(t.getTransform());
-            transform.upload();
+            transform.set(age::Transformable().setScale(1600, 1200).getTransform());
 
             auto& color = background.addComponent<age::ColorComponent>();
             color.create();
             color.set({1, 0, 0, 1});
-            color.upload();
 
             auto& drawable = background.addComponent<age::Drawable>();
             // FIXME: if we swap color and transform it will not be rendered

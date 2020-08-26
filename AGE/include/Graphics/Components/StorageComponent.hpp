@@ -25,10 +25,6 @@ public:
         m_buffer.destroy();
     }
 
-    inline void upload() {
-        m_buffer.load(&m_data, sizeof(T));
-    }
-
     inline T& get() {
         return m_data;
     }
@@ -39,6 +35,7 @@ public:
 
     inline void set(T data) {
         m_data = data;
+        m_buffer.load(&m_data, sizeof(T));
     }
 };
 

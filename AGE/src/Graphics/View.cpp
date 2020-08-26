@@ -32,7 +32,7 @@ void View::create(const Viewport& viewport) {
     setOrigin({ m_viewport.width / 2, m_viewport.height / 2 });
     setPosition({ m_viewport.width / 2, m_viewport.height / 2 });
 
-    m_globals.cameraTransform = camera.getProjection() * getTransform();
+    m_globals.cameraTransform = camera.getProjection() * Transformable::getTransform();
     m_globals.resolution = glm::vec2(m_viewport.width, m_viewport.height);
 
     m_buffer.load(&m_globals, sizeof(m_globals));
@@ -41,9 +41,9 @@ void View::create(const Viewport& viewport) {
 void View::update(float elapsedTime, float currentTime) {
     m_globals.deltaTime = elapsedTime;
     m_globals.time = currentTime;
-    if (Transformable::needUpdate()) {
-        m_globals.cameraTransform = camera.getProjection() * Transformable::getTransform();
-    }
+    // if (Transformable::needUpdate()) {
+    //     m_globals.cameraTransform = camera.getProjection() * Transformable::getTransform();
+    // }
     m_buffer.load(&m_globals, sizeof(ViewGlobals));
 }
 
