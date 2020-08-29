@@ -9,9 +9,11 @@
 #include "Entity.hpp"
 #include "ScriptComponent.hpp"
 
+#include "Application.hpp"
+
 namespace age {
 
-class Application;
+// class Application;
 class Scene {
     void update(float elapsedTime);
 	void handleEvent(Event event);
@@ -28,6 +30,10 @@ protected:
 		e.m_entityId = m_registry.create();
 		e.m_registry = &m_registry;
 		return e;
+	}
+
+	inline Font& getFont(const std::string& font) {
+		return parent->getFont(font);
 	}
 
 	virtual void onDestroy() {}

@@ -83,30 +83,25 @@ struct RectController : public age::ScriptComponent {
 
 class TestScene : public age::Scene {
     TestTriangle triangle;
-    age::Font font2;
     age::Text text;
     age::Text text2;
-    age::Font font;
     glm::vec2 move = {};
     float rotate = 0.0f;
 
     virtual void onCreate() override {
         auto e = createEntity();
 
-        font2.load(age::getResourcePath("Courier.dfont"));
-        font.load(age::getResourcePath("Courier.dfont"));
-
         // Fixme
         // create view
         m_views.push_back(age::View());
         m_views[0].create();
 
-        text.create(m_views[0], font);
+        text.create(m_views[0], getFont("courier"));
         text.setText("Hello world");
         text.setColor({1, 1, 1, 1});
         text.uploadMapData();
 
-        text2.create(m_views[0], font);
+        text2.create(m_views[0], getFont("courier"));
         text2.setText("Hell");
         text2.setColor({1, 0, 0, 1});
         text2.move(1200, 800);
@@ -155,8 +150,6 @@ class TestScene : public age::Scene {
     virtual void onDestroy() override {
         triangle.destroy();
         text.destroy();
-        font.destroy();
-        font2.destroy();
         text2.destroy();
     }
 
@@ -215,6 +208,8 @@ class Application : public age::Application {
     }
 
     virtual void onCreate() override {
+        loadFont(age::getResourcePath("Courier.dfont"), "courier");
+
         auto scene = new TestScene();
         scene->create(this);
         setActiveScene(scene);

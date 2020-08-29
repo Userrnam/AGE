@@ -11,6 +11,7 @@
 #include "Core/Command.hpp"
 #include "Audio/Core.hpp"
 #include "ShapeManager.hpp"
+#include "Scene.hpp"
 
 namespace age {
 
@@ -30,6 +31,10 @@ void Application::destroy() {
 
     pActiveScene->destroy();
     onDestroy();
+
+    for (auto& font : m_fonts) {
+        font.second.destroy();
+    }
 
     Shape::destroyManager();
 

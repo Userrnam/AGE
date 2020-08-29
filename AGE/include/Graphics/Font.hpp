@@ -21,7 +21,7 @@ class Font {
 
     friend class Text;
 public:
-    void load(const std::string& fontPath, Sampler sampler = Sampler::getDefault(), unsigned fontSize = 100);
+    void load(const std::string& fontPath, unsigned fontSize = 100, Sampler sampler = Sampler::getDefault());
     void destroy();
 };
 
