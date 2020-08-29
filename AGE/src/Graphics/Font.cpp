@@ -15,7 +15,7 @@ void initFreeType() {
     }
 }
 
-void Font::load(const std::string& fontPath, Shared<Sampler> sampler, unsigned fontSize) {
+void Font::load(const std::string& fontPath, Sampler sampler, unsigned fontSize) {
     FT_Face face;
     if (FT_New_Face(ftLibrary, fontPath.c_str(), 0, &face)) {
         throw std::runtime_error("Font::load: failed to load font");

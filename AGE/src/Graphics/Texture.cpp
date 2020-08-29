@@ -8,7 +8,7 @@
 
 namespace age {
 
-void Texture::create(const std::string& filename, Shared<Sampler> sampler) {
+void Texture::create(const std::string& filename, Sampler sampler) {
     m_sampler = sampler;
 
     int texWidth, texHeight, texChannels;
@@ -40,14 +40,13 @@ void Texture::create(const std::string& filename, Shared<Sampler> sampler) {
     stagingBuffer.destroy();
 }
 
-void Texture::create(const core::Image& image, Shared<Sampler> sampler) {
+void Texture::create(const core::Image& image, Sampler sampler) {
     m_image = image;
     m_sampler = sampler;
 }
 
 void Texture::destroy() {
     m_image.destroy();
-    m_sampler.destroy();
 }
 
 } // namespace age

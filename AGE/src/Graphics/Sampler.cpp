@@ -4,6 +4,8 @@
 
 namespace age {
 
+Sampler defaultSampler;
+
 Sampler& Sampler::create(const SamplerInfo& info) {
     VkSamplerCreateInfo samplerInfo = {};
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -26,6 +28,18 @@ Sampler& Sampler::create(const SamplerInfo& info) {
 
 void Sampler::destroy() {
     vkDestroySampler(core::apiCore.device, m_sampler, nullptr);
+}
+
+void Sampler::createDefault() {
+    defaultSampler.create(SamplerInfo());
+}
+
+void Sampler::destroyDefault() {
+    defaultSampler.destroy();
+}
+
+const Sampler& Sampler::getDefault() {
+    return defaultSampler;
 }
 
 } // namespace age

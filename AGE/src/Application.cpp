@@ -32,10 +32,11 @@ void Application::destroy() {
     onDestroy();
 
     Shape::destroyManager();
-    
-    defaultSampler.destroy();
+
+    Sampler::destroyDefault();
 
     audioCore.destroy();
+
     EventManager::destroy();
     Renderer::destroy();
 }
@@ -57,11 +58,8 @@ void Application::create() {
     // init audio
     audioCore.init();
 
-    defaultSampler.create(
-        Sampler()
-        .create(SamplerInfo())
-    );
-
+    Sampler::createDefault();
+    
     EventManager::init();
 
     onCreate();

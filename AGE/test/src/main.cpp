@@ -81,16 +81,6 @@ struct RectController : public age::ScriptComponent {
     }
 };
 
-/*
-
-Scene should have global Fonts, Textures
-
-scene.addFont("arial");
-scene.addTexture("TextureId", "filepath");
-scene.add(RectController);
-
-*/
-
 class TestScene : public age::Scene {
     TestTriangle triangle;
     age::Font font2;
@@ -103,8 +93,8 @@ class TestScene : public age::Scene {
     virtual void onCreate() override {
         auto e = createEntity();
 
-        font2.load(age::getResourcePath("Courier.dfont"), parent->getDefaultSamplerCopy());
-        font.load(age::getResourcePath("Courier.dfont"), parent->getDefaultSamplerCopy());
+        font2.load(age::getResourcePath("Courier.dfont"));
+        font.load(age::getResourcePath("Courier.dfont"));
 
         // Fixme
         // create view
@@ -227,13 +217,6 @@ class Application : public age::Application {
     virtual void onCreate() override {
         auto scene = new TestScene();
         scene->create(this);
-        /*
-
-        scene->addFont();
-        scene->addTexture();
-        scene->add(RectangleController);
-        
-        */
         setActiveScene(scene);
     }
 

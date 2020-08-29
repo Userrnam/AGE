@@ -21,7 +21,14 @@ struct SamplerInfo {
 
 class Sampler {
     VkSampler m_sampler = nullptr;
+
+    static void createDefault();
+    static void destroyDefault();
+
+    friend class Application;
 public:
+    static const Sampler& getDefault();
+
     inline VkSampler getSampler() const {
         return m_sampler;
     }

@@ -15,7 +15,7 @@ class TextureComponent {
     Texture m_texture;
 
 public:
-    void create(std::string path, Shared<Sampler> sampler)  {
+    void create(std::string path, Sampler sampler)  {
         m_texture.create(path, sampler);
     }
 
