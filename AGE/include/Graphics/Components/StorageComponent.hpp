@@ -21,6 +21,11 @@ public:
         );
     }
 
+    inline void create(T data) {
+        create();
+        set(data);
+    }
+
     inline void destroy() {
         m_buffer.destroy();
     }

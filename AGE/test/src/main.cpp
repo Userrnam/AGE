@@ -74,16 +74,22 @@ struct RectController : public age::ScriptComponent {
         }
     }
 
-    // Fixme: this is temporary, find better way to do this
     virtual void onDestroy() override {
-        auto& transform = getComponent<age::TransformComponent>();
-        transform.destroy();
-        auto& color = getComponent<age::ColorComponent>();
-        color.destroy();
-        auto& drawable = getComponent<age::Drawable>();
-        drawable.destroy();
+        getComponent<age::TransformComponent>().destroy();
+        getComponent<age::ColorComponent>().destroy();
+        getComponent<age::Drawable>().destroy();
     }
 };
+
+/*
+
+Scene should have global Fonts, Textures
+
+scene.addFont("arial");
+scene.addTexture("TextureId", "filepath");
+scene.add(RectController);
+
+*/
 
 class TestScene : public age::Scene {
     TestTriangle triangle;
@@ -140,14 +146,11 @@ class TestScene : public age::Scene {
         // add background
         {
             auto background = createEntity();
-            auto& transform = background.addComponent<age::TransformComponent>();
-            transform.set(age::Transformable().setScale(1600, 1200).getTransform());
-
-            auto& color = background.addComponent<age::ColorComponent>();
-            color.set({1, 0, 0, 1});
-
             // FIXME: if we swap color and transform it will not be rendered
-            background.addComponent<age::Drawable>(m_views[0], age::RECTANGLE_SHAPE, color, transform);
+            background.addComponent<age::Drawable>(m_views[0], age::RECTANGLE_SHAPE, 
+                background.addComponent<age::ColorComponent>(glm::vec4(1, 0, 0, 1)),
+                background.addComponent<age::TransformComponent>(age::Transformable().setScale(1600, 1200).getTransform())
+            );
         }
 
         auto view = m_registry.view<age::Drawable>();
@@ -224,6 +227,13 @@ class Application : public age::Application {
     virtual void onCreate() override {
         auto scene = new TestScene();
         scene->create(this);
+        /*
+
+        scene->addFont();
+        scene->addTexture();
+        scene->add(RectangleController);
+        
+        */
         setActiveScene(scene);
     }
 
@@ -254,19 +264,6 @@ class Application : public age::Application {
 int main(int argc, char* argv[]) {
     Application app;
     app.create();
-
-    age::TransformComponent transform;
-    age::ColorComponent color;
-    age::TextureComponent tex;
-    age::TexCoordsComponent texCoord;
-    age::TileMapComponent tilemap;
-
-    age::ShaderBuilder shaderBuilder;
-    shaderBuilder.generateVertexShaderSource(transform, color, tex, tilemap);
-    shaderBuilder.saveShader("temp.vert");
-    shaderBuilder.generateFragmentShaderSource(transform, color, tex, tilemap);
-    shaderBuilder.saveShader("temp.frag");
-
     app.run();
     app.destroy();
 

@@ -33,7 +33,6 @@ protected:
 	virtual void onDestroy() {}
 	virtual void onCreate() {}
 
-	// game logic goes here
 	virtual void onEvent(Event event) {}
 	virtual void onUpdate(float elapsedTime) {}
 public:
