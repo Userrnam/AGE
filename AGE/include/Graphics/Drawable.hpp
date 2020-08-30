@@ -19,7 +19,6 @@
 namespace age {
 
 class DrawableCreateInfo {
-    View* m_view;
     bool m_colorBlending = false;
     uint32_t m_instanceCount = 1;
 
@@ -32,11 +31,6 @@ class DrawableCreateInfo {
 public:
     inline DrawableCreateInfo& setShapeId(ShapeId shapeId) {
         m_shapeId = shapeId;
-        return *this;
-    }
-
-    inline DrawableCreateInfo& setView(View& view) {
-        m_view = &view;
         return *this;
     }
 
@@ -67,6 +61,7 @@ class Drawable {
 protected:
     VkPipelineLayout m_pipelineLayout;
     VkPipeline m_pipeline;
+    VkViewport m_viewport;
 
     std::vector<uint32_t> m_poolIndicies;
     std::vector<VkDescriptorSet> m_descriptorSets;
@@ -75,13 +70,13 @@ protected:
 
     uint32_t m_instanceCount = 1;
 
-    void __create(const View& view, ShapeId, const std::vector<ShaderComponentInfo>&);
+    void __create(ShapeId, const std::vector<ShaderComponentInfo>&);
 public:
     template<typename... Args>
-    void create(const View& view, ShapeId shapeId, Args... components) {
+    void create(ShapeId shapeId, Args... components) {
         std::vector<ShaderComponentInfo> _components;
         collectComponents(_components, components...);
-        __create(view, shapeId, _components);
+        __create(shapeId, _components);
     }
 
     void create(const DrawableCreateInfo& createInfo);

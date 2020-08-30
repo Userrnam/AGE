@@ -28,7 +28,7 @@ class TileMap : public Drawable, public Transformable {
 
     MapData m_mapData;                  // this is extra data (transform, color) maybe divide it in transform + color components
 public:
-    void create(View& view, Texture& texture, uint32_t maxSize, bool blendEnable);
+    void create(Texture& texture, uint32_t maxSize, bool blendEnable);
 
     void addTile(const Tile& tile);
     void removeTile(size_t index);

@@ -8,7 +8,7 @@
 
 namespace age {
 
-void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendEnable) {
+void TileMap::create(Texture& texture, uint32_t maxSize, bool blendEnable) {
     m_maxSize = maxSize;
     m_tiles.reserve(m_maxSize);
 
@@ -32,7 +32,6 @@ void TileMap::create(View& view, Texture& texture, uint32_t maxSize, bool blendE
     Drawable::create(
         DrawableCreateInfo()
         .setColorBlendEnable(blendEnable)
-        .setView(view)
         .setIstanceCount(0)
         .addDescriptorSet(
             DescriptorSet().get(

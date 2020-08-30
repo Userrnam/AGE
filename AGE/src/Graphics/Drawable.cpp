@@ -4,6 +4,7 @@
 #include "CoreConfig.hpp"
 #include "Core/RenderPassManager.hpp"
 #include "PipelineManager.hpp"
+#include "ViewManager.hpp"
 #include "Core/Pool.hpp"
 
 namespace age::core {
@@ -70,7 +71,9 @@ void Drawable::getPipelineLayout(const DrawableCreateInfo& info) {
     m_descriptorSets.reserve(info.m_descriptors.size() + 1);
 
     // add camera descriptor
-    auto cameraDescriptor = info.m_view->getDescriptor();
+    auto& view = ViewManager::getSelected();
+    m_viewport = view.getViewport();
+    auto cameraDescriptor = view.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
     m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
     layouts.push_back(cameraDescriptor.m_layout);
@@ -182,11 +185,13 @@ void Drawable::create(const DrawableCreateInfo& info) {
     }
 }
 
-void Drawable::__create(const View& view, ShapeId shapeId, const std::vector<ShaderComponentInfo>& compoents) {
+void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>& compoents) {
     m_shapeRenderInfo = Shape::get(shapeId);
 
     std::vector<VkDescriptorSetLayout> layouts;
     // add camera descriptor
+    auto& view = ViewManager::getSelected();
+    m_viewport = view.getViewport();
     auto cameraDescriptor = view.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
     m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
@@ -240,6 +245,7 @@ void Drawable::draw(int i) const {
     VkBuffer vertexBuffer = m_shapeRenderInfo.m_vertexMemoryId.buffer;
     VkBuffer indexBuffer = m_shapeRenderInfo.m_indexMemoryId.buffer;
 
+    vkCmdSetViewport(core::apiCore.commandBuffers.active[i], 0, 1, &m_viewport);
     VkDeviceSize offsets[] = { m_shapeRenderInfo.m_vertexMemoryId.address };
 
     vkCmdBindPipeline(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);

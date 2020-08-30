@@ -20,4 +20,22 @@ void collectComponents(std::vector<ShaderComponentInfo>& components, Head head) 
     components.push_back(head.getInfo());
 }
 
+template<typename... Args>
+struct ComponentCollector;
+
+template<typename Head, typename... Tail>
+struct ComponentCollector<Head, Tail...> {
+    static void collect(std::vector<ShaderComponentInfo>& components) {
+        components.push_back(Head::__getInfo());
+        ComponentCollector<Tail...>::collect(components);
+    }
+};
+
+template<typename Head>
+struct ComponentCollector<Head> {
+    static void collect(std::vector<ShaderComponentInfo>& components) {
+        components.push_back(Head::__getInfo());
+    }
+};
+
 } // namespace age

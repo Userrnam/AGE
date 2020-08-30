@@ -11,12 +11,16 @@ struct Viewport : public VkViewport {
         y = 0;
         width = 0;
         height = 0;
+        minDepth = 0;
+        maxDepth = 0;
     }
     Viewport(float _x, float _y, float _width, float _height) {
         x = _x;
         y = _y;
         width = _width;
         height = _height;
+        minDepth = 0;
+        maxDepth = 0;
     }
 };
 

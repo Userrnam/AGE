@@ -22,7 +22,6 @@ class Scene {
 	friend class Entity;
 protected:
 	Application* parent = nullptr;
-	std::vector<View> m_views;
 	entt::registry m_registry;
 
 	Entity createEntity() {

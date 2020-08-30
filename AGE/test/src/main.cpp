@@ -29,6 +29,9 @@
 #define RESOURCE_PATH ""
 #endif
 
+// may be create entities like this
+// inherit from scriptComponent and apply changes here?
+
 struct RectController : public age::ScriptComponent {
     glm::vec2 move = {};
     age::Transformable transformable;
@@ -91,23 +94,18 @@ class TestScene : public age::Scene {
     virtual void onCreate() override {
         auto e = createEntity();
 
-        // Fixme
-        // create view
-        m_views.push_back(age::View());
-        m_views[0].create();
-
-        text.create(m_views[0], getFont("courier"));
+        text.create(getFont("courier"));
         text.setText("Hello world");
         text.setColor({1, 1, 1, 1});
         text.uploadMapData();
 
-        text2.create(m_views[0], getFont("courier"));
+        text2.create(getFont("courier"));
         text2.setText("Hell");
         text2.setColor({1, 0, 0, 1});
         text2.move(1200, 800);
         text2.uploadMapData();
 
-        triangle.create(m_views[0]);
+        triangle.create();
 
         auto entity = createEntity();
         entity.addComponentNoCreate<age::Drawable>(text2);
@@ -117,7 +115,7 @@ class TestScene : public age::Scene {
 
         // create rectangle
         entity = createEntity();
-        entity.addComponent<age::Drawable>(m_views[0],
+        entity.addComponent<age::Drawable>(
             age::RECTANGLE_SHAPE,
             entity.addComponent<age::ColorComponent>(),
             entity.addComponent<age::TransformComponent>()
@@ -132,7 +130,7 @@ class TestScene : public age::Scene {
         {
             auto background = createEntity();
             // FIXME: if we swap color and transform it will not be rendered
-            background.addComponent<age::Drawable>(m_views[0], age::RECTANGLE_SHAPE, 
+            background.addComponent<age::Drawable>(age::RECTANGLE_SHAPE, 
                 background.addComponent<age::ColorComponent>(glm::vec4(1, 0, 0, 1)),
                 background.addComponent<age::TransformComponent>(age::Transformable().setScale(1600, 1200).getTransform())
             );
@@ -144,7 +142,8 @@ class TestScene : public age::Scene {
         for (size_t i = 0; i < view.size(); ++i) {
             targets[i] = view.get(view[i]);
         }
-        parent->render({ age::RenderPack(m_views[0], targets) });
+
+        age::Renderer::render(targets);
     }
 
     virtual void onDestroy() override {

@@ -23,12 +23,13 @@ class View : public Transformable {
 
     Viewport m_viewport;
     Camera camera;
+
+    friend class ViewManager;
 public:
 
     inline Viewport getViewport() const { return m_viewport; }
     inline DescriptorSet getDescriptor() const { return m_descriptor; }
 
-    void update(float elapsedTime, float currentTime);
     void create(const Viewport& viewport = {});
     void destroy();
 };

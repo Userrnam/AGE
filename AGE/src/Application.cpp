@@ -12,6 +12,7 @@
 #include "Audio/Core.hpp"
 #include "ShapeManager.hpp"
 #include "Scene.hpp"
+#include "ViewManager.hpp"
 
 namespace age {
 
@@ -36,6 +37,7 @@ void Application::destroy() {
         font.second.destroy();
     }
 
+    ViewManager::destroy();
     Shape::destroyManager();
 
     Sampler::destroyDefault();
@@ -53,8 +55,14 @@ void Application::create() {
     onCoreConfig();
 
     Renderer::create();
-
     core::deviceAlloc::init();
+
+    // create default view
+    View view;
+    view.create();
+    ViewManager::add(view, "default");
+    ViewManager::select("default");
+
     Shape::createManager();
 
     // init freetype
@@ -93,6 +101,7 @@ void Application::run() {
             pActiveScene->handleEvent(event);
         }
         EventManager::clearEvents();
+        ViewManager::updateViews(elapsedTime, std::chrono::duration<float, std::chrono::seconds::period>(currentTime.time_since_epoch()).count());
 
         pActiveScene->update(elapsedTime);
 

@@ -1,11 +1,11 @@
 #include "Text.hpp"
-#include <iostream>
+#include "View.hpp"
 
 namespace age {
 
-void Text::create(View& view, Font& font, uint32_t maxSize) {
+void Text::create(Font& font, uint32_t maxSize) {
     m_font = &font;
-    TileMap::create(view, font.m_atlas, maxSize, true);
+    TileMap::create(font.m_atlas, maxSize, true);
 }
 
 void Text::setText(const std::string& text) {

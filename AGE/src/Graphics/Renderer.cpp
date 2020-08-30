@@ -5,7 +5,7 @@
 
 namespace age {
 
-void Renderer::render(const std::vector<RenderPack>& packs) {
+void Renderer::render(const std::vector<Drawable>& targets) {
     // TODO: update only if something changed
 
     // update active commandBuffer
@@ -36,12 +36,8 @@ void Renderer::render(const std::vector<RenderPack>& packs) {
 
         vkCmdBeginRenderPass(core::apiCore.commandBuffers.active[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-        for (const auto& pack : packs) {
-            vkCmdSetViewport(core::apiCore.commandBuffers.active[i], 0, 1, &pack.m_viewport);
-
-            for (auto& target : pack.m_targets) {
-                target.draw(i);
-            }
+        for (auto& target : targets) {
+            target.draw(i);
         }
 
         vkCmdEndRenderPass(core::apiCore.commandBuffers.active[i]);

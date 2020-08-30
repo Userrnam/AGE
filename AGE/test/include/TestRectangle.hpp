@@ -27,7 +27,6 @@ struct TestRectangle : public age::Drawable {
             age::DrawableCreateInfo()
             .setColorBlendEnable(false)
             .setIstanceCount(1)
-            .setView(view)
             .setShapeId(age::RECTANGLE_SHAPE)
             .addDescriptorSet(
                 age::DescriptorSet()

@@ -43,10 +43,6 @@ protected:
     virtual void onDestroy() {}
 
 public:
-    inline void render(const std::vector<RenderPack>& packs) {
-        Renderer::render(packs);
-    }
-
     void destroy();
     void create();
     void run();
