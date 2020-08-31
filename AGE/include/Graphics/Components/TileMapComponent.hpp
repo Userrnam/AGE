@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 
 #include "ShaderComponent.hpp"
-#include "InstancedComponent.hpp"
+#include "ArrayComponent.hpp"
 
 #include "../Buffer.hpp"
 
@@ -16,12 +16,7 @@ struct __Tile {
     glm::vec2 size;
     glm::vec2 position;
     glm::vec2 texCoords[4];
-};
 
-class __TileMapComponent {
-    __Tile m_data;
-    friend class Instanced<__TileMapComponent>;
-public:
     static ShaderComponentInfo __getInfo() {
         ShaderComponentInfo info;
         info.add(
@@ -44,6 +39,6 @@ public:
     }
 };
 
-typedef Instanced<__TileMapComponent> TileMapComponent;
+typedef ArrayComponent<__Tile, PER_INSTANCE> TileMapComponent;
 
 } // namespace age

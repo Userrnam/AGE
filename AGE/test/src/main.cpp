@@ -12,7 +12,6 @@
 #include "Math.hpp"
 
 #include "TestTriangle.hpp"
-#include "TestRectangle.hpp"
 #include "Scene.hpp"
 #include <GlFW/glfw3.h>
 
@@ -31,24 +30,30 @@
 #endif
 
 struct RectController : public age::ScriptComponent {
-    using ComponentVariables = age::BundleComponent<age::Color, age::Transform>;
+    // using ComponentVariables = age::BundleComponent<age::Color, age::Transform>;
 
     glm::vec2 move = {};
     age::Transformable transformable;
-    ComponentVariables variables;
+    // ComponentVariables variables;
+    age::StorageComponent<age::Transform> transform;
+    age::ArrayComponent<age::Color, age::PER_VERTEX> colors;
     const float speed = 1.0f;
 
     virtual void onCreate() override {
         transformable.setScale(100, 100);
 
-        variables.create();
-        variables.get().get<age::Color>().set({1, 0, 1, 1});
-        variables.get().get<age::Transform>().set(transformable.getTransform());
-        variables.upload();
+        transform.create(transformable.setScale(100, 100).getTransform());
+        colors.create(4);
+        colors.add({{1, 0, 0, 1}});
+        colors.add({{0, 1, 0, 1}});
+        colors.add({{0, 0, 1, 1}});
+        colors.add({{0, 1, 1, 1}});
+        colors.upload();
 
         addComponent<age::Drawable>(
             age::RECTANGLE_SHAPE,
-            variables
+            transform,
+            colors
         );
     }
 
@@ -79,13 +84,13 @@ struct RectController : public age::ScriptComponent {
     virtual void onUpdate(float elapsedTime) override {
         if (move != glm::vec2(0.0)) {
             transformable.move(move.x * speed, move.y * speed);
-            variables.get().get<age::Transform>().set(transformable.getTransform());
-            variables.upload();
+            transform.set(transformable.getTransform());
         }
     }
 
     virtual void onDestroy() override {
-        variables.destroy();
+        transform.destroy();
+        colors.destroy();
         getComponent<age::Drawable>().destroy();
     }
 };

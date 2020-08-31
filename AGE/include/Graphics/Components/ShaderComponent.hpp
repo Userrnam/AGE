@@ -100,7 +100,7 @@ struct ShaderComponentInfo {
     std::vector<std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>> m_data;
     ShaderComponentDescription m_description;
     ShaderComponentId m_id = 0;
-    bool m_instanced = false; // this can be changed by Instanced template
+    std::string m_arrayIndex = ""; // if array index is "" - component is not array
 
     struct {
         std::string rawInsert;

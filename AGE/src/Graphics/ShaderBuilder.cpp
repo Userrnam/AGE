@@ -6,18 +6,6 @@
 
 namespace age {
 
-/*
-
-maybe automatically generate struct and pass it to fragment shader via layout?
-so all buffers are only accessed in vertex shader
-use some global name for this layout (for example globals)
-
-rename shader builder to something else and generate descriptor sets here, because buffer type
-is chosen here (storage if instanced, uniform otherwise), this means buffers also should be
-created here...
-
-*/
-
 inline std::string insertStructName(const std::string& mainInsert, const std::string& structName) {
     std::stringstream ss;
 	for (char c : mainInsert) {
@@ -75,8 +63,8 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<ShaderComponent
 
                 std::string name = "n" + std::to_string(binding);
                 names[binding] = name + "." + name;
-                if (component.m_instanced) {
-                    names[binding] += "[gl_InstanceIndex]";
+                if (component.m_arrayIndex.size()) {
+                    names[binding] += component.m_arrayIndex;
                 }
 
                 // insert struct
@@ -90,7 +78,7 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<ShaderComponent
                 m_stream << "};\n";
 
                 // insert buffer block
-                if (component.m_instanced) {
+                if (component.m_arrayIndex.size()) {
                     m_stream << "layout(set=1, binding=" << binding << ") readonly buffer XX" << name << " {\n";
                     m_stream << "\tYY" << name << " " << name << "[];\n";
                 } else {
