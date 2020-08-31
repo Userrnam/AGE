@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Buffer.hpp"
+#include "ShaderComponent.hpp"
 
 namespace age {
 
@@ -10,6 +11,13 @@ class StorageComponent {
     Buffer m_buffer;
 
 public:
+    inline ShaderComponentInfo getInfo() {
+        auto info = T::__getInfo();
+        info.setBuffer(m_buffer);
+        info. template setId<StorageComponent<T>>();
+        return info;
+    }
+
     inline Buffer& getBuffer() {
         return m_buffer;
     }
@@ -40,6 +48,10 @@ public:
 
     inline void set(T data) {
         m_data = data;
+        upload();
+    }
+
+    inline void upload() {
         m_buffer.load(&m_data, sizeof(T));
     }
 };

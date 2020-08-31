@@ -23,27 +23,33 @@
 #include "Graphics/Components/TextureComponent.hpp"
 #include "Graphics/Components/TexCoordsComponent.hpp"
 #include "Graphics/Components/TileMapComponent.hpp"
+#include "Graphics/Components/BundleComponent.hpp"
 #include "Containers/DynamicBuffer.hpp"
 
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""
 #endif
 
-// may be create entities like this
-// inherit from scriptComponent and apply changes here?
-
 struct RectController : public age::ScriptComponent {
+    using ComponentVariables = age::BundleComponent<age::Color, age::Transform>;
+
     glm::vec2 move = {};
     age::Transformable transformable;
-    age::TransformComponent tc;
+    ComponentVariables variables;
     const float speed = 1.0f;
 
     virtual void onCreate() override {
-        getComponent<age::ColorComponent>().set({ 1, 0, 1, 1 });
-
         transformable.setScale(100, 100);
-        tc = getComponent<age::TransformComponent>();
-        tc.set(transformable.getTransform());
+
+        variables.create();
+        variables.get().get<age::Color>().set({1, 0, 1, 1});
+        variables.get().get<age::Transform>().set(transformable.getTransform());
+        variables.upload();
+
+        addComponent<age::Drawable>(
+            age::RECTANGLE_SHAPE,
+            variables
+        );
     }
 
     virtual void onEvent(age::Event event) override {
@@ -73,13 +79,13 @@ struct RectController : public age::ScriptComponent {
     virtual void onUpdate(float elapsedTime) override {
         if (move != glm::vec2(0.0)) {
             transformable.move(move.x * speed, move.y * speed);
-            tc.set(transformable.getTransform());
+            variables.get().get<age::Transform>().set(transformable.getTransform());
+            variables.upload();
         }
     }
 
     virtual void onDestroy() override {
-        getComponent<age::TransformComponent>().destroy();
-        getComponent<age::ColorComponent>().destroy();
+        variables.destroy();
         getComponent<age::Drawable>().destroy();
     }
 };
@@ -115,11 +121,6 @@ class TestScene : public age::Scene {
 
         // create rectangle
         entity = createEntity();
-        entity.addComponent<age::Drawable>(
-            age::RECTANGLE_SHAPE,
-            entity.addComponent<age::ColorComponent>(),
-            entity.addComponent<age::TransformComponent>()
-        );
         auto script = entity.addComponentNoCreate<age::ScriptComponent*>(new RectController());
         script->create(entity);
 
@@ -131,8 +132,8 @@ class TestScene : public age::Scene {
             auto background = createEntity();
             // FIXME: if we swap color and transform it will not be rendered
             background.addComponent<age::Drawable>(age::RECTANGLE_SHAPE, 
-                background.addComponent<age::ColorComponent>(glm::vec4(1, 0, 0, 1)),
-                background.addComponent<age::TransformComponent>(age::Transformable().setScale(1600, 1200).getTransform())
+                background.addComponent<age::StorageComponent<age::Color>>(glm::vec4(1, 0, 0, 1)),
+                background.addComponent<age::StorageComponent<age::Transform>>(age::Transformable().setScale(1600, 1200).getTransform())
             );
         }
 

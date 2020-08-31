@@ -4,17 +4,18 @@
 #include "Graphics/ShapeManager.hpp"
 #include "Graphics/Components/ColorComponent.hpp"
 #include "Graphics/Components/TransformComponent.hpp"
+#include "Graphics/Components/StorageComponent.hpp"
 #include "Graphics/ShaderBuilder.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
 struct TestRectangle : public age::Drawable {
-    age::ColorComponent color;
-    age::TransformComponent transform;
+    age::StorageComponent<age::Color> color;
+    age::StorageComponent<age::Transform> transform;
 
     void create(age::View& view) {
         color.create();
-        color.set({1, 1, 0, 1});
+        color.set(glm::vec4(1, 1, 0, 1));
 
         transform.create();
         auto& t = transform.get();

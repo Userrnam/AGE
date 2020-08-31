@@ -235,7 +235,7 @@ void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>&
 }
 
 void Drawable::destroy() {
-    destroyPipeline(m_pipeline);
+    // destroyPipeline(m_pipeline);
     for (int i = 1; i < m_descriptorSets.size(); ++i) {
         freeDescriptor(m_poolIndicies[i], m_descriptorSets[i]);
     }

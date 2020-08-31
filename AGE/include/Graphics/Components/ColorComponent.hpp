@@ -4,13 +4,12 @@
 #include <glm/glm.hpp>
 
 #include "ShaderComponent.hpp"
-#include "StorageComponent.hpp"
+#include "GetSet.hpp"
 
 namespace age {
 
-class ColorComponent : public StorageComponent<glm::vec4> {
+class Color : public util::GetSet<glm::vec4> {
 public:
-    // this is used by Instanced template
     static ShaderComponentInfo __getInfo() {
         ShaderComponentInfo info;
         info.add(
@@ -21,12 +20,8 @@ public:
         return info;
     }
 
-    ShaderComponentInfo getInfo() {
-        ShaderComponentInfo info = __getInfo();
-        info.setId<ColorComponent>();
-        info.setBuffer(getBuffer());
-        return info;
-    }
+    Color() {}
+    inline Color(glm::vec4 v) { set(v); }
 };
 
 } // namespace age

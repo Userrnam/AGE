@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "CoreConfig.hpp"
-#include "Color.hpp"
 
 namespace age::core {
 

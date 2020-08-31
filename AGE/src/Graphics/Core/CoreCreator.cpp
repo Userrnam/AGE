@@ -46,10 +46,6 @@ void destroyCore() {
 	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.graphicsPool, nullptr);
 	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.transferPool, nullptr);
 
-	for (auto pipelineLayoutRef : apiCore.pipelineLayouts) {
-		vkDestroyPipelineLayout(apiCore.device, pipelineLayoutRef.pipelineLayout, nullptr);
-	}
-
 	apiCore.renderPass.destroy();
 
 	apiCore.multisampling.image.destroy();

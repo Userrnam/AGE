@@ -2,6 +2,7 @@
 #include "Graphics/Core/Command.hpp"
 #include "Graphics/Core/CoreCreator.hpp"
 #include "Graphics/Core/Core.hpp"
+#include "Core/PipelineManager.hpp"
 
 namespace age {
 
@@ -72,6 +73,7 @@ void Renderer::create() {
 }
 
 void Renderer::destroy() {
+    core::destroyPipelineManager();
     core::destroyCore();
 }
 

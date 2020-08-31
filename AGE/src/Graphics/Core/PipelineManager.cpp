@@ -71,8 +71,11 @@ std::pair<VkPipeline, VkPipelineLayout> requestPipeline(PipelineInfo requirement
 void destroyPipelineManager() {
     for (auto& p : pipelinesMap) {
         vkDestroyPipeline(apiCore.device, p.second.first, nullptr);
-        vkDestroyPipelineLayout(apiCore.device, p.second.second, nullptr);
     }
+
+	for (auto pipelineLayoutRef : apiCore.pipelineLayouts) {
+		vkDestroyPipelineLayout(apiCore.device, pipelineLayoutRef.pipelineLayout, nullptr);
+	}
 }
 
 constexpr inline VkPipelineRasterizationStateCreateInfo getRasterizationStateCreateInfo() {

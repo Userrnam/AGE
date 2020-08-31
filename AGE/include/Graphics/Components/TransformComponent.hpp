@@ -3,13 +3,12 @@
 #include <sstream>
 
 #include "ShaderComponent.hpp"
-#include "StorageComponent.hpp"
+#include "GetSet.hpp"
 
 namespace age {
 
-class TransformComponent : public StorageComponent<glm::mat4> {
+class Transform : public util::GetSet<glm::mat4> {
 public:
-
     static ShaderComponentInfo __getInfo() {
         ShaderComponentInfo info;
         info.add(
@@ -20,12 +19,8 @@ public:
         return info;
     }
 
-    ShaderComponentInfo getInfo() {
-        auto info = __getInfo();
-        info.setBuffer(getBuffer());
-        info.setId<TransformComponent>();
-        return info;
-    }
+    Transform() {}
+    inline Transform(const glm::mat4& m) { set(m); }
 };
 
 } // namespace age

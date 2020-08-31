@@ -9,26 +9,21 @@
 
 namespace age {
 
-template <class T, class M> M __getMemberType(M T:: *);
-#define GET_TYPE_OF(mem) decltype(__getMemberType(&mem))
-
-// T's field holding data must be named m_data
-// T must have a static method __getInfo() that returns ShaderComponentInfo
 template<typename T>
 class Instanced {
-    std::vector<GET_TYPE_OF(T::m_data)> m_instances;
+    std::vector<T> m_instances;
     Buffer m_buffer;
 
 public:
-    const GET_TYPE_OF(T::m_data)& operator[](size_t i) const {
+    const T& operator[](size_t i) const {
         return m_instances[i];
     }
 
-    GET_TYPE_OF(T::m_data)& operator[](size_t i) {
+    T& operator[](size_t i) {
         return m_instances[i];
     }
 
-    inline void add(GET_TYPE_OF(T::m_data) elem) {
+    inline void add(T elem) {
         m_instances.push_back(elem);
     }
 
@@ -37,14 +32,14 @@ public:
     }
 
     void upload() {
-        m_buffer.load(m_instances.data(), sizeof(GET_TYPE_OF(T::m_data)) * m_instances.size());
+        m_buffer.load(m_instances.data(), sizeof(T) * m_instances.size());
     }
 
     void create(int instanceCount) {
         m_buffer.create(
             BufferCreateInfo()
             .setUsage(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT)
-            .setSize(sizeof(GET_TYPE_OF(T::m_data)) * instanceCount)
+            .setSize(sizeof(T) * instanceCount)
         );
     }
 

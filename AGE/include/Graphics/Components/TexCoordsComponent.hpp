@@ -5,12 +5,14 @@
 #include <sstream>
 
 #include "ShaderComponent.hpp"
-#include "StorageComponent.hpp"
 
 namespace age {
 
-class TexCoordsComponent : public StorageComponent<glm::vec2[4]> {
-public:
+struct TexCoords {
+    glm::vec2 coords[4] = {
+        {0, 0}, {1, 0}, {1, 1}, {0, 1}
+    };
+
     static ShaderComponentInfo __getInfo() {
         ShaderComponentInfo info;
         info.add(
@@ -21,13 +23,6 @@ public:
             ShaderComponentForward("vec2 texCoords")
         );
         info.setVertMainInsert("\tglobals.texCoords = ?.texCoords[gl_VertexIndex];\n");
-        return info;
-    }
-
-    ShaderComponentInfo getInfo() {
-        auto info = __getInfo();
-        info.setBuffer(getBuffer());
-        info.setId<TexCoordsComponent>();
         return info;
     }
 };
