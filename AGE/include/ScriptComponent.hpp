@@ -8,7 +8,7 @@ namespace age {
 struct ScriptComponent : public Entity {
     void create(Entity e) {
         m_entityId = e.m_entityId;
-        m_registry = e.m_registry;
+        m_scene = e.m_scene;
 
         onCreate();
     }

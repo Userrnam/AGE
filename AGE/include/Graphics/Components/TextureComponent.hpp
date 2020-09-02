@@ -15,13 +15,12 @@ class TextureComponent {
     Texture m_texture;
 
 public:
-    void create(std::string path, Sampler sampler)  {
-        m_texture.create(path, sampler);
+    inline void setTexture(const Texture& texture) {
+        m_texture = texture;
     }
 
-    void destroy() {
-        m_texture.destroy();
-    }
+    TextureComponent() {}
+    inline TextureComponent(const Texture& texture) { m_texture = texture; }
 
     ShaderComponentInfo getInfo() {
         ShaderComponentInfo info;

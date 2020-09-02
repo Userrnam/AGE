@@ -87,7 +87,9 @@ void Buffer::copyTo(VkBuffer buffer, VkDeviceSize offset) {
 
 void Buffer::load(const void* data, VkDeviceSize size, VkDeviceSize offset) {
 	void* mapped;
-	vkMapMemory(core::apiCore.device, m_memoryId.memory, m_memoryId.address + offset, size, 0, &mapped);
+	if (vkMapMemory(core::apiCore.device, m_memoryId.memory, m_memoryId.address + offset, size, 0, &mapped) != VK_SUCCESS) {
+		throw std::runtime_error("[Buffer::load]: Failed to map memory");
+	}
 		memcpy(mapped, data, static_cast<size_t>(size));
 	vkUnmapMemory(core::apiCore.device, m_memoryId.memory);
 }

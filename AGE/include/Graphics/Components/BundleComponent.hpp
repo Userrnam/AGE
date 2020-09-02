@@ -31,6 +31,8 @@ public:
         std::vector<ShaderComponentInfo> infos;
         ComponentCollector<Args...>::collect(infos);
 
+        ShaderComponentInfo shaderComponentInfo;
+
         ShaderComponentBuffer bufferInfo;
         std::stringstream vertRawInsert;
         std::stringstream fragRawInsert;
@@ -45,6 +47,8 @@ public:
                     for (auto& member : bi.m_members) {
                         bufferInfo.addBlockMember(member.m_member, member.m_forward);
                     }
+                } else if (std::holds_alternative<ShaderComponentForward>(b)) {
+                    shaderComponentInfo.add(std::get<ShaderComponentForward>(b));
                 }
             }
             // get inserts
@@ -54,7 +58,6 @@ public:
             fragMainInsert << info.m_frag.mainInsert << "\n";
         }
 
-        ShaderComponentInfo shaderComponentInfo;
         shaderComponentInfo.add(bufferInfo);
         shaderComponentInfo.setVertRawInsert(vertRawInsert.str());
         shaderComponentInfo.setFragRawInsert(fragRawInsert.str());

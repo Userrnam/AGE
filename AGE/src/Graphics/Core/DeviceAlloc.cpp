@@ -12,7 +12,7 @@ namespace age::core::deviceAlloc {
 BufferPool pool;
 
 MemoryId allocBuffer(uint32_t size, VkBufferUsageFlags usage) {
-    VkDeviceSize alignent = 16;
+    VkDeviceSize alignent = 1;
 
     if (usage & VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT) {
         alignent = apiCore.deviceProperties.limits.minUniformBufferOffsetAlignment;

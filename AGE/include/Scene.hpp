@@ -10,29 +10,23 @@
 #include "ScriptComponent.hpp"
 
 #include "Application.hpp"
+#include "SceneAPI.hpp"
 
 namespace age {
 
 // class Application;
-class Scene {
+class Scene : public SceneAPI {
     void update(float elapsedTime);
 	void handleEvent(Event event);
 
 	friend class Application;
 	friend class Entity;
 protected:
-	Application* parent = nullptr;
-	entt::registry m_registry;
-
 	Entity createEntity() {
 		Entity e;
 		e.m_entityId = m_registry.create();
-		e.m_registry = &m_registry;
+		e.m_scene = this;
 		return e;
-	}
-
-	inline Font& getFont(const std::string& font) {
-		return parent->getFont(font);
 	}
 
 	virtual void onDestroy() {}

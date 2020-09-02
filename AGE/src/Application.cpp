@@ -37,6 +37,10 @@ void Application::destroy() {
         font.second.destroy();
     }
 
+    for (auto& texture: m_textures) {
+        texture.second.destroy();
+    }
+
     ViewManager::destroy();
     Shape::destroyManager();
 

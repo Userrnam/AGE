@@ -30,30 +30,32 @@
 #endif
 
 struct RectController : public age::ScriptComponent {
-    // using ComponentVariables = age::BundleComponent<age::Color, age::Transform>;
-
     glm::vec2 move = {};
     age::Transformable transformable;
     // ComponentVariables variables;
-    age::StorageComponent<age::Transform> transform;
+    age::BundleComponent<age::Transform, age::TexCoords> vars;
     age::ArrayComponent<age::Color, age::PER_VERTEX> colors;
     const float speed = 1.0f;
 
     virtual void onCreate() override {
         transformable.setScale(100, 100);
 
-        transform.create(transformable.setScale(100, 100).getTransform());
+        vars.create();
+        vars.get().get<age::Transform>().set(transformable.setScale(500, 500).getTransform());
+        vars.upload();
+
         colors.create(4);
-        colors.add({{1, 0, 0, 1}});
-        colors.add({{0, 1, 0, 1}});
-        colors.add({{0, 0, 1, 1}});
-        colors.add({{0, 1, 1, 1}});
+        colors.add({{1, 1, 1, 1}});
+        colors.add({{1, 1, 1, 1}});
+        colors.add({{0, 0, 1, 0.5}});
+        colors.add({{0, 0, 1, 0.5}});
         colors.upload();
 
         addComponent<age::Drawable>(
             age::RECTANGLE_SHAPE,
-            transform,
-            colors
+            vars,
+            colors,
+            age::TextureComponent(getTexture("mountains"))
         );
     }
 
@@ -84,12 +86,13 @@ struct RectController : public age::ScriptComponent {
     virtual void onUpdate(float elapsedTime) override {
         if (move != glm::vec2(0.0)) {
             transformable.move(move.x * speed, move.y * speed);
-            transform.set(transformable.getTransform());
+            vars.get().get<age::Transform>().set(transformable.getTransform());
+            vars.upload();
         }
     }
 
     virtual void onDestroy() override {
-        transform.destroy();
+        vars.destroy();
         colors.destroy();
         getComponent<age::Drawable>().destroy();
     }
@@ -214,6 +217,8 @@ class Application : public age::Application {
 
     virtual void onCreate() override {
         loadFont(age::getResourcePath("Courier.dfont"), "courier");
+        loadTexture(age::getResourcePath("mountains.png"), "mountains");
+        loadTexture(age::getResourcePath("yoda.jpg"), "yoda");
 
         auto scene = new TestScene();
         scene->create(this);

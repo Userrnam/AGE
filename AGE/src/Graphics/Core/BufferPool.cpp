@@ -47,9 +47,9 @@ AllocAddress MemoryBlock::getAllocAddress(uint32_t size, uint32_t alignment) {
     for (size_t i = 0; i < m_allocs.size(); ++i) {
         if (m_allocs[i].isFree && m_allocs[i].size >= size + (alignmentExtra = (alignment - m_allocs[i].address % alignment) % alignment)) {
             m_allocs[i].isFree = false;
-            m_allocs[i].address += alignmentExtra;
-            m_allocs[i].size -= alignmentExtra;
             if (i > 0) {
+                m_allocs[i].address += alignmentExtra;
+                m_allocs[i].size -= alignmentExtra;
                 m_allocs[i - 1].size += alignmentExtra;
             }
             if (m_allocs[i].size == size) {
