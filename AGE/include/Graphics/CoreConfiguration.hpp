@@ -10,10 +10,7 @@ namespace age::config {
 typedef uint32_t Features;
 
 enum Feature {
-    GEOMETRY_SHADER = 1,
-    TESSELATION_SHADER = 2,
-    SAMPLER_ANISTROPY = 4,
-    SAMPLE_RATE_SHADING = 8
+    SAMPLE_RATE_SHADING = 1
 };
 
 class WindowProperties {

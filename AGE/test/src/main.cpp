@@ -9,7 +9,6 @@
 #include "Utils/utils.hpp"
 #include "Graphics.hpp"
 #include "Audio.hpp"
-#include "Math.hpp"
 
 #include "TestTriangle.hpp"
 #include "Scene.hpp"
