@@ -1,8 +1,8 @@
 #include "Renderer.hpp"
-#include "Graphics/Core/Command.hpp"
-#include "Graphics/Core/CoreCreator.hpp"
-#include "Graphics/Core/Core.hpp"
-#include "Core/PipelineManager.hpp"
+#include "Core/Command.hpp"
+#include "Core/CoreCreator.hpp"
+#include "Core/Core.hpp"
+#include "PipelineManager.hpp"
 
 namespace age {
 

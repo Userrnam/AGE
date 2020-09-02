@@ -10,10 +10,9 @@
 #include "coreAPI.hpp"
 #include "VulkanDebug.hpp"
 #include "Core.hpp"
-#include "utils.hpp"
-#include "QueueFamilyIndicies.hpp"
-#include "SwapchainSupportDetails.hpp"
-
+#include "Utils/utils.hpp"
+#include "Window/QueueFamilyIndicies.hpp"
+#include "Window/SwapchainSupportDetails.hpp"
 
 namespace age::core {
 
@@ -23,11 +22,6 @@ const std::vector<const char*> validationLayers = {
 
 Core apiCore;
 CoreConfig coreConfig;
-
-// void setCoreConfig(const CoreConfig& config) {
-// 	coreConfig = config;
-// 	apiCore.debug.enable = config.debugEnable;
-// }
 
 void init() {
 	glfwInit();

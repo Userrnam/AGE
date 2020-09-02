@@ -3,16 +3,16 @@
 #include FT_FREETYPE_H
 
 #include "Application.hpp"
-#include "Viewport.hpp"
+// #include "View/Viewport.hpp"
 
-#include "Graphics/Core/coreAPI.hpp"
-#include "Graphics/Core/Window.hpp"
+// #include "Graphics/Core/coreAPI.hpp"
+#include "Graphics/Core/Window/Window.hpp"
 #include "Graphics/Core/Core.hpp"
-#include "Core/Command.hpp"
+// #include "Core/Command.hpp"
 #include "Audio/Core.hpp"
-#include "ShapeManager.hpp"
-#include "Scene.hpp"
-#include "ViewManager.hpp"
+// #include "ShapeManager.hpp"
+#include "Scene/Scene.hpp"
+#include "View/ViewManager.hpp"
 
 namespace age {
 

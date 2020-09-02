@@ -1,10 +1,10 @@
 #include "CoreCreator.hpp"
 #include "coreAPI.hpp"
-#include "Window.hpp"
+#include "Window/Window.hpp"
 #include "Core.hpp"
 #include "VulkanDebug.hpp"
 #include "RenderPassManager.hpp"
-#include "DeviceAlloc.hpp"
+#include "Memory/DeviceAlloc.hpp"
 
 namespace age::core {
 

@@ -14,16 +14,6 @@
 #include "Scene.hpp"
 #include <GlFW/glfw3.h>
 
-#include "Graphics/ShaderBuilder.hpp"
-
-#include "Graphics/Components/TransformComponent.hpp"
-#include "Graphics/Components/ColorComponent.hpp"
-#include "Graphics/Components/TextureComponent.hpp"
-#include "Graphics/Components/TexCoordsComponent.hpp"
-#include "Graphics/Components/TileMapComponent.hpp"
-#include "Graphics/Components/BundleComponent.hpp"
-#include "Containers/DynamicBuffer.hpp"
-
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""
 #endif

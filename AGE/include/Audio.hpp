@@ -1,5 +1,5 @@
 #pragma once
 
-#include "Audio/Listener.hpp"
-#include "Audio/Sound.hpp"
-#include "Audio/SoundSource.hpp"
+#include "../src/Audio/Listener.hpp"
+#include "../src/Audio/Sound.hpp"
+#include "../src/Audio/SoundSource.hpp"
