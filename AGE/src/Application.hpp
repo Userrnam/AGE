@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <unordered_map>
 
-#include "Graphics/Renderer.hpp"
+#include "Graphics/Rendering/Renderer.hpp"
 #include "Graphics/Objects/Sampler.hpp"
 
 #include "Events/EventManager.hpp"

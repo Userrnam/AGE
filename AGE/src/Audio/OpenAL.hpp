@@ -11,11 +11,12 @@
 #endif
 
 #include <stdexcept>
+#include <string>
 
 #define ERROR_CHECK(name) \
     {\
         ALCenum error = alGetError(); \
         if (error != AL_NO_ERROR) { \
-            throw std::runtime_error(name ": " + error); \
+            throw std::runtime_error(name ": " + std::to_string(error)); \
         } \
     }

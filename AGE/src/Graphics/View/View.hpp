@@ -2,9 +2,9 @@
 
 #include "Viewport.hpp"
 #include "Camera.hpp"
-#include "../ObjectCreation/Descriptor.hpp"
-#include "../MemoryHolders/Buffer.hpp"
-#include "../Transformable.hpp"
+#include "ObjectCreation/Descriptor.hpp"
+#include "MemoryHolders/Buffer.hpp"
+#include "Transformable.hpp"
 
 namespace age {
 

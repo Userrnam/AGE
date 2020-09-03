@@ -1,36 +1,36 @@
 #include "RenderPassManager.hpp"
 
-#include "Core.hpp"
+#include "Core/Core.hpp"
 
 
-namespace age::core {
+namespace age {
 
 void createFramebuffers(RenderPassRef& renderPassRef) {
-    renderPassRef.framebuffers.resize(apiCore.swapchain.imageViews.size());
+    renderPassRef.framebuffers.resize(core::apiCore.swapchain.imageViews.size());
 
 	size_t swapchainImageViewIndex = 0;
     std::vector<VkImageView> attachments;
 
     if (renderPassRef.config & RENDER_PASS_MULTISAMPLING_BIT) {
-        attachments.push_back(apiCore.multisampling.image.getView());
+        attachments.push_back(core::apiCore.multisampling.image.getView());
 		swapchainImageViewIndex++;
     }
 
-	attachments.push_back(apiCore.swapchain.imageViews[0]);
+	attachments.push_back(core::apiCore.swapchain.imageViews[0]);
 
-	for (size_t i = 0; i < apiCore.swapchain.imageViews.size(); ++i) {
-		attachments[swapchainImageViewIndex] = apiCore.swapchain.imageViews[i];
+	for (size_t i = 0; i < core::apiCore.swapchain.imageViews.size(); ++i) {
+		attachments[swapchainImageViewIndex] = core::apiCore.swapchain.imageViews[i];
 
 		VkFramebufferCreateInfo framebufferInfo = {};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferInfo.renderPass = renderPassRef.renderPass;
 		framebufferInfo.attachmentCount = attachments.size();
 		framebufferInfo.pAttachments = attachments.data();
-		framebufferInfo.width = apiCore.swapchain.extent.width;
-		framebufferInfo.height = apiCore.swapchain.extent.height;
+		framebufferInfo.width = core::apiCore.swapchain.extent.width;
+		framebufferInfo.height = core::apiCore.swapchain.extent.height;
 		framebufferInfo.layers = 1;
 
-		if (vkCreateFramebuffer(apiCore.device, &framebufferInfo, nullptr, &renderPassRef.framebuffers[i]) != VK_SUCCESS) {
+		if (vkCreateFramebuffer(core::apiCore.device, &framebufferInfo, nullptr, &renderPassRef.framebuffers[i]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create framebuffer");
 		}
 	}
@@ -43,9 +43,9 @@ void createRenderPass(RenderPassConfig rpc) {
     std::vector<VkAttachmentDescription> attachments;
 
     VkAttachmentDescription colorAttachment = {};
-	colorAttachment.format = apiCore.swapchain.format;
+	colorAttachment.format = core::apiCore.swapchain.format;
 	if (rpc & RENDER_PASS_MULTISAMPLING_BIT) {
-		colorAttachment.samples = apiCore.multisampling.sampleCount;
+		colorAttachment.samples = core::apiCore.multisampling.sampleCount;
 	} else {
 		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	}
@@ -65,7 +65,7 @@ void createRenderPass(RenderPassConfig rpc) {
 
     if (rpc & RENDER_PASS_MULTISAMPLING_BIT) {
         VkAttachmentDescription colorAttachmentResolve = {};
-        colorAttachmentResolve.format = apiCore.swapchain.format;
+        colorAttachmentResolve.format = core::apiCore.swapchain.format;
         colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
         colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -115,13 +115,13 @@ void createRenderPass(RenderPassConfig rpc) {
 	renderPassInfo.dependencyCount = 1;
 	renderPassInfo.pDependencies = &dependency;
 
-	if (vkCreateRenderPass(apiCore.device, &renderPassInfo, nullptr, &renderPass.renderPass) != VK_SUCCESS) {
+	if (vkCreateRenderPass(core::apiCore.device, &renderPassInfo, nullptr, &renderPass.renderPass) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create render pass");
 	}
 
 	createFramebuffers(renderPass);
 
-	apiCore.renderPass = renderPass;
+	core::apiCore.renderPass = renderPass;
 }
 
-} // namespace age::core
+} // namespace age

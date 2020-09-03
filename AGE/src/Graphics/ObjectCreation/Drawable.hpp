@@ -3,11 +3,11 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-#include "../View/View.hpp"
+#include "View/View.hpp"
 #include "Shader.hpp"
 #include "Descriptor.hpp"
-#include "../RenderPassRef.hpp"
-#include "../MemoryHolders/Buffer.hpp"
+#include "Rendering/RenderPassRef.hpp"
+#include "MemoryHolders/Buffer.hpp"
 #include "Vertex.hpp"
 #include "Index.hpp"
 #include "Containers/Shared.hpp"

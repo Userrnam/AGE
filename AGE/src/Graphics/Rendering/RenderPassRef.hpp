@@ -3,7 +3,7 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 
-namespace age::core {
+namespace age {
 
 typedef uint32_t RenderPassConfig;
 
@@ -20,4 +20,4 @@ struct RenderPassRef {
     void destroy();
 };
 
-} // namespace age::core
+} // namespace age

@@ -3,7 +3,7 @@
 #include "Window/Window.hpp"
 #include "Core.hpp"
 #include "VulkanDebug.hpp"
-#include "RenderPassManager.hpp"
+#include "Rendering/RenderPassManager.hpp"
 #include "Memory/DeviceAlloc.hpp"
 
 namespace age::core {

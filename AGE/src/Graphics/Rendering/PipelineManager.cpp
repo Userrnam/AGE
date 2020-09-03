@@ -4,9 +4,11 @@
 #include "PipelineManager.hpp"
 #include "Core/CoreConfig.hpp"
 
-namespace age::core {
+namespace age {
 
-extern CoreConfig coreConfig;
+namespace core {
+    extern CoreConfig coreConfig;
+}
 
 std::unordered_map<PipelineInfo, std::pair<VkPipeline, VkPipelineLayout>> pipelinesMap;
 
@@ -34,7 +36,7 @@ bool isSame(const std::vector<VkDescriptorSetLayout>& layouts1, const std::vecto
 // TODO: There is always 2 descriptorSetLayouts. First for camera, second - user defined
 // maybe this can be simplified
 VkPipelineLayout requestPipelineLayout(const std::vector<VkDescriptorSetLayout>& layouts) {
-    for (auto& pipelineLayout : apiCore.pipelineLayouts) {
+    for (auto& pipelineLayout : core::apiCore.pipelineLayouts) {
         if (isSame(pipelineLayout.descriptorSetLayouts, layouts)) {
             return pipelineLayout.pipelineLayout;
         }
@@ -48,14 +50,14 @@ VkPipelineLayout requestPipelineLayout(const std::vector<VkDescriptorSetLayout>&
     pipelineLayoutInfo.pPushConstantRanges = nullptr;
 
     VkPipelineLayout pipelineLayout;
-    if (vkCreatePipelineLayout(apiCore.device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+    if (vkCreatePipelineLayout(core::apiCore.device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
         std::runtime_error("failed to create pipeline layout");
     }
 
-    PipelineLayoutRef ref;
+    core::PipelineLayoutRef ref;
     ref.descriptorSetLayouts = layouts;
     ref.pipelineLayout = pipelineLayout;
-    apiCore.pipelineLayouts.push_back(ref);
+    core::apiCore.pipelineLayouts.push_back(ref);
 
     return pipelineLayout;
 }
@@ -70,11 +72,11 @@ std::pair<VkPipeline, VkPipelineLayout> requestPipeline(PipelineInfo requirement
 
 void destroyPipelineManager() {
     for (auto& p : pipelinesMap) {
-        vkDestroyPipeline(apiCore.device, p.second.first, nullptr);
+        vkDestroyPipeline(core::apiCore.device, p.second.first, nullptr);
     }
 
-	for (auto pipelineLayoutRef : apiCore.pipelineLayouts) {
-		vkDestroyPipelineLayout(apiCore.device, pipelineLayoutRef.pipelineLayout, nullptr);
+	for (auto pipelineLayoutRef : core::apiCore.pipelineLayouts) {
+		vkDestroyPipelineLayout(core::apiCore.device, pipelineLayoutRef.pipelineLayout, nullptr);
 	}
 }
 
@@ -118,10 +120,10 @@ inline VkPipelineMultisampleStateCreateInfo getMultisampleStateCreateInfo() {
     VkPipelineMultisampleStateCreateInfo multisampling = {};
 
     multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-    if (coreConfig.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
-        multisampling.rasterizationSamples = apiCore.multisampling.sampleCount;
-        multisampling.sampleShadingEnable = coreConfig.multisampling.sampleRateShading;
-        multisampling.minSampleShading = coreConfig.multisampling.minSampleShading;
+    if (core::coreConfig.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
+        multisampling.rasterizationSamples = core::apiCore.multisampling.sampleCount;
+        multisampling.sampleShadingEnable = core::coreConfig.multisampling.sampleRateShading;
+        multisampling.minSampleShading = core::coreConfig.multisampling.minSampleShading;
     } else {
         multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
     }
@@ -179,7 +181,7 @@ std::pair<VkPipeline, VkPipelineLayout> createPipeline(const PipelineCreateInfo&
 
     VkRect2D scissors = {};
     scissors.offset = { 0, 0 };
-    scissors.extent = apiCore.swapchain.extent;
+    scissors.extent = core::apiCore.swapchain.extent;
 
     VkPipelineViewportStateCreateInfo viewportState = {};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -215,12 +217,12 @@ std::pair<VkPipeline, VkPipelineLayout> createPipeline(const PipelineCreateInfo&
     pipelineCreateInfo.pColorBlendState = &colorBlending;
     pipelineCreateInfo.pMultisampleState = &multisampling;
     pipelineCreateInfo.layout = result.second;
-    pipelineCreateInfo.renderPass = apiCore.renderPass.renderPass;
+    pipelineCreateInfo.renderPass = core::apiCore.renderPass.renderPass;
     pipelineCreateInfo.subpass = 0;
     pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineCreateInfo.basePipelineIndex = -1;
 
-    if (vkCreateGraphicsPipelines(apiCore.device, VK_NULL_HANDLE, 1, &pipelineCreateInfo,
+    if (vkCreateGraphicsPipelines(core::apiCore.device, VK_NULL_HANDLE, 1, &pipelineCreateInfo,
     nullptr, &result.first) != VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline");
     }
@@ -230,4 +232,4 @@ std::pair<VkPipeline, VkPipelineLayout> createPipeline(const PipelineCreateInfo&
     return result;
 }
 
-} // namespace age::core
+} // namespace age

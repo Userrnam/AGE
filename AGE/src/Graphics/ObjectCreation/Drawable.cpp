@@ -2,8 +2,8 @@
 
 #include "Core/Core.hpp"
 #include "Core/CoreConfig.hpp"
-#include "RenderPassManager.hpp"
-#include "PipelineManager.hpp"
+#include "Rendering/RenderPassManager.hpp"
+#include "Rendering/PipelineManager.hpp"
 #include "View/ViewManager.hpp"
 #include "Core/Pool.hpp"
 
@@ -84,7 +84,7 @@ void Drawable::getPipelineLayout(const DrawableCreateInfo& info) {
         layouts.push_back(d.m_layout);
     }
 
-    m_pipelineLayout = core::requestPipelineLayout(layouts);
+    m_pipelineLayout = requestPipelineLayout(layouts);
 }
 
 void Drawable::getShaderStageCreateInfos(const std::vector<Shader>& shaders, std::vector<VkPipelineShaderStageCreateInfo>& shaderStages, std::vector<VkSpecializationInfo>& specializationInfos) {
@@ -207,18 +207,18 @@ void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>&
 
     // color blend is always true
     // TODO: remove color blend option from everywhere
-    core::PipelineInfo pipelineInfo = 1;
+    PipelineInfo pipelineInfo = 1;
     for (auto& component : compoents) {
         pipelineInfo |= component.m_id;
     }
-    auto pipeline = core::requestPipeline(pipelineInfo);
+    auto pipeline = requestPipeline(pipelineInfo);
     if (!pipeline.first) {
         ShaderBuilder builder;
         auto vertexShader = builder.compileVertexShader(compoents);
         auto fragmentShader = builder.compileFragmentShader(compoents);
         
-        pipeline = core::createPipeline(
-            core::PipelineCreateInfo()
+        pipeline = createPipeline(
+            PipelineCreateInfo()
             .setInfo(pipelineInfo)
             .setShapeId(shapeId)
             .setLayouts(layouts)

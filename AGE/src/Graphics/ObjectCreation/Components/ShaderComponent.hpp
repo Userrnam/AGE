@@ -5,8 +5,8 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-#include "../../MemoryHolders/Buffer.hpp"
-#include "../../Objects/Texture.hpp"
+#include "MemoryHolders/Buffer.hpp"
+#include "Objects/Texture.hpp"
 
 namespace age {
 

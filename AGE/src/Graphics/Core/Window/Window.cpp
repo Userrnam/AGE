@@ -3,8 +3,8 @@
 #include <stdexcept>
 
 #include "Window.hpp"
-#include "../Core.hpp"
-#include "../CoreConfig.hpp"
+#include "Core/Core.hpp"
+#include "Core/CoreConfig.hpp"
 
 namespace age::core {
 

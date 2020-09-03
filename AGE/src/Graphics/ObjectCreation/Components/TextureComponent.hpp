@@ -6,7 +6,7 @@
 
 #include "ShaderComponent.hpp"
 
-#include "../../Objects/Texture.hpp"
+#include "Objects/Texture.hpp"
 
 namespace age {
 

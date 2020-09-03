@@ -5,10 +5,10 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 
-#include "../MemoryHolders/Image.hpp"
-#include "../RenderPassManager.hpp"
-#include "../RenderPassRef.hpp"
-#include "../DescriptorLayout.hpp"
+#include "MemoryHolders/Image.hpp"
+#include "Rendering/RenderPassManager.hpp"
+#include "Rendering/RenderPassRef.hpp"
+#include "ObjectCreation/DescriptorLayout.hpp"
 #include "Pool.hpp"
 
 #define printVar(s, ident) for (int i=0;i<ident;++i) { std::cout << ' '; } std::cout << #s << ": " << s << "\n"

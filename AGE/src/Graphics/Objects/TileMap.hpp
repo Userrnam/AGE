@@ -3,10 +3,10 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-#include "../MemoryHolders/Buffer.hpp"
+#include "MemoryHolders/Buffer.hpp"
 #include "Texture.hpp"
-#include "../Transformable.hpp"
-#include "../ObjectCreation/Drawable.hpp"
+#include "Transformable.hpp"
+#include "ObjectCreation/Drawable.hpp"
 
 namespace age {
 

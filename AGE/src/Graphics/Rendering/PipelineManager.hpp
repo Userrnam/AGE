@@ -13,7 +13,7 @@ Pipeline manager can only be used to create pipelines using GraphicsComponents
 
 */
 
-namespace age::core {
+namespace age {
 
 typedef uint64_t PipelineInfo; // first bit is blend enable
 
@@ -45,4 +45,4 @@ VkPipelineLayout requestPipelineLayout(const std::vector<VkDescriptorSetLayout>&
 
 void destroyPipelineManager();
 
-} // namespace age::core
+} // namespace age

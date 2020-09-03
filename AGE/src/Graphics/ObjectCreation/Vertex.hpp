@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <vulkan/vulkan.h>
 
-#include "../Format.hpp"
+#include "Core/Utils/Format.hpp"
 
 #define VERTEX_ATTRIBUTES(type) \
     template<> std::vector<age::VertexAttribute> age::Vertex<type>::attributes

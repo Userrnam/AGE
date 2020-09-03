@@ -3,7 +3,7 @@
 #include <string>
 #include <vulkan/vulkan.h>
 
-#include "../MemoryHolders/Image.hpp"
+#include "MemoryHolders/Image.hpp"
 #include "Sampler.hpp"
 
 namespace age {

@@ -73,7 +73,7 @@ void Renderer::create() {
 }
 
 void Renderer::destroy() {
-    core::destroyPipelineManager();
+    destroyPipelineManager();
     core::destroyCore();
 }
 

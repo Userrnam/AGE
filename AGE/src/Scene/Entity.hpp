@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "../External/entt.hpp"
+#include "External/entt.hpp"
 #include "SceneAPI.hpp"
 
 namespace age {

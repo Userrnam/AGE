@@ -12,7 +12,7 @@
 #include "Audio/Core.hpp"
 // #include "ShapeManager.hpp"
 #include "Scene/Scene.hpp"
-#include "View/ViewManager.hpp"
+#include "Graphics/View/ViewManager.hpp"
 
 namespace age {
 

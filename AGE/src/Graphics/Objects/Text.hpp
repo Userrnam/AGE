@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Font.hpp"
-#include "../Transformable.hpp"
+#include "Transformable.hpp"
 #include "TileMap.hpp"
 
 namespace age {

@@ -7,7 +7,7 @@
 #include "ShaderComponent.hpp"
 #include "ArrayComponent.hpp"
 
-#include "../../MemoryHolders/Buffer.hpp"
+#include "MemoryHolders/Buffer.hpp"
 
 namespace age {
 

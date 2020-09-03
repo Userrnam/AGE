@@ -4,8 +4,8 @@
 
 #include "RenderPassRef.hpp"
 
-namespace age::core {
+namespace age {
 
 void createRenderPass(RenderPassConfig rpc);
 
-} // namespace age::core
+} // namespace age

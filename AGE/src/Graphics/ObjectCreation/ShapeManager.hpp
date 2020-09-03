@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Containers/Shared.hpp"
-#include "../Memory/MemoryId.hpp"
+#include "Memory/MemoryId.hpp"
 
 #include "Vertex.hpp"
 #include "Index.hpp"

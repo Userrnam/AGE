@@ -4,8 +4,8 @@
 #include <vector>
 #include <variant>
 
-#include "../MemoryHolders/Buffer.hpp"
-#include "../Objects/Texture.hpp"
+#include "MemoryHolders/Buffer.hpp"
+#include "Objects/Texture.hpp"
 
 #include "Debug.hpp"
 
