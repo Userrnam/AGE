@@ -1,8 +1,9 @@
 #include <unordered_map>
 
+#include "Core/CoreConfig.hpp"
 #include "Core/Core.hpp"
 #include "PipelineManager.hpp"
-#include "Core/CoreConfig.hpp"
+#include "RenderPass.hpp"
 
 namespace age {
 
@@ -217,7 +218,7 @@ std::pair<VkPipeline, VkPipelineLayout> createPipeline(const PipelineCreateInfo&
     pipelineCreateInfo.pColorBlendState = &colorBlending;
     pipelineCreateInfo.pMultisampleState = &multisampling;
     pipelineCreateInfo.layout = result.second;
-    pipelineCreateInfo.renderPass = core::apiCore.renderPass.renderPass;
+    pipelineCreateInfo.renderPass = RenderPass::get();
     pipelineCreateInfo.subpass = 0;
     pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineCreateInfo.basePipelineIndex = -1;

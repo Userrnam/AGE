@@ -6,7 +6,6 @@
 #include "View/View.hpp"
 #include "Shader.hpp"
 #include "Descriptor.hpp"
-#include "Rendering/RenderPassRef.hpp"
 #include "MemoryHolders/Buffer.hpp"
 #include "Vertex.hpp"
 #include "Index.hpp"

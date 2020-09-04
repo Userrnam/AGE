@@ -1,61 +1,24 @@
-#include "RenderPassManager.hpp"
+#include "RenderPass.hpp"
 
 #include "Core/Core.hpp"
 
-
 namespace age {
 
-void createFramebuffers(RenderPassRef& renderPassRef) {
-    renderPassRef.framebuffers.resize(core::apiCore.swapchain.imageViews.size());
+VkRenderPass RenderPass::m_renderPass;
 
-	size_t swapchainImageViewIndex = 0;
-    std::vector<VkImageView> attachments;
-
-    if (renderPassRef.config & RENDER_PASS_MULTISAMPLING_BIT) {
-        attachments.push_back(core::apiCore.multisampling.image.getView());
-		swapchainImageViewIndex++;
-    }
-
-	attachments.push_back(core::apiCore.swapchain.imageViews[0]);
-
-	for (size_t i = 0; i < core::apiCore.swapchain.imageViews.size(); ++i) {
-		attachments[swapchainImageViewIndex] = core::apiCore.swapchain.imageViews[i];
-
-		VkFramebufferCreateInfo framebufferInfo = {};
-		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferInfo.renderPass = renderPassRef.renderPass;
-		framebufferInfo.attachmentCount = attachments.size();
-		framebufferInfo.pAttachments = attachments.data();
-		framebufferInfo.width = core::apiCore.swapchain.extent.width;
-		framebufferInfo.height = core::apiCore.swapchain.extent.height;
-		framebufferInfo.layers = 1;
-
-		if (vkCreateFramebuffer(core::apiCore.device, &framebufferInfo, nullptr, &renderPassRef.framebuffers[i]) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create framebuffer");
-		}
-	}
-}
-
-void createRenderPass(RenderPassConfig rpc) {
-    RenderPassRef renderPass = {};
-    renderPass.config = rpc;
-
+void RenderPass::create() {
     std::vector<VkAttachmentDescription> attachments;
 
     VkAttachmentDescription colorAttachment = {};
 	colorAttachment.format = core::apiCore.swapchain.format;
-	if (rpc & RENDER_PASS_MULTISAMPLING_BIT) {
-		colorAttachment.samples = core::apiCore.multisampling.sampleCount;
-	} else {
-		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-	}
+    colorAttachment.samples = core::apiCore.multisampling.sampleCount;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
-	if (rpc & RENDER_PASS_MULTISAMPLING_BIT) {
+	if (core::apiCore.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
 		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	} else {
 		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
@@ -63,7 +26,7 @@ void createRenderPass(RenderPassConfig rpc) {
 
     attachments.push_back(colorAttachment);
 
-    if (rpc & RENDER_PASS_MULTISAMPLING_BIT) {
+    if (core::apiCore.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
         VkAttachmentDescription colorAttachmentResolve = {};
         colorAttachmentResolve.format = core::apiCore.swapchain.format;
         colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -78,7 +41,6 @@ void createRenderPass(RenderPassConfig rpc) {
     }
 
     VkAttachmentReference colorAttachmentRef = {};
-    VkAttachmentReference depthAttachmentRef = {};
     VkAttachmentReference colorAttachmentResolveRef = {};
     uint32_t attachmentIndex = 0;
 
@@ -91,7 +53,7 @@ void createRenderPass(RenderPassConfig rpc) {
 	subpass.pColorAttachments = &colorAttachmentRef;
     attachmentIndex++;
 
-    if (rpc & RENDER_PASS_MULTISAMPLING_BIT) {
+    if (core::apiCore.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
         colorAttachmentResolveRef.attachment = attachmentIndex;
         colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
         subpass.pResolveAttachments = &colorAttachmentResolveRef;
@@ -115,13 +77,14 @@ void createRenderPass(RenderPassConfig rpc) {
 	renderPassInfo.dependencyCount = 1;
 	renderPassInfo.pDependencies = &dependency;
 
-	if (vkCreateRenderPass(core::apiCore.device, &renderPassInfo, nullptr, &renderPass.renderPass) != VK_SUCCESS) {
+	if (vkCreateRenderPass(core::apiCore.device, &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create render pass");
 	}
-
-	createFramebuffers(renderPass);
-
-	core::apiCore.renderPass = renderPass;
 }
+
+void RenderPass::destroy() {
+	vkDestroyRenderPass(core::apiCore.device, m_renderPass, nullptr);
+}
+
 
 } // namespace age

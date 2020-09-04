@@ -3,6 +3,8 @@
 #include "Core/CoreCreator.hpp"
 #include "Core/Core.hpp"
 #include "PipelineManager.hpp"
+#include "Framebuffers.hpp"
+#include "RenderPass.hpp"
 
 namespace age {
 
@@ -23,7 +25,7 @@ void Renderer::render(const std::vector<Drawable>& targets) {
 
     VkRenderPassBeginInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = core::apiCore.renderPass.renderPass;
+    renderPassInfo.renderPass = RenderPass::get();
     renderPassInfo.renderArea.offset = { 0, 0 };
     renderPassInfo.renderArea.extent = core::apiCore.swapchain.extent;
 
@@ -33,7 +35,7 @@ void Renderer::render(const std::vector<Drawable>& targets) {
 			throw std::runtime_error("failed to begin recording command buffer");
 		}
 
-        renderPassInfo.framebuffer = core::apiCore.renderPass.framebuffers[i];
+        renderPassInfo.framebuffer = Framebuffers::get(i);
 
         vkCmdBeginRenderPass(core::apiCore.commandBuffers.active[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
@@ -51,6 +53,8 @@ void Renderer::render(const std::vector<Drawable>& targets) {
 
 void Renderer::create() {
     core::initCore();
+    RenderPass::create();
+    Framebuffers::create(RenderPass::get());
 
     // clear screen
     VkCommandBufferBeginInfo beginInfo = {};
@@ -74,6 +78,8 @@ void Renderer::create() {
 
 void Renderer::destroy() {
     destroyPipelineManager();
+    Framebuffers::destroy();
+    RenderPass::destroy();
     core::destroyCore();
 }
 

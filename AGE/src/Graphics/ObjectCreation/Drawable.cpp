@@ -2,8 +2,8 @@
 
 #include "Core/Core.hpp"
 #include "Core/CoreConfig.hpp"
-#include "Rendering/RenderPassManager.hpp"
 #include "Rendering/PipelineManager.hpp"
+#include "Rendering/RenderPass.hpp"
 #include "View/ViewManager.hpp"
 #include "Core/Pool.hpp"
 
@@ -174,7 +174,7 @@ void Drawable::create(const DrawableCreateInfo& info) {
     pipelineCreateInfo.pColorBlendState = &colorBlending;
     pipelineCreateInfo.pMultisampleState = &multisampling;
     pipelineCreateInfo.layout = m_pipelineLayout;
-    pipelineCreateInfo.renderPass = core::apiCore.renderPass.renderPass;
+    pipelineCreateInfo.renderPass = RenderPass::get();
     pipelineCreateInfo.subpass = 0;
     pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineCreateInfo.basePipelineIndex = -1;

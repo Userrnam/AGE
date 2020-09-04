@@ -3,7 +3,6 @@
 #include "Window/Window.hpp"
 #include "Core.hpp"
 #include "VulkanDebug.hpp"
-#include "Rendering/RenderPassManager.hpp"
 #include "Memory/DeviceAlloc.hpp"
 
 namespace age::core {
@@ -17,9 +16,6 @@ void initCore() {
     createLogicalDevice();
     createSwapchain();
     createMultisamplingResources();
-	if (core::coreConfig.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
-		createRenderPass(RENDER_PASS_MULTISAMPLING_BIT);
-	}
     createCommandPools();
     createSyncObjects();
     allocateCommandBuffers();
@@ -45,8 +41,6 @@ void destroyCore() {
 
 	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.graphicsPool, nullptr);
 	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.transferPool, nullptr);
-
-	apiCore.renderPass.destroy();
 
 	apiCore.multisampling.image.destroy();
 	// apiCore.depth.image.destroy();

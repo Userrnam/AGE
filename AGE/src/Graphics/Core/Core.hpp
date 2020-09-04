@@ -6,8 +6,6 @@
 #include <GLFW/glfw3.h>
 
 #include "MemoryHolders/Image.hpp"
-#include "Rendering/RenderPassManager.hpp"
-#include "Rendering/RenderPassRef.hpp"
 #include "ObjectCreation/DescriptorLayout.hpp"
 #include "Pool.hpp"
 
@@ -75,7 +73,6 @@ struct Core {
         VkSemaphore imageAvailableSemaphore;
         VkSemaphore renderFinishedSemaphore;
         VkFence inFlightFence;
-        // std::vector<VkFence> imagesInFlight;
     } sync;
 
     std::vector<PipelineLayoutRef> pipelineLayouts;
@@ -94,8 +91,6 @@ struct Core {
 	VkInstance instance = VK_NULL_HANDLE;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
     VkDevice device = VK_NULL_HANDLE;
-
-    RenderPassRef renderPass;
 };
 
 extern Core apiCore;
