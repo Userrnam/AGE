@@ -1,3 +1,6 @@
+#include <unordered_map>
+#include <assert.h>
+
 #include "Drawable.hpp"
 
 #include "Core/Core.hpp"
@@ -185,6 +188,12 @@ void Drawable::create(const DrawableCreateInfo& info) {
     }
 }
 
+#ifndef NDEBUG
+
+std::unordered_map<PipelineInfo, std::vector<PipelineInfo>> shaderComponentsOrder;
+
+#endif
+
 void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>& compoents) {
     m_shapeRenderInfo = Shape::get(shapeId);
 
@@ -205,12 +214,28 @@ void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>&
     m_poolIndicies.push_back(descriptor.m_poolIndex);
     layouts.push_back(descriptor.m_layout);
 
+#ifndef NDEBUG
+    std::vector<PipelineInfo> currentComponentsOrder;
+#endif
+
     // color blend is always true
     // TODO: remove color blend option from everywhere
     PipelineInfo pipelineInfo = 1;
     for (auto& component : compoents) {
         pipelineInfo |= component.m_id;
+#ifndef NDEBUG
+        currentComponentsOrder.push_back(component.m_id);
+#endif
     }
+
+#ifndef NDEBUG
+    auto previousComponentsOrder = shaderComponentsOrder.find(pipelineInfo);
+    if (previousComponentsOrder == shaderComponentsOrder.end()) {
+        shaderComponentsOrder[pipelineInfo] = currentComponentsOrder;
+    }
+    assert(shaderComponentsOrder[pipelineInfo] == currentComponentsOrder && "drawables created using same components must have same components order");
+#endif
+    
     auto pipeline = requestPipeline(pipelineInfo);
     if (!pipeline.first) {
         ShaderBuilder builder;

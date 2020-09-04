@@ -127,10 +127,9 @@ class TestScene : public age::Scene {
         // add background
         {
             auto background = createEntity();
-            // FIXME: if we swap color and transform it will not be rendered
             background.addComponent<age::Drawable>(age::RECTANGLE_SHAPE, 
-                background.addComponent<age::StorageComponent<age::Color>>(glm::vec4(1, 0, 0, 1)),
-                background.addComponent<age::StorageComponent<age::Transform>>(age::Transformable().setScale(1600, 1200).getTransform())
+                background.addComponent<age::StorageComponent<age::Transform>>(age::Transformable().setScale(1600, 1200).getTransform()),
+                background.addComponent<age::StorageComponent<age::Color>>(glm::vec4(1, 0, 0, 1))
             );
         }
 
