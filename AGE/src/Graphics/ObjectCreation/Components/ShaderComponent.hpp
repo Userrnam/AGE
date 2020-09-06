@@ -25,33 +25,6 @@ ShaderComponentId getShaderComponentId() {
 	return id;
 }
 
-struct ShaderComponentDescription {
-    VkShaderStageFlags m_stage;
-    VkDescriptorType m_type;
-    std::variant<Buffer, Texture> m_descriptor;
-
-    // we dont need this all buffers go to vertex shader, all textures to fragment
-    inline ShaderComponentDescription& setStage(VkShaderStageFlags stage) {
-        m_stage = stage;
-        return *this;
-    }
-
-    inline ShaderComponentDescription& setType(VkDescriptorType type) {
-        m_type = type;
-        return *this;
-    }
-
-    inline ShaderComponentDescription& setBuffer(Buffer& buffer) {
-        m_descriptor = buffer;
-        return *this;
-    }
-
-    inline ShaderComponentDescription& setTexture(Texture& texture) {
-        m_descriptor = texture;
-        return *this;
-    }
-};
-
 struct BlockMember {
     std::string m_member;
     bool m_forward;
@@ -98,9 +71,8 @@ struct ShaderComponentForward {
 
 struct ShaderComponentInfo {
     std::vector<std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>> m_data;
-    ShaderComponentDescription m_description;
     ShaderComponentId m_id = 0;
-    std::string m_arrayIndex = ""; // if array index is "" - component is not array
+    std::string m_arrayIndex = ""; // if array index is "" - component is not array and uses uniform buffer, storage otherwise
 
     struct {
         std::string rawInsert;
@@ -118,28 +90,18 @@ struct ShaderComponentInfo {
         return *this;
     }
 
-    inline ShaderComponentInfo& setTexture(Texture& t) {
-        m_description.m_descriptor = t;
-        return *this;
-    }
-
     inline ShaderComponentInfo& setBuffer(Buffer& b) {
-        m_description.m_descriptor = b;
+        assert(std::holds_alternative<ShaderComponentBuffer>(m_data[0]));
+        std::get<ShaderComponentBuffer>(m_data[0]).m_buffer = b;
         return *this;
     }
 
     inline ShaderComponentInfo& add(ShaderComponentTexture t) {
-        m_description.setStage(VK_SHADER_STAGE_FRAGMENT_BIT);
-        m_description.setType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
-        m_description.setTexture(t.m_texture);
         m_data.push_back(t);
         return *this;
     }
 
     inline ShaderComponentInfo& add(ShaderComponentBuffer b) {
-        m_description.setStage(VK_SHADER_STAGE_VERTEX_BIT);
-        m_description.setBuffer(b.m_buffer);
-        m_description.setType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); // can be changed by Instanced template
         m_data.push_back(b);
         return *this;
     }

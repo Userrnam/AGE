@@ -34,13 +34,13 @@ public:
         return *this;
     }
 
-    inline DescriptorBinding& add(Buffer& buffer) {
-        m_descriptors.push_back(buffer);
+    inline DescriptorBinding& add(std::variant<Buffer, Texture> bt) {
+        m_descriptors.push_back(bt);
         return *this;
     }
 
-    inline DescriptorBinding& add(std::variant<Buffer, Texture> bt) {
-        m_descriptors.push_back(bt);
+    inline DescriptorBinding& add(Buffer& buffer) {
+        m_descriptors.push_back(buffer);
         return *this;
     }
 
@@ -57,6 +57,33 @@ class DescriptorSetInfo {
     friend class DescriptorSet;
     friend VkDescriptorSetLayout createDescriptorSetLayout(const DescriptorSetInfo& info);
     friend VkDescriptorSetLayout requestDescriptorSetLayout(const DescriptorSetInfo& info);
+
+    void __addBasedOnComponent(const ShaderComponentInfo& info) {
+        for (auto& elem : info.m_data) {
+            if (std::holds_alternative<ShaderComponentBuffer>(elem)) {
+                DescriptorBinding binding = {};
+
+                auto b = std::get<ShaderComponentBuffer>(elem);
+                binding.setStage(VK_SHADER_STAGE_VERTEX_BIT);
+                binding.add(b.m_buffer);
+                if (info.m_arrayIndex == "") {
+                    binding.setDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+                } else {
+                    binding.setDescriptorType(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
+                }
+
+                this->addBinding(binding);
+            } else if (std::holds_alternative<ShaderComponentTexture>(elem)) {
+                this->addBinding(
+                    DescriptorBinding()
+                    .setStage(VK_SHADER_STAGE_FRAGMENT_BIT)
+                    .setDescriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+                    .add(std::get<ShaderComponentTexture>(elem).m_texture)
+                );
+            }
+        }
+    }
+
 public:
     inline DescriptorSetInfo& addBinding(const DescriptorBinding& binding) {
         m_bindings.push_back(binding);
@@ -71,36 +98,18 @@ public:
 
     template<typename Head, typename...Tail>
     DescriptorSetInfo getBasedOnComponents(Head head, Tail... tail) {
-        auto description = head.getInfo().m_description;
-        this->addBinding(
-            DescriptorBinding()
-            .setDescriptorType(description.m_type)
-            .setStage(description.m_stage)
-            .add(description.m_descriptor)
-        );
+        __addBasedOnComponent(head.getInfo());
         return getBasedOnComponents(tail...);
     }
     template<typename Head>
     DescriptorSetInfo& getBasedOnComponents(Head head) {
-        auto description = head.getInfo().m_description;
-        this->addBinding(
-            DescriptorBinding()
-            .setDescriptorType(description.m_type)
-            .setStage(description.m_stage)
-            .add(description.m_descriptor)
-        );
+        __addBasedOnComponent(head.getInfo());
         return *this;
     }
 
     DescriptorSetInfo& getBasedOnComponents(const std::vector<ShaderComponentInfo>& components) {
         for (auto& component : components) {
-            auto& description = component.m_description;
-            this->addBinding(
-                DescriptorBinding()
-                .setDescriptorType(description.m_type)
-                .setStage(description.m_stage)
-                .add(description.m_descriptor)
-            );
+            __addBasedOnComponent(component);
         }
         return *this;
     }

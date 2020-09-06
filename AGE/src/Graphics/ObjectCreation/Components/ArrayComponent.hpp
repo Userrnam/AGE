@@ -50,8 +50,7 @@ public:
     ShaderComponentInfo getInfo() {
         ShaderComponentInfo info = T::__getInfo();
         info.m_arrayIndex = arrayIndex;
-        info.m_description.m_type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-        info.m_description.m_descriptor = m_buffer;
+        info.setBuffer(m_buffer);
         info.setId<ArrayComponent<T, arrayIndex>>();
         return info;
     }

@@ -33,11 +33,14 @@ public:
 
         ShaderComponentInfo shaderComponentInfo;
 
-        ShaderComponentBuffer bufferInfo;
         std::stringstream vertRawInsert;
         std::stringstream fragRawInsert;
         std::stringstream vertMainInsert;
         std::stringstream fragMainInsert;
+
+        // reserve index 0 for buffer
+        shaderComponentInfo.add(ShaderComponentBuffer());
+        auto& bufferInfo = std::get<ShaderComponentBuffer>(shaderComponentInfo.m_data[0]);
 
         for (auto& info : infos) {
             for (auto& b : info.m_data) {
@@ -47,7 +50,9 @@ public:
                     for (auto& member : bi.m_members) {
                         bufferInfo.addBlockMember(member.m_member, member.m_forward);
                     }
-                } else if (std::holds_alternative<ShaderComponentForward>(b)) {
+                } else if (std::holds_alternative<ShaderComponentTexture>(b)) {
+                    shaderComponentInfo.add(std::get<ShaderComponentTexture>(b));
+                } else {
                     shaderComponentInfo.add(std::get<ShaderComponentForward>(b));
                 }
             }
@@ -58,7 +63,6 @@ public:
             fragMainInsert << info.m_frag.mainInsert << "\n";
         }
 
-        shaderComponentInfo.add(bufferInfo);
         shaderComponentInfo.setVertRawInsert(vertRawInsert.str());
         shaderComponentInfo.setFragRawInsert(fragRawInsert.str());
         shaderComponentInfo.setVertMainInsert(vertMainInsert.str());

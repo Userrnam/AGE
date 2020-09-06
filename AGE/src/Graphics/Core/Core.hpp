@@ -9,8 +9,6 @@
 #include "ObjectCreation/DescriptorLayout.hpp"
 #include "Pool.hpp"
 
-#define printVar(s, ident) for (int i=0;i<ident;++i) { std::cout << ' '; } std::cout << #s << ": " << s << "\n"
-
 namespace age::core {
 
 struct Queue {
