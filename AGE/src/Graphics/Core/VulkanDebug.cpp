@@ -4,7 +4,6 @@
 
 #include "VulkanDebug.hpp"
 
-
 namespace age::core {
 
 VkResult createDebugUtilsMessengerEXT(VkInstance instance,

@@ -14,7 +14,7 @@ class Entity {
     friend class Scene;
     friend class ScriptComponent;
 public:
-    inline Font& getFont(const std::string& font) {
+    inline FontComponent* getFont(const std::string& font) {
 		return m_scene->getFont(font);
 	}
 

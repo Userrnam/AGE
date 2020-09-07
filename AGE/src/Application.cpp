@@ -34,7 +34,8 @@ void Application::destroy() {
     onDestroy();
 
     for (auto& font : m_fonts) {
-        font.second.destroy();
+        font.second->destroy();
+        delete font.second;
     }
 
     for (auto& texture: m_textures) {

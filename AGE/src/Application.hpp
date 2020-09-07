@@ -8,7 +8,7 @@
 
 #include "Events/EventManager.hpp"
 #include "Events/Event.hpp"
-#include "Graphics/Objects/Font.hpp"
+#include "Graphics/ObjectCreation/Components/FontComponent.hpp"
 
 namespace age {
 
@@ -16,7 +16,7 @@ class Scene;
 class Application {
     bool m_isRunning = true;
     bool m_created = false;
-    std::unordered_map<uint64_t, Font> m_fonts;
+    std::unordered_map<uint64_t, FontComponent*> m_fonts;
     std::unordered_map<uint64_t, Texture> m_textures;
 
     friend class Scene;
@@ -29,13 +29,13 @@ protected:
         pActiveScene = scene;
     }
 
-    inline Font& getFont(const std::string& fontName) {
+    inline FontComponent* getFont(const std::string& fontName) {
         return m_fonts[hash(fontName.c_str())];
     }
 
     inline void loadFont(const std::string& path, const std::string& fontName, unsigned fontSize = 100, Sampler sampler = Sampler::getDefault()) {
-        Font font;
-        font.load(path, fontSize, sampler);
+        auto font = new FontComponent;
+        font->load(path, fontSize, sampler);
         m_fonts[hash(fontName.c_str())] = font;
     }
 

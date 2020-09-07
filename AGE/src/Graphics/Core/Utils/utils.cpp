@@ -2,7 +2,6 @@
 #include <vulkan/vulkan.h>
 #include <set>
 #include <string>
-#include <iostream>
 
 #include "utils.hpp"
 #include "Core/Window/QueueFamilyIndicies.hpp"

@@ -1,21 +1,19 @@
-#include <stdexcept>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "Font.hpp"
-#include "MemoryHolders/Buffer.hpp"
+#include "FontComponent.hpp"
 
 namespace age {
 
 FT_Library ftLibrary;
 
-void initFreeType() {
-    if (FT_Init_FreeType(&ftLibrary)) {
-        throw std::runtime_error("initFreeType: failed to init");
-    }
-}
+void FontComponent::load(const std::string& fontPath, unsigned fontSize, Sampler sampler) {
+    const unsigned char lastCharacter = 128;
+    m_firstCharacter = 32;
 
-void Font::load(const std::string& fontPath, unsigned fontSize, Sampler sampler) {
+    // create tilemap buffer
+    TileMapComponent::create(lastCharacter - m_firstCharacter);
+
     FT_Face face;
     if (FT_New_Face(ftLibrary, fontPath.c_str(), 0, &face)) {
         throw std::runtime_error("Font::load: failed to load font");
@@ -29,7 +27,7 @@ void Font::load(const std::string& fontPath, unsigned fontSize, Sampler sampler)
     // to determine size of atlas
     unsigned maxHeight = 0;
     unsigned totalWidth = 0;
-    for (unsigned char c = 0; c < 128; ++c) {
+    for (unsigned char c = 0; c < lastCharacter; ++c) {
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
             throw std::runtime_error("Font::load: failed to load Glyph");
         }
@@ -38,17 +36,18 @@ void Font::load(const std::string& fontPath, unsigned fontSize, Sampler sampler)
             maxHeight = face->glyph->bitmap.rows;
         }
     }
-    // add spacing
-    totalWidth += 128;
+    // add spacing ??
+    totalWidth += lastCharacter;
 
+    // create texture
     float textureWidth = static_cast<float>(totalWidth);
     float textureHeight = static_cast<float>(maxHeight);
 
     char* pixels = new char[maxHeight * totalWidth];
     unsigned curX = 0;
 
-    // fill texture atlas
-    for (unsigned char c = 32; c < 127; ++c) {
+    // fill characters map
+    for (unsigned char c = m_firstCharacter; c < lastCharacter; ++c) {
         FT_Load_Char(face, c, FT_LOAD_RENDER);
         FT_Bitmap* bitmap = &face->glyph->bitmap;
 
@@ -64,21 +63,32 @@ void Font::load(const std::string& fontPath, unsigned fontSize, Sampler sampler)
         auto& character = m_characters[c];
         character.advance = face->glyph->advance.x >> 6;
         character.bearing.x = face->glyph->bitmap_left;
-        character.bearing.y = face->glyph->bitmap_top;
-        character.size.x = face->glyph->bitmap.width;
-        character.size.y = face->glyph->bitmap.rows;
+        character.bearing.y = face->glyph->bitmap_top - face->glyph->bitmap.rows;
 
-        float leftX = static_cast<float>(curX) / textureWidth;
-        float rightX = static_cast<float>(curX + bitmap->width) / textureWidth;
-        float lowY = static_cast<float>(bitmap->rows) / textureHeight;
-        float highY = 0.0f;
-        character.texCoords[0] = { leftX, lowY };
-        character.texCoords[1] = { rightX, lowY };
-        character.texCoords[2] = { rightX, highY };
-        character.texCoords[3] = { leftX, highY };
+        // add tile
+        {
+             __Tile tile;
+
+            tile.size.x = face->glyph->bitmap.width;
+            tile.size.y = face->glyph->bitmap.rows;
+
+            float leftX = static_cast<float>(curX) / textureWidth;
+            float rightX = static_cast<float>(curX + bitmap->width) / textureWidth;
+            float lowY = static_cast<float>(bitmap->rows) / textureHeight;
+            float highY = 0.0f;
+            tile.texCoords[0] = { leftX, lowY };
+            tile.texCoords[1] = { rightX, lowY };
+            tile.texCoords[2] = { rightX, highY };
+            tile.texCoords[3] = { leftX, highY };
+
+            TileMapComponent::add(tile);
+        }
+       
 
         curX += bitmap->width + 1;
     }
+
+    TileMapComponent::upload();
 
     // FIXME:
     char* imageData = (char*)calloc(maxHeight * totalWidth, sizeof(uint32_t));
@@ -111,11 +121,15 @@ void Font::load(const std::string& fontPath, unsigned fontSize, Sampler sampler)
     stagingBuffer.copyTo(image);
     stagingBuffer.destroy();
 
-    m_atlas.create(image, sampler);
+    Texture texture;
+    texture.create(image, sampler);
+
+    TextureComponent::setTexture(texture);
 }
 
-void Font::destroy() {
-    m_atlas.destroy();
+void FontComponent::destroy() {
+    TextureComponent::getTexture().destroy();
+    TileMapComponent::destroy();
 }
 
 } // namespace age

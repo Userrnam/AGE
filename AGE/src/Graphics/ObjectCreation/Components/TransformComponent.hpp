@@ -14,13 +14,12 @@ public:
         info.add(
             ShaderComponentBuffer()
             .addBlockMember("mat4 transform")
+            .setVertMainInsert("\ttransform *= ?.transform;\n")
         );
-        info.setVertMainInsert("\ttransform *= ?.transform;\n");
         return info;
     }
 
-    Transform() {}
-    inline Transform(const glm::mat4& m) { set(m); }
+    inline Transform(const glm::mat4& m = glm::mat4(1)) { set(m); }
 };
 
 } // namespace age

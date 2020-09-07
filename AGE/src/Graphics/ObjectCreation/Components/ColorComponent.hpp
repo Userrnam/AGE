@@ -15,13 +15,12 @@ public:
         info.add(
             ShaderComponentBuffer()
             .addBlockMember("vec4 color", true)
+            .setFragMainInsert("\tfragColor *= globals.color;\n")
         );
-        info.setFragMainInsert("\tfragColor *= globals.color;\n");
         return info;
     }
 
-    Color() {}
-    inline Color(glm::vec4 v) { set(v); }
+    inline Color(glm::vec4 v = glm::vec4(1)) { set(v); }
 };
 
 } // namespace age

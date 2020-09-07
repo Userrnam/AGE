@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <vector>
 
 #include "External/entt.hpp"

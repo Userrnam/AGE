@@ -9,6 +9,19 @@
 
 namespace age {
 
+// todo: remove this and use custom variant
+const Inserts& _getVariantInserts(const std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>& v) {
+    if (std::holds_alternative<ShaderComponentBuffer>(v)) {
+        return std::get<ShaderComponentBuffer>(v);
+    }
+    if (std::holds_alternative<ShaderComponentTexture>(v)) {
+        return std::get<ShaderComponentTexture>(v);
+    }
+    if (std::holds_alternative<ShaderComponentForward>(v)) {
+        return std::get<ShaderComponentForward>(v);
+    }
+}
+
 template<typename... Args>
 class Bundle {
     std::tuple<Args...> m_data;
@@ -40,15 +53,19 @@ public:
 
         // reserve index 0 for buffer
         shaderComponentInfo.add(ShaderComponentBuffer());
-        auto& bufferInfo = std::get<ShaderComponentBuffer>(shaderComponentInfo.m_data[0]);
 
         for (auto& info : infos) {
             for (auto& b : info.m_data) {
+                auto& inserts = _getVariantInserts(b);
+                vertRawInsert << inserts.m_vertRawInsert;
+                fragRawInsert << inserts.m_fragRawInsert;
+                vertMainInsert << inserts.m_vertMainInsert;
+                fragMainInsert << inserts.m_fragMainInsert;
                 // collect buffer members
                 if (std::holds_alternative<ShaderComponentBuffer>(b)) {
                     ShaderComponentBuffer& bi = std::get<ShaderComponentBuffer>(b);
                     for (auto& member : bi.m_members) {
-                        bufferInfo.addBlockMember(member.m_member, member.m_forward);
+                        std::get<ShaderComponentBuffer>(shaderComponentInfo.m_data[0]).addBlockMember(member.m_member, member.m_forward);
                     }
                 } else if (std::holds_alternative<ShaderComponentTexture>(b)) {
                     shaderComponentInfo.add(std::get<ShaderComponentTexture>(b));
@@ -56,17 +73,12 @@ public:
                     shaderComponentInfo.add(std::get<ShaderComponentForward>(b));
                 }
             }
-            // get inserts
-            vertRawInsert << info.m_vert.rawInsert << "\n";
-            fragRawInsert << info.m_frag.rawInsert << "\n";
-            vertMainInsert << info.m_vert.mainInsert << "\n";
-            fragMainInsert << info.m_frag.mainInsert << "\n";
         }
 
-        shaderComponentInfo.setVertRawInsert(vertRawInsert.str());
-        shaderComponentInfo.setFragRawInsert(fragRawInsert.str());
-        shaderComponentInfo.setVertMainInsert(vertMainInsert.str());
-        shaderComponentInfo.setFragMainInsert(fragMainInsert.str());
+        std::get<ShaderComponentBuffer>(shaderComponentInfo.m_data[0]).setVertRawInsert(vertRawInsert.str());
+        std::get<ShaderComponentBuffer>(shaderComponentInfo.m_data[0]).setVertMainInsert(vertMainInsert.str());
+        std::get<ShaderComponentBuffer>(shaderComponentInfo.m_data[0]).setFragRawInsert(fragRawInsert.str());
+        std::get<ShaderComponentBuffer>(shaderComponentInfo.m_data[0]).setFragMainInsert(fragMainInsert.str());
 
         return shaderComponentInfo;
     }

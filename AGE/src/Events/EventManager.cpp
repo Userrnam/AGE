@@ -2,8 +2,6 @@
 
 #include "Graphics/Core/Core.hpp"
 
-#include <iostream>
-
 #include "EventManager.hpp"
 #include "Containers.hpp"
 

@@ -66,7 +66,7 @@ class DescriptorSetInfo {
                 auto b = std::get<ShaderComponentBuffer>(elem);
                 binding.setStage(VK_SHADER_STAGE_VERTEX_BIT);
                 binding.add(b.m_buffer);
-                if (info.m_arrayIndex == "") {
+                if (b.m_arrayIndex == "") {
                     binding.setDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
                 } else {
                     binding.setDescriptorType(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);

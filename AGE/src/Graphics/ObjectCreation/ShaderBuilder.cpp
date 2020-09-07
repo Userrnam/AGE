@@ -18,6 +18,19 @@ inline std::string insertStructName(const std::string& mainInsert, const std::st
 	return ss.str();
 }
 
+// todo: remove this and use custom variant
+const Inserts& getVariantInserts(const std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>& v) {
+    if (std::holds_alternative<ShaderComponentBuffer>(v)) {
+        return std::get<ShaderComponentBuffer>(v);
+    }
+    if (std::holds_alternative<ShaderComponentTexture>(v)) {
+        return std::get<ShaderComponentTexture>(v);
+    }
+    if (std::holds_alternative<ShaderComponentForward>(v)) {
+        return std::get<ShaderComponentForward>(v);
+    }
+}
+
 inline std::string getVariableName(const std::string& s) {
     std::stringstream ss(s);
     std::string name;
@@ -48,23 +61,25 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<ShaderComponent
     int binding = 0;
     // block names that will be used in main
     std::vector<std::string> names;
-    names.resize(components.size());
+    // fixme:
+    names.resize(components.size() * 10);
     std::vector<std::pair<std::string, int>> forwardVariables;
     std::vector<std::string> globalNames;
     for (auto component : components) {
-        auto rawInsert = component.m_vert.rawInsert;
-        if (rawInsert.size() > 0) {
-            m_stream << rawInsert << "\n";
-        }
-
         for (auto &sc : component.m_data) {
+
+            auto& rawInsert = getVariantInserts(sc).m_vertRawInsert;
+            if (rawInsert.size() > 0) {
+                m_stream << rawInsert << "\n";
+            }
+
             if (std::holds_alternative<ShaderComponentBuffer>(sc)) {
                 auto bufferInfo = std::get<ShaderComponentBuffer>(sc);
 
                 std::string name = "n" + std::to_string(binding);
                 names[binding] = name + "." + name;
-                if (component.m_arrayIndex.size()) {
-                    names[binding] += component.m_arrayIndex;
+                if (bufferInfo.m_arrayIndex.size()) {
+                    names[binding] += bufferInfo.m_arrayIndex;
                 }
 
                 // insert struct
@@ -78,7 +93,7 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<ShaderComponent
                 m_stream << "};\n";
 
                 // insert buffer block
-                if (component.m_arrayIndex.size()) {
+                if (bufferInfo.m_arrayIndex.size()) {
                     m_stream << "layout(set=1, binding=" << binding << ") readonly buffer XX" << name << " {\n";
                     m_stream << "\tYY" << name << " " << name << "[];\n";
                 } else {
@@ -139,13 +154,16 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<ShaderComponent
 
     // insert in main
     binding = 0;
-    for (auto component : components) {
-        // auto insert = component.data->getVertMainInsert(names[binding]);
-        auto insert = component.m_vert.mainInsert;
-        if (insert.size() > 0) {
-            m_stream << insertStructName(insert, names[binding]);
+    for (auto& component : components) {
+        for (auto& elem : component.m_data) {
+            auto insert = getVariantInserts(elem).m_vertMainInsert;
+            if (insert.size() > 0) {
+                m_stream << insertStructName(insert, names[binding]);
+            }
+            if (!std::holds_alternative<ShaderComponentForward>(elem)) {
+                binding++;
+            }
         }
-        binding++;
     }
 
     // apply transform
@@ -169,12 +187,13 @@ void ShaderBuilder::generateFragmentShaderSource(const std::vector<ShaderCompone
     std::vector<std::pair<std::string, int>> forwardVariables;
     std::vector<std::string> globalNames;
     for (auto component : components) {
-        auto rawInsert = component.m_vert.rawInsert;
-        if (rawInsert.size() > 0) {
-            m_stream << rawInsert << "\n";
-        }
-
         for (auto &sc : component.m_data) {
+
+            auto& rawInsert = getVariantInserts(sc).m_vertRawInsert;
+            if (rawInsert.size() > 0) {
+                m_stream << rawInsert << "\n";
+            }
+
             if (std::holds_alternative<ShaderComponentBuffer>(sc)) {
                 auto bufferInfo = std::get<ShaderComponentBuffer>(sc);
                 for (auto& member : bufferInfo.m_members) {
@@ -225,10 +244,14 @@ void ShaderBuilder::generateFragmentShaderSource(const std::vector<ShaderCompone
 
     // insert in main
     binding = 0;
-    for (auto component : components) {
-        auto insert = component.m_frag.mainInsert;
-        m_stream << insertStructName(insert, names[binding]);
-        binding++;
+    for (auto& component : components) {
+        for (auto& elem : component.m_data) {
+            auto insert = getVariantInserts(elem).m_fragMainInsert;
+            m_stream << insertStructName(insert, names[binding]);
+            if (!std::holds_alternative<ShaderComponentForward>(elem)) {
+                binding++;
+            }
+        }
     }
 
     // return color
@@ -251,7 +274,6 @@ Shader ShaderBuilder::compileVertexShader(const std::vector<ShaderComponentInfo>
     generateVertexShaderSource(components);
     saveShader("tmp.vert");
     if (std::system("glslc tmp.vert")) {
-        std::system("rm tmp.vert a.spv");
         throw std::runtime_error("[ShaderBuilder]: failed to compile vertex shader");
     }
 
@@ -260,7 +282,7 @@ Shader ShaderBuilder::compileVertexShader(const std::vector<ShaderComponentInfo>
     out.setEntry("main");
     out.setStage(VK_SHADER_STAGE_VERTEX_BIT);
 
-    std::system("rm tmp.vert a.spv");
+    // std::system("rm tmp.vert a.spv");
 
     return out;
 }
@@ -269,7 +291,6 @@ Shader ShaderBuilder::compileFragmentShader(const std::vector<ShaderComponentInf
     generateFragmentShaderSource(components);
     saveShader("tmp.frag");
     if (std::system("glslc tmp.frag")) {
-        std::system("rm tmp.frag a.spv");
         throw std::runtime_error("[ShaderBuilder]: failed to compile fragment shader");
     }
 

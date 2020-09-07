@@ -14,6 +14,9 @@ namespace age {
 class TextureComponent {
     Texture m_texture;
 
+protected:
+    inline Texture getTexture() { return m_texture; }
+
 public:
     inline void setTexture(const Texture& texture) {
         m_texture = texture;
@@ -22,15 +25,29 @@ public:
     TextureComponent() {}
     inline TextureComponent(const Texture& texture) { m_texture = texture; }
 
+    ShaderComponentInfo __getInfo() {
+        ShaderComponentInfo info;
+
+        info.add(
+            ShaderComponentTexture()
+            .setName("textureSampler")
+            .setFragMainInsert("\tfragColor *= texture(textureSampler, globals.texCoords);\n")
+        );
+
+        return info;
+    }
+
     ShaderComponentInfo getInfo() {
         ShaderComponentInfo info;
+
         info.add(
             ShaderComponentTexture()
             .setName("textureSampler")
             .setTexture(m_texture)
+            .setFragMainInsert("\tfragColor *= texture(textureSampler, globals.texCoords);\n")
         );
-        info.setFragMainInsert("\tfragColor *= texture(textureSampler, globals.texCoords);\n");
         info.setId<TextureComponent>();
+
         return info;
     }
 };

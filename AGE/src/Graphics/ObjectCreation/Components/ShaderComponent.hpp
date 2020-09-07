@@ -25,6 +25,13 @@ ShaderComponentId getShaderComponentId() {
 	return id;
 }
 
+struct Inserts {
+    std::string m_vertMainInsert;
+    std::string m_vertRawInsert;
+    std::string m_fragMainInsert;
+    std::string m_fragRawInsert;
+};
+
 struct BlockMember {
     std::string m_member;
     bool m_forward;
@@ -33,9 +40,10 @@ struct BlockMember {
         : m_member(member), m_forward(forward) {} 
 };
 
-struct ShaderComponentBuffer {
-    std::vector<BlockMember> m_members;
+struct ShaderComponentBuffer : public Inserts {
     Buffer m_buffer;
+    std::vector<BlockMember> m_members;
+    std::string m_arrayIndex = ""; // if array index is "" - component is not array and uses uniform buffer, storage otherwise
 
     inline ShaderComponentBuffer& addBlockMember(std::string member, bool forward = false) {
         m_members.push_back( { member, forward } );
@@ -46,11 +54,16 @@ struct ShaderComponentBuffer {
         m_buffer = buffer;
         return *this;
     }
+
+    inline ShaderComponentBuffer& setVertMainInsert(const std::string& s) { m_vertMainInsert = s; return *this; }
+    inline ShaderComponentBuffer& setVertRawInsert(const std::string& s) { m_vertRawInsert = s; return *this; }
+    inline ShaderComponentBuffer& setFragMainInsert(const std::string& s) { m_fragMainInsert = s; return *this; }
+    inline ShaderComponentBuffer& setFragRawInsert(const std::string& s) { m_fragRawInsert = s; return *this; }
 };
 
-struct ShaderComponentTexture {
-    std::string m_name;
+struct ShaderComponentTexture : public Inserts {
     Texture m_texture;
+    std::string m_name;
 
     inline ShaderComponentTexture& setName(const std::string& name) {
         m_name = name;
@@ -61,28 +74,26 @@ struct ShaderComponentTexture {
         m_texture = texture;
         return *this;
     }
+
+    inline ShaderComponentTexture& setFragMainInsert(const std::string& s) { m_fragMainInsert = s; return *this; }
+    inline ShaderComponentTexture& setFragRawInsert(const std::string& s) { m_fragRawInsert = s; return *this; }
 };
 
-struct ShaderComponentForward {
+struct ShaderComponentForward : public Inserts {
     std::string m_data;
+
     ShaderComponentForward(const std::string& data)
         : m_data(data) {}
+    
+    inline ShaderComponentForward& setVertMainInsert(const std::string& s) { m_vertMainInsert = s; return *this; }
+    inline ShaderComponentForward& setVertRawInsert(const std::string& s) { m_vertRawInsert = s; return *this; }
+    inline ShaderComponentForward& setFragMainInsert(const std::string& s) { m_fragMainInsert = s; return *this; }
+    inline ShaderComponentForward& setFragRawInsert(const std::string& s) { m_fragRawInsert = s; return *this; }
 };
 
 struct ShaderComponentInfo {
     std::vector<std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>> m_data;
     ShaderComponentId m_id = 0;
-    std::string m_arrayIndex = ""; // if array index is "" - component is not array and uses uniform buffer, storage otherwise
-
-    struct {
-        std::string rawInsert;
-        std::string mainInsert;
-    } m_vert;
-
-    struct {
-        std::string rawInsert;
-        std::string mainInsert;
-    } m_frag;
 
     template<typename T>
     inline ShaderComponentInfo& setId() {
@@ -108,26 +119,6 @@ struct ShaderComponentInfo {
 
     inline ShaderComponentInfo& add(ShaderComponentForward f) {
         m_data.push_back(f);
-        return *this;
-    }
-
-    inline ShaderComponentInfo& setVertRawInsert(const std::string& s) {
-        m_vert.rawInsert = s;
-        return *this;
-    }
-
-    inline ShaderComponentInfo& setVertMainInsert(const std::string& s) {
-        m_vert.mainInsert = s;
-        return *this;
-    }
-
-    inline ShaderComponentInfo& setFragRawInsert(const std::string& s) {
-        m_frag.rawInsert = s;
-        return *this;
-    }
-
-    inline ShaderComponentInfo& setFragMainInsert(const std::string& s) {
-        m_frag.mainInsert = s;
         return *this;
     }
 };

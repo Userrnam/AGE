@@ -14,6 +14,9 @@ class ArrayComponent {
     std::vector<T> m_data;
     Buffer m_buffer;
 
+protected:
+    inline Buffer getBuffer() { return m_buffer; }
+
 public:
     const T& operator[](size_t i) const {
         return m_data[i];
@@ -29,6 +32,10 @@ public:
 
     inline void erase(size_t i) {
         m_data.erase(m_data.begin() + i);
+    }
+
+    inline void clear() {
+        m_data.clear();
     }
 
     void upload() {
@@ -47,16 +54,22 @@ public:
         );
     }
 
+    ShaderComponentInfo __getInfo() {
+        auto info = T::__getInfo();
+        assert(std::holds_alternative<ShaderComponentBuffer>(info.m_data[0]));
+        std::get<ShaderComponentBuffer>(info.m_data[0]).m_arrayIndex = arrayIndex;
+        return info;
+    }
+
     ShaderComponentInfo getInfo() {
-        ShaderComponentInfo info = T::__getInfo();
-        info.m_arrayIndex = arrayIndex;
+        auto info = __getInfo();
+        info.template setId<ArrayComponent<T, arrayIndex>>();
         info.setBuffer(m_buffer);
-        info.setId<ArrayComponent<T, arrayIndex>>();
         return info;
     }
 };
 
-char PER_INSTANCE[] = "[gl_InstanceIndex]";
-char PER_VERTEX[] = "[gl_VertexIndex]";
+const char PER_INSTANCE[] = "[gl_InstanceIndex]";
+const char PER_VERTEX[] = "[gl_VertexIndex]";
 
 } // namespace age

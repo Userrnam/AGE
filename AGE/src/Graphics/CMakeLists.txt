@@ -35,6 +35,7 @@ file(GLOB sources
     "Memory/*.cpp"
     "MemoryHolders/*.cpp"
     "ObjectCreation/*.cpp"
+    "ObjectCreation/Components/*.cpp"
     "Objects/*.cpp"
     "Rendering/*.cpp"
     "View/*.cpp"

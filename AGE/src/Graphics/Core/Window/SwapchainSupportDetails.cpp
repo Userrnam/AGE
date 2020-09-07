@@ -56,7 +56,6 @@ VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>
 			return availableFormat;
 		}
 	}
-	std::cout << "Format fail\n";
 	return availableFormats[0];
 }
 

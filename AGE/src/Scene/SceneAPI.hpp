@@ -12,7 +12,7 @@ protected:
 	friend class Entity;
 public:
 
-	inline Font& getFont(const std::string& font) {
+	inline FontComponent* getFont(const std::string& font) {
 		return parent->getFont(font);
 	}
 
