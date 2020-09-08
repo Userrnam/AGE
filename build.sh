@@ -1,5 +1,4 @@
-if [[ -d ".build" ]]; then {}
-else
+if [[ ! -d ".build" ]]; then
     mkdir .build
 fi
 

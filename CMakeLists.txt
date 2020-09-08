@@ -1,14 +1,19 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 
 project("AGE")
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
-include_directories("/usr/local/include")
-link_directories("/usr/local/lib")
+# used to install library if not found
+# Ubuntu, Debian
+set(LINUX_DISTRO Ubuntu)
 
-add_compile_definitions("DEBUG")
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
+
+include_directories("/usr/local/include" "/usr/include")
+link_directories("/usr/local/lib")
 
 # freetype path
 if(APPLE)
