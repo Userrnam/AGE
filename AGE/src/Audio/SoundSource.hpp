@@ -17,7 +17,7 @@ public:
     void pause();
     void rewind();
 
-    void setSound(const Sound* sound);
+    void setSound(const Sound& sound);
     void setPosition(const glm::vec3& position);
     void setVelocity(const glm::vec3& velocity);
     void setPitch(float pitch);

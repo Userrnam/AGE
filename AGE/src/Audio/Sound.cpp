@@ -1,4 +1,5 @@
 #include "OpenAL.hpp"
+#include "WavReader.hpp"
 
 #include "Sound.hpp"
 
@@ -15,17 +16,12 @@ void Sound::destroy() {
 }
 
 void Sound::load(const std::string& file) {
-    ALsizei size,freq;
-    ALenum  format;
-    ALvoid  *data;
+    WavReader reader;
+    reader.read(file);
 
-    alutLoadWAVFile((ALbyte*)file.c_str(), &format,&data, &size, &freq);
-    alBufferData(m_alBuffer, format, data, size, freq);
-    alutUnloadWAV(format,data,size,freq);
+    alBufferData(m_alBuffer, reader.getFormat(), reader.getData(), reader.getSize(), reader.getFreq());
 
     ERROR_CHECK("Sound::load");
 }
-
-
 
 } // namespace age

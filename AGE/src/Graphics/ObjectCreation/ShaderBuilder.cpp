@@ -282,7 +282,7 @@ Shader ShaderBuilder::compileVertexShader(const std::vector<ShaderComponentInfo>
     out.setEntry("main");
     out.setStage(VK_SHADER_STAGE_VERTEX_BIT);
 
-    // std::system("rm tmp.vert a.spv");
+    std::system("rm tmp.vert a.spv");
 
     return out;
 }

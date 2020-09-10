@@ -35,8 +35,8 @@ void SoundSource::rewind() {
     ERROR_CHECK("SoundSource::rewind");
 }
 
-void SoundSource::setSound(const Sound* sound) {
-    alSourcei(m_alSource, AL_BUFFER, sound->m_alBuffer);
+void SoundSource::setSound(const Sound& sound) {
+    alSourcei(m_alSource, AL_BUFFER, sound.m_alBuffer);
     ERROR_CHECK("SoundSource::setSound");
 }
 
