@@ -125,14 +125,25 @@ void Drawable::create(const DrawableCreateInfo& info) {
     std::vector<VkSpecializationInfo> specializationInfos;
     getShaderStageCreateInfos(info.m_shaders, shaderStages, specializationInfos);
 
-    auto& vertexDescription = Shape::getPipelineCreateDescription(info.m_shapeId);
+    // auto& vertexDescription = Shape::getPipelineCreateDescription(info.m_shapeId);
+
+    VkVertexInputBindingDescription bindingDescription = {};
+    bindingDescription.binding = 0;
+    bindingDescription.stride = sizeof(Vertex);
+    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+    VkVertexInputAttributeDescription attributeDescription = {};
+    attributeDescription.binding = 0;
+    attributeDescription.location = 0;
+    attributeDescription.format = VK_FORMAT_R32G32_SFLOAT;
+    attributeDescription.offset = 0;
 
     VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo = {};
     vertexInputCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputCreateInfo.vertexBindingDescriptionCount = 1;
-    vertexInputCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexDescription.attributeDescriptions.size());
-    vertexInputCreateInfo.pVertexBindingDescriptions = &vertexDescription.bindingDescription;
-    vertexInputCreateInfo.pVertexAttributeDescriptions = vertexDescription.attributeDescriptions.data();
+    vertexInputCreateInfo.pVertexBindingDescriptions = &bindingDescription;
+    vertexInputCreateInfo.vertexAttributeDescriptionCount = 1;
+    vertexInputCreateInfo.pVertexAttributeDescriptions = &attributeDescription;
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -274,7 +285,7 @@ void Drawable::draw(int i) const {
 
     vkCmdBindPipeline(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
     vkCmdBindVertexBuffers(core::apiCore.commandBuffers.active[i], 0, 1, &vertexBuffer, offsets);
-    vkCmdBindIndexBuffer(core::apiCore.commandBuffers.active[i], indexBuffer, m_shapeRenderInfo.m_indexMemoryId.address, m_shapeRenderInfo.m_indexType);
+    vkCmdBindIndexBuffer(core::apiCore.commandBuffers.active[i], indexBuffer, m_shapeRenderInfo.m_indexMemoryId.address, VK_INDEX_TYPE_UINT16);
     vkCmdBindDescriptorSets(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, 
     m_pipelineLayout, 0, m_descriptorSets.size(), m_descriptorSets.data(), 0, nullptr);
     vkCmdDrawIndexed(core::apiCore.commandBuffers.active[i], m_shapeRenderInfo.m_indexCount, m_instanceCount, 0, 0, 0);

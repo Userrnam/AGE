@@ -166,14 +166,24 @@ std::pair<VkPipeline, VkPipelineLayout> createPipeline(const PipelineCreateInfo&
     std::vector<VkSpecializationInfo> specializationInfos;
     getShaderStageCreateInfos(info.getShaders(), shaderStages, specializationInfos);
 
-    auto& vertexDescription = Shape::getPipelineCreateDescription(info.getShapeId());
+    // auto& vertexDescription = Shape::getPipelineCreateDescription(info.getShapeId());
+    VkVertexInputBindingDescription bindingDescription = {};
+    bindingDescription.binding = 0;
+    bindingDescription.stride = sizeof(Vertex);
+    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+    VkVertexInputAttributeDescription attributeDescription = {};
+    attributeDescription.binding = 0;
+    attributeDescription.location = 0;
+    attributeDescription.format = VK_FORMAT_R32G32_SFLOAT;
+    attributeDescription.offset = 0;
 
     VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo = {};
     vertexInputCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputCreateInfo.vertexBindingDescriptionCount = 1;
-    vertexInputCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexDescription.attributeDescriptions.size());
-    vertexInputCreateInfo.pVertexBindingDescriptions = &vertexDescription.bindingDescription;
-    vertexInputCreateInfo.pVertexAttributeDescriptions = vertexDescription.attributeDescriptions.data();
+    vertexInputCreateInfo.pVertexBindingDescriptions = &bindingDescription;
+    vertexInputCreateInfo.vertexAttributeDescriptionCount = 1;
+    vertexInputCreateInfo.pVertexAttributeDescriptions = &attributeDescription;
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;

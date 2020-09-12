@@ -3,22 +3,10 @@
 #include "Graphics.hpp"
 #include "Utils/utils.hpp"
 
-struct VertexElement {
-    glm::vec4 m_color;
-    glm::vec2 m_coord;
-
-    VertexElement(glm::vec4 color, glm::vec2 coord) : m_color(color), m_coord(coord) {}
-};
-
-std::vector<age::Vertex<VertexElement>> verticies = {
-    VertexElement({ 0, 0, 1, 0 }, { 2 * 800, 0 }),
-    VertexElement({ 1, 0, 0, 0 }, { 2 * 800, 2 * 600 }),
-    VertexElement({ 0, 1, 0, 0 }, { 0, 2 * 600 }),
-};
-
-VERTEX_ATTRIBUTES(VertexElement) = {
-    VK_FORMAT_R32G32B32A32_SFLOAT,
-    VK_FORMAT_R32G32_SFLOAT
+std::vector<age::Vertex> verticies = {
+    { 2 * 800, 0 },
+    { 2 * 800, 2 * 600 },
+    { 0, 2 * 600 },
 };
 
 std::vector<age::Index16> indicies = {

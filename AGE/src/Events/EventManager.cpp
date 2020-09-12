@@ -28,7 +28,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
     // glfw release is 0, glfw press is 1
     pressedKeys[key] = action;
-    std::cout << "[" << key << "]: " << action << std::endl;
 
     Event e;
     e.setId(hash("glfw_key"));
