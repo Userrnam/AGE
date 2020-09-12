@@ -1,4 +1,5 @@
 #include <GLFW/glfw3.h>
+#include <iostream>
 
 #include "Graphics/Core/Core.hpp"
 
@@ -16,6 +17,7 @@ extern Core apiCore;
 namespace age::EventManager {
 
 std::vector<Event> m_events;
+bool pressedKeys[GLFW_KEY_LAST + 1] = {};
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     event::Key eStruct;
@@ -23,6 +25,10 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     eStruct.scancode = scancode;
     eStruct.action = action;
     eStruct.mods = mods;
+
+    // glfw release is 0, glfw press is 1
+    pressedKeys[key] = action;
+    std::cout << "[" << key << "]: " << action << std::endl;
 
     Event e;
     e.setId(hash("glfw_key"));
@@ -89,6 +95,14 @@ const std::vector<Event>& getEvents() {
 void clearEvents() {
     m_events.clear();
     eventArena.flush();
+}
+
+} // namespace age::EventManager
+
+namespace age {
+
+bool isKeyPressed(KeyCode keyCode) {
+    return age::EventManager::pressedKeys[keyCode];
 }
 
 } // namespace age
