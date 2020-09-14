@@ -11,10 +11,24 @@
 #include <stdexcept>
 #include <string>
 
-#define ERROR_CHECK(name) \
-    {\
-        ALCenum error = alGetError(); \
-        if (error != AL_NO_ERROR) { \
-            throw std::runtime_error(name ": " + std::to_string(error)); \
-        } \
+#define ec(e) case e: return #e
+
+inline std::string alErrorToString(ALCenum err) {
+    switch (err) {
+        ec(ALC_NO_ERROR);
+        ec(ALC_INVALID_CONTEXT);
+        ec(ALC_INVALID_DEVICE);
+        ec(ALC_INVALID_ENUM);
+        ec(ALC_INVALID_VALUE);
+        ec(ALC_OUT_OF_MEMORY);
+    default:
+        return "Unknown error code";
     }
+}
+
+inline void ERROR_CHECK(const std::string& name) {
+    ALCenum error = alGetError();
+    if (error != AL_NO_ERROR) {
+        throw std::runtime_error(name + ": " + alErrorToString(error));
+    }
+}

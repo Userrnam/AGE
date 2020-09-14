@@ -10,7 +10,7 @@
 #include "Audio.hpp"
 
 #include "Scene.hpp"
-#include <GlFW/glfw3.h>
+#include <GLFW/glfw3.h>
 
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""

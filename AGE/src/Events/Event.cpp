@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "Event.hpp"
 #include "Containers.hpp"
 

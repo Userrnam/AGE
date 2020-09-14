@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "Framebuffers.hpp"
 #include "Core/Core.hpp"
 

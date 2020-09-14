@@ -12,7 +12,7 @@ set(LINUX_DISTRO Ubuntu)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 
-include_directories("/usr/local/include" "/usr/include")
+include_directories("/usr/local/include")
 link_directories("/usr/local/lib")
 
 # freetype path

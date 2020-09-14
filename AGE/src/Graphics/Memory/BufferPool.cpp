@@ -1,3 +1,6 @@
+#include <stdexcept>
+#include <assert.h>
+
 #include "BufferPool.hpp"
 
 #include "Core/Core.hpp"

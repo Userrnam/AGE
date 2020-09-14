@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "Sampler.hpp"
 
 #include "Core/Core.hpp"

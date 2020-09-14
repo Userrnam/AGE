@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "RenderPass.hpp"
 
 #include "Core/Core.hpp"

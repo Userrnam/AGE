@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "Image.hpp"
 
 #include "Core/Core.hpp"

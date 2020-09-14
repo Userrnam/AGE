@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string.h>
+
 #include "Containers/Shared.hpp"
 #include "Memory/MemoryId.hpp"
 

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <vulkan/vulkan.h>
+#include <assert.h>
 
 #include "MemoryHolders/Buffer.hpp"
 #include "Objects/Texture.hpp"

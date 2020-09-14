@@ -11,19 +11,19 @@ Orientation Listener::m_orientation = Orientation();
 
 void Listener::setVelocity(const glm::vec3& velocity) {
     alListener3f(AL_VELOCITY, velocity.x, velocity.y, velocity.z);
-    ERROR_CHECK("Velocity")
+    ERROR_CHECK("Velocity");
     m_velocity = velocity;
 }
 
 void Listener::setPosition(const glm::vec3& position) {
     alListener3f(AL_POSITION, position.x, position.y, position.z);
-    ERROR_CHECK("Position")
+    ERROR_CHECK("Position");
     m_position = position;
 }
 
 void Listener::setOrientation(const Orientation& orientation) {
     alListenerfv(AL_ORIENTATION, (ALfloat*)&orientation);
-    ERROR_CHECK("Orientation")
+    ERROR_CHECK("Orientation");
     m_orientation = orientation;
 }
 

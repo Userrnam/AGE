@@ -7,7 +7,7 @@ namespace age {
 
 void SoundSource::create() {
     alGenSources(1, &m_alSource);
-    ERROR_CHECK("SoundSource::create")
+    ERROR_CHECK("SoundSource::create");
 }
 
 void SoundSource::destroy() {

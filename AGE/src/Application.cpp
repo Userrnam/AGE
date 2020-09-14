@@ -19,7 +19,7 @@ namespace age {
 extern FT_Library ftLibrary;
 audio::Core audioCore;
 
-std::chrono::steady_clock::time_point currentTime;
+auto currentTime = std::chrono::high_resolution_clock::now();
 
 inline void initFreetype() {
     if (FT_Init_FreeType(&ftLibrary)) {

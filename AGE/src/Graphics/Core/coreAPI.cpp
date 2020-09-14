@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <vulkan/vulkan_core.h>
 
 #include "coreAPI.hpp"
 #include "VulkanDebug.hpp"
@@ -17,7 +18,7 @@
 namespace age::core {
 
 const std::vector<const char*> validationLayers = {
-	"VK_LAYER_KHRONOS_validation"
+	"VK_LAYER_LUNARG_core_validation"
 };
 
 Core apiCore;
@@ -172,6 +173,11 @@ void createLogicalDevice() {
 				apiCore.queues.graphics.index = index;
 				graphicsQueueFound = true;
 				apiCore.queues.present.index = index;
+				// FIXME:
+				if (queue.queueFlags & VK_QUEUE_TRANSFER_BIT) {
+					apiCore.queues.transfer.index = index;
+				}
+				break;
 			}
 		} else if (!transferQueueFound && (queue.queueFlags & VK_QUEUE_TRANSFER_BIT)) {
 			apiCore.queues.transfer.index = index;
