@@ -43,7 +43,6 @@ void destroyCore() {
 	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.transferPool, nullptr);
 
 	apiCore.multisampling.image.destroy();
-	// apiCore.depth.image.destroy();
 
 	// destroy swapChain Views
 	for (auto imageView : apiCore.swapchain.imageViews) {

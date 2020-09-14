@@ -18,37 +18,17 @@
 
 #include "RectController.hpp"
 #include "HelloText.hpp"
-#include "TestTriangle.hpp"
+#include "Background.hpp"
+#include "Triangle.hpp"
 
 class TestScene : public age::Scene {
-    TestTriangle triangle;
-    glm::vec2 move = {};
-    float rotate = 0.0f;
-
     virtual void onCreate() override {
-        triangle.create();
+        createEntity<HelloText>();
+        createEntity<RectController>();
+        createStaticEntity<Triangle>();
+        createStaticEntity<Background>();
 
-        // create text
-        auto entity = createEntity();
-        auto script = entity.addComponentNoCreate<age::ScriptComponent*>(new HelloText());
-        script->create(entity);
-
-        entity = createEntity();
-        script = entity.addComponentNoCreate<age::ScriptComponent*>(new RectController());
-        script->create(entity);
-
-        entity = createEntity();
-        entity.addComponentNoCreate<age::Drawable>(triangle);
-
-        // add background
-        {
-            auto background = createEntity();
-            background.addComponent<age::Drawable>(age::RECTANGLE_SHAPE, 
-                background.addComponent<age::StorageComponent<age::Transform>>(age::Transformable().setScale(1600, 1200).getTransform()),
-                background.addComponent<age::StorageComponent<age::Color>>(glm::vec4(1, 0, 0, 1))
-            );
-        }
-
+        // todo: move it somewhere else
         auto view = m_registry.view<age::Drawable>();
         std::vector<age::Drawable> targets;
         targets.resize(view.size());
@@ -58,46 +38,12 @@ class TestScene : public age::Scene {
 
         age::Renderer::render(targets);
     }
-
-    virtual void onDestroy() override {
-        triangle.destroy();
-    }
-
-    virtual void onEvent(age::Event event) override {
-        if (event == age::event::KEY) {
-            auto e = event.getStructure<age::event::Key>();
-            if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
-                switch (e.key) {
-                case GLFW_KEY_W: move.y = 10; break;
-                case GLFW_KEY_S: move.y = -10; break;
-                case GLFW_KEY_D: move.x = 10; break;
-                case GLFW_KEY_A: move.x = -10; break;
-
-                case GLFW_KEY_J: rotate = 0.05; break;
-                case GLFW_KEY_K: rotate = -0.05; break;
-                
-                default:
-                    break;
-                }
-            } else if (e.action == GLFW_RELEASE) {
-                switch (e.key) {
-                case GLFW_KEY_W: case GLFW_KEY_S: move.y = 0; break;
-                case GLFW_KEY_D: case GLFW_KEY_A: move.x = 0; break;
-                case GLFW_KEY_J: case GLFW_KEY_K: rotate = 0; break;
-                
-                default:
-                    break;
-                }
-            }
-        }
-    }
-
-    virtual void onUpdate(float elapsedTime) override {
-
-    }
 };
 
 class Application : public age::Application {
+    age::Sound sound;
+    age::SoundSource source;
+
     virtual void onCoreConfig() override {
         age::setResourcePath(RESOURCE_PATH);
 
@@ -107,7 +53,7 @@ class Application : public age::Application {
         age::config::setSampleCount(VK_SAMPLE_COUNT_4_BIT);
         age::config::setWindowProperties(
             age::config::WindowProperties()
-            .setResizeEnable(false)
+            .setResizeEnable(true)
             .setSize(800, 600)
             .setTitle("app")
         );
@@ -118,9 +64,21 @@ class Application : public age::Application {
         loadTexture(age::getResourcePath("mountains.png"), "mountains");
         loadTexture(age::getResourcePath("yoda.jpg"), "yoda");
 
+        sound.create();
+        sound.load(age::getResourcePath("test.wav"));
+        source.create();
+        source.setLooping(true);
+        source.setSound(sound);
+        source.play();
+
         auto scene = new TestScene();
         scene->create(this);
         setActiveScene(scene);
+    }
+
+    virtual void onDestroy() override {
+        source.destroy();
+        sound.destroy();
     }
 
     virtual void onEvent(age::Event e) override {

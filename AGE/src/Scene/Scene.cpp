@@ -31,10 +31,20 @@ void Scene::create(Application* app) {
 }
 
 void Scene::destroy() {
-    auto entities = m_registry.view<ScriptComponent*>();
-    for (auto entity : entities) {
-        auto script = entities.get(entity);
-        script->onDestroy();
+    {
+        auto entities = m_registry.view<ScriptComponent*>();
+        for (auto entity : entities) {
+            auto script = entities.get(entity);
+            delete script;
+        }
+    }
+
+    {
+        auto entities = m_registry.view<StaticScriptComponent*>();
+        for (auto entity : entities) {
+            auto script = entities.get(entity);
+            delete script;
+        }
     }
 
     onDestroy();

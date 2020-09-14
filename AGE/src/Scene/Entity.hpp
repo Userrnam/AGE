@@ -12,7 +12,7 @@ class Entity {
     SceneAPI* m_scene;
 
     friend class Scene;
-    friend class ScriptComponent;
+    friend class StaticScriptComponent;
 public:
     inline FontComponent* getFont(const std::string& font) {
 		return m_scene->getFont(font);

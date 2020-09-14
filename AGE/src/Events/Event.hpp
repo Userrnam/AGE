@@ -48,6 +48,7 @@ const uint64_t KEY = hash("glfw_key");
 const uint64_t SCROLL = hash("glfw_scroll");
 const uint64_t CURSOR_POS = hash("glfw_cursor_pos");
 const uint64_t MOUSE_BUTTON = hash("glfw_mouse_button");
+const uint64_t RESIZE = hash("glfw_resize");
 
 struct Key {
     int key;
@@ -72,6 +73,11 @@ struct MouseButton {
     int button;
     int action;
     int mods;
+};
+
+struct Resize {
+    int width;
+    int height;
 };
 
 } // namespace event

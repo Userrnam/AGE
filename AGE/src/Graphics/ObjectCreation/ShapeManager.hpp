@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string.h>
+#include <vector>
 
 #include "Containers/Shared.hpp"
 #include "Memory/MemoryId.hpp"
@@ -16,31 +17,21 @@ enum BasicShape {
     RECTANGLE_SHAPE = 0
 };
 
-struct ShapePipelineCreateDescription {
-    VkVertexInputBindingDescription bindingDescription;
-    std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-};
-
 class ShapeCreateInfo {
     struct {
-        ShapePipelineCreateDescription description;
         std::vector<uint8_t> data;
     } m_vertex;
 
     struct {
         uint32_t count;
-        VkIndexType type;
         std::vector<uint8_t> data;
     } m_index;
 
     friend class Shape;
 public:
-    template<class T>
-    inline ShapeCreateInfo& loadVerticies(const std::vector<Vertex<T>>& verticies) {
-        m_vertex.data.resize(verticies.size() * sizeof(T));
+    inline ShapeCreateInfo& loadVerticies(const std::vector<Vertex>& verticies) {
+        m_vertex.data.resize(verticies.size() * sizeof(Vertex));
         memcpy(m_vertex.data.data(), verticies.data(), m_vertex.data.size());
-        Vertex<T>::fillBinding(m_vertex.description.bindingDescription);
-        Vertex<T>::fillAttributes(m_vertex.description.attributeDescriptions);
 
         return *this;
     }
@@ -48,18 +39,6 @@ public:
     inline ShapeCreateInfo& loadIndicies(const std::vector<Index16>& indicies) {
         m_index.data.resize(indicies.size() * sizeof(Index16));
         memcpy(m_index.data.data(), indicies.data(), m_index.data.size());
-
-        m_index.type = VK_INDEX_TYPE_UINT16;
-        m_index.count = indicies.size();
-
-        return *this;
-    }
-
-    inline ShapeCreateInfo& loadIndicies(const std::vector<Index32>& indicies) {
-        m_index.data.resize(indicies.size() * sizeof(Index16));
-        memcpy(m_index.data.data(), indicies.data(), m_index.data.size());
-
-        m_index.type = VK_INDEX_TYPE_UINT32;
         m_index.count = indicies.size();
 
         return *this;
@@ -69,7 +48,6 @@ public:
 class ShapeRenderInfo {
     core::MemoryId m_vertexMemoryId;
     core::MemoryId m_indexMemoryId;
-    VkIndexType m_indexType;
     uint32_t m_indexCount;
 
     inline VkBuffer getVertexBuffer() const { return m_vertexMemoryId.buffer; }
@@ -90,7 +68,6 @@ class Shape {
 public:
     static ShapeId create(const ShapeCreateInfo& info);
     static ShapeRenderInfo get(ShapeId id);
-    static const ShapePipelineCreateDescription& getPipelineCreateDescription(ShapeId id);
 };
 
 } // namespace age

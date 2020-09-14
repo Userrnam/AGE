@@ -5,16 +5,17 @@
 
 namespace age {
 
-struct ScriptComponent : public Entity {
-    void create(Entity e) {
+struct StaticScriptComponent : public Entity {
+    StaticScriptComponent(Entity e) {
         m_entityId = e.m_entityId;
         m_scene = e.m_scene;
-
-        onCreate();
     }
 
-    virtual void onCreate() {}
-    virtual void onDestroy() {}
+    virtual ~StaticScriptComponent() {}
+};
+
+struct ScriptComponent : public StaticScriptComponent {
+    ScriptComponent(Entity e) : StaticScriptComponent(e) {}
     virtual void onEvent(Event event) {}
     virtual void onUpdate(float elapsedTime) {}
 };

@@ -28,6 +28,18 @@ protected:
 		return e;
 	}
 
+	template<typename Script, typename... Args>
+	void createEntity(Args... args) {
+		Entity e = createEntity();
+		auto script = e.addComponentNoCreate<ScriptComponent*>(new Script(e, std::forward(args)...));
+	}
+
+	template<typename Script, typename... Args>
+	void createStaticEntity(Args... args) {
+		Entity e = createEntity();
+		auto script = e.addComponentNoCreate<StaticScriptComponent*>(new Script(e, std::forward(args)...));
+	}
+
 	virtual void onDestroy() {}
 	virtual void onCreate() {}
 

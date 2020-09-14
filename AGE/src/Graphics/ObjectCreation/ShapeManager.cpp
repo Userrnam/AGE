@@ -14,21 +14,17 @@ ShapeManager uses its own pool for buffer allocations
 
 namespace age {
 
-static std::vector<Vertex<glm::vec2>> verticies = {
+static std::vector<Vertex> verticies = {
     glm::vec2({ 0.0, 0.0 }),
     glm::vec2({ 1.0, 0.0 }),
     glm::vec2({ 1.0, 1.0 }),
     glm::vec2({ 0.0, 1.0 }),
 };
 
-VERTEX_ATTRIBUTES(glm::vec2) = {
-    VK_FORMAT_R32G32_SFLOAT
-};
-
 static std::vector<Index16> indicies = { 0, 1, 2, 2, 3, 0 };
 
 core::BufferPool shapeManagerBufferPool;
-std::vector<std::pair<ShapeRenderInfo, ShapePipelineCreateDescription>> shapesMap;
+std::vector<ShapeRenderInfo> shapesMap;
 
 void Shape::createManager() {
     // TODO: put page size to core settings
@@ -52,15 +48,11 @@ void Shape::destroyManager() {
 }
 
 ShapeId Shape::create(const ShapeCreateInfo& info) {
-    shapesMap.push_back(std::pair<ShapeRenderInfo, ShapePipelineCreateDescription>());
+    shapesMap.push_back(ShapeRenderInfo());
     auto& shape = shapesMap.back();
 
-    // save vertex info
-    shape.second = info.m_vertex.description;
-
     // save index data
-    shape.first.m_indexType = info.m_index.type;
-    shape.first.m_indexCount = info.m_index.count;
+    shape.m_indexCount = info.m_index.count;
 
     // load data to buffers
     const std::vector<uint8_t> *datas[2] = {
@@ -68,8 +60,8 @@ ShapeId Shape::create(const ShapeCreateInfo& info) {
         &info.m_index.data
     };
     core::MemoryId *memoryIds[] = {
-        &shape.first.m_vertexMemoryId,
-        &shape.first.m_indexMemoryId
+        &shape.m_vertexMemoryId,
+        &shape.m_indexMemoryId
     };
     for (int i = 0; i < 2; ++i) {
         Buffer stagingBuffer;
@@ -90,11 +82,7 @@ ShapeId Shape::create(const ShapeCreateInfo& info) {
 }
 
 ShapeRenderInfo Shape::get(ShapeId id) {
-    return shapesMap[id].first;
-}
-
-const ShapePipelineCreateDescription& Shape::getPipelineCreateDescription(ShapeId id) {
-    return shapesMap[id].second;
+    return shapesMap[id];
 }
 
 } // namespace age

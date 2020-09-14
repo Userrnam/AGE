@@ -8,7 +8,11 @@
 
 namespace age {
 
+std::vector<Drawable> Renderer::m_previousTargets;
+
 void Renderer::render(const std::vector<Drawable>& targets) {
+    m_previousTargets = targets;
+
     // TODO: update only if something changed
 
     // update active commandBuffer

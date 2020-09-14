@@ -1,4 +1,5 @@
 #include <GLFW/glfw3.h>
+#include <iostream>
 
 #include "Graphics/Core/Core.hpp"
 
@@ -16,6 +17,7 @@ extern Core apiCore;
 namespace age::EventManager {
 
 std::vector<Event> m_events;
+bool pressedKeys[GLFW_KEY_LAST + 1] = {};
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     event::Key eStruct;
@@ -24,9 +26,12 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     eStruct.action = action;
     eStruct.mods = mods;
 
+    // glfw release is 0, glfw press is 1
+    pressedKeys[key] = action;
+
     Event e;
     e.setId(hash("glfw_key"));
-    e.setStructure<event::Key>(eStruct);
+    e.setStructure(eStruct);
     sendEvent(e);
 }
 
@@ -37,7 +42,7 @@ void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
 
     Event e;
     e.setId(hash("glfw_scroll"));
-    e.setStructure<event::Scroll>(eStruct);
+    e.setStructure(eStruct);
     sendEvent(e);
 }
 
@@ -48,7 +53,7 @@ void cursorPosCallback(GLFWwindow* window, double xPos, double yPos) {
 
     Event e;
     e.setId(hash("glfw_cursor_pos"));
-    e.setStructure<event::CursorPos>(eStruct);
+    e.setStructure(eStruct);
     sendEvent(e);
 }
 
@@ -61,7 +66,20 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 
     Event e;
     e.setId(hash("glfw_mouse_button"));
-    e.setStructure<event::MouseButton>(eStruct);
+    e.setStructure(eStruct);
+    sendEvent(e);
+}
+
+void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
+    core::apiCore.framebufferResized = true;
+
+    event::Resize eStruct;
+    eStruct.width = width;
+    eStruct.height = height;
+
+    Event e;
+    e.setId(hash("glfw_resize"));
+    e.setStructure(eStruct);
     sendEvent(e);
 }
 
@@ -72,6 +90,7 @@ void init() {
     glfwSetScrollCallback(core::apiCore.window.handle, scrollCallback);
     glfwSetCursorPosCallback(core::apiCore.window.handle, cursorPosCallback);
     glfwSetMouseButtonCallback(core::apiCore.window.handle, mouseButtonCallback);
+    glfwSetFramebufferSizeCallback(core::apiCore.window.handle, framebufferResizeCallback);
 }
 
 void destroy() {
@@ -89,6 +108,14 @@ const std::vector<Event>& getEvents() {
 void clearEvents() {
     m_events.clear();
     eventArena.flush();
+}
+
+} // namespace age::EventManager
+
+namespace age {
+
+bool isKeyPressed(KeyCode keyCode) {
+    return age::EventManager::pressedKeys[keyCode];
 }
 
 } // namespace age

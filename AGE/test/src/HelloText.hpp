@@ -7,7 +7,8 @@ class HelloText : public age::ScriptComponent {
     age::Transformable transformable;
     age::BundleComponent<age::Color, age::Transform> ct;
 
-    virtual void onCreate() override {
+public:
+    HelloText(Entity e) : age::ScriptComponent(e) {
         text.create(getFont("courier"));
         text.setText("hello");
         ct.create();
@@ -22,7 +23,7 @@ class HelloText : public age::ScriptComponent {
         getComponent<age::Drawable>().setInstanceCount(5);
     }
 
-    virtual void onDestroy() override {
+    ~HelloText() {
         text.destroy();
         ct.destroy();
     }
