@@ -43,6 +43,7 @@ class TestScene : public age::Scene {
 class Application : public age::Application {
     age::Sound sound;
     age::SoundSource source;
+
     virtual void onCoreConfig() override {
         age::setResourcePath(RESOURCE_PATH);
 
@@ -52,7 +53,7 @@ class Application : public age::Application {
         age::config::setSampleCount(VK_SAMPLE_COUNT_4_BIT);
         age::config::setWindowProperties(
             age::config::WindowProperties()
-            .setResizeEnable(false)
+            .setResizeEnable(true)
             .setSize(800, 600)
             .setTitle("app")
         );

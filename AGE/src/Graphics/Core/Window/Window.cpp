@@ -5,6 +5,10 @@
 #include "Window.hpp"
 #include "Core/Core.hpp"
 #include "Core/CoreConfig.hpp"
+#include "Core/coreAPI.hpp"
+#include "Rendering/Framebuffers.hpp"
+#include "Rendering/RenderPass.hpp"
+#include "Rendering/Renderer.hpp"
 
 namespace age::core {
 
@@ -64,8 +68,39 @@ bool closed() {
     return glfwWindowShouldClose(apiCore.window.handle);
 }
 
-void recreateSwapchain() {
+void cleanupSwapchain() {
+    vkDeviceWaitIdle(apiCore.device);
 
+    if (apiCore.multisampling.sampleCount != VK_SAMPLE_COUNT_1_BIT) {
+        apiCore.multisampling.image.destroy();
+    }
+    
+    Framebuffers::destroy();
+
+	// destroy swapChain Views
+	for (auto imageView : apiCore.swapchain.imageViews) {
+		vkDestroyImageView(apiCore.device, imageView, nullptr);
+	}
+
+    vkDestroySwapchainKHR(apiCore.device, apiCore.swapchain.swapchain, nullptr);
+}
+
+void recreateSwapchain() {
+    int width, height;
+    glfwGetFramebufferSize(apiCore.window.handle, &width, &height);
+
+    while (width == 0 || height == 0) {
+        glfwGetFramebufferSize(apiCore.window.handle, &width, &height);
+        glfwWaitEvents();
+    }
+
+    cleanupSwapchain();
+
+    createSwapchain();
+    createMultisamplingResources();
+    Framebuffers::create(RenderPass::get());
+
+    Renderer::rerender();
 }
 
 void present() {
