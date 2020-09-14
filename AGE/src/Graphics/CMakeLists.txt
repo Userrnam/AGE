@@ -43,7 +43,6 @@ file(GLOB sources
 add_library(graphics STATIC ${sources})
 target_include_directories(graphics PRIVATE "$CMAKE_CURRENT_LIST_DIR")
 target_compile_options(graphics PUBLIC "-I${CMAKE_CURRENT_LIST_DIR}")
-target_compile_definitions(graphics PRIVATE SHADER_PATH="${CMAKE_CURRENT_BINARY_DIR}/Shaders/" CMAKE_DEFINITION)
 if (APPLE)
 target_link_libraries(graphics containers glfw vulkan utils freetype)
 else (APPLE)

@@ -65,11 +65,16 @@ void SoundSource::setLooping(bool b) {
     ERROR_CHECK("SoundSource::setLooping");
 }
 
-int SoundSource::getState() {
+SoundSourceState SoundSource::getState() {
     ALint sourceState;
     alGetSourcei(m_alSource, AL_SOURCE_STATE, &sourceState);
 
-    return sourceState;
+    switch (sourceState) {
+    case AL_INITIAL: return SoundSourceState::INITIAL;
+    case AL_PLAYING: return SoundSourceState::PLAYING;
+    case AL_PAUSED:  return SoundSourceState::PAUSED;
+    case AL_STOPPED: return SoundSourceState::STOPPED;
+    }
 }
 
 } // namespace age

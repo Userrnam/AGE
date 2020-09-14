@@ -6,6 +6,13 @@
 
 namespace age {
 
+enum class SoundSourceState {
+    INITIAL,
+    PLAYING,
+    PAUSED,
+    STOPPED
+};
+
 class SoundSource {
     unsigned int m_alSource = 0;
 public:
@@ -32,7 +39,7 @@ public:
         setVelocity({vx, vy, vz});
     }
 
-    int getState();
+    SoundSourceState getState();
 };
 
 } // namespace age

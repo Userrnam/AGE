@@ -138,8 +138,6 @@ void pickPhysicalDevice() {
 	apiCore.depth.format = findDepthFormat();
 }
 
-// FIXME: add queue choice
-// Default: 1 graphicsQueue, 1 presentQueue, 1 transferQueue
 void createLogicalDevice() {
 	std::vector<VkQueueFamilyProperties> queues = getQueueFamilyProperties(apiCore.physicalDevice);
 
@@ -344,7 +342,6 @@ void createMultisamplingResources() {
 	);
 }
 
-// FIXME: add compute
 void createCommandPools() {
 	VkCommandPoolCreateInfo poolInfo = {};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
