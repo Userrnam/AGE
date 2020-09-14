@@ -18,6 +18,7 @@
 namespace age::core {
 
 const std::vector<const char*> validationLayers = {
+	"VK_LAYER_KHRONOS_validation",
 	"VK_LAYER_LUNARG_core_validation"
 };
 
@@ -27,7 +28,8 @@ CoreConfig coreConfig;
 void init() {
 	glfwInit();
 
-	if (apiCore.debug.enable && !checkValidationLayerSupport(validationLayers)) {
+	int validatioLayerIndex = checkValidationLayerSupport(validationLayers);
+	if (apiCore.debug.enable && (validatioLayerIndex == -1)) {
 		throw std::runtime_error("requested unavailable validation layers");
 	}
 
@@ -50,8 +52,8 @@ void init() {
 
 	if (apiCore.debug.enable) {
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		createInfo.ppEnabledLayerNames = validationLayers.data();
+		createInfo.enabledLayerCount = 1;
+		createInfo.ppEnabledLayerNames = &validationLayers[validatioLayerIndex];
 
 		populateDebugMessengerCreateInfo(debugCreateInfo);
 		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;

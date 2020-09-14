@@ -1,5 +1,5 @@
 #include "Core.hpp"
-#include <AL/al.h>
+#include "OpenAL.hpp"
 
 namespace age::audio {
 

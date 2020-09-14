@@ -39,29 +39,22 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 	return VK_FALSE;
 }
 
-bool checkValidationLayerSupport(const std::vector<const char*>& validationLayers) {
+int checkValidationLayerSupport(const std::vector<const char*>& validationLayers) {
 	uint32_t layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
 	std::vector<VkLayerProperties> availableLayers(layerCount);
 	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-	for (const char *layerName : validationLayers) {
-		bool layerFound = false;
-
+	for (int i = 0; i < validationLayers.size(); ++i) {
 		for (const auto& layerProperties : availableLayers) {
-			if (strcmp(layerName, layerProperties.layerName) == 0) {
-				layerFound = true;
-				break;
+			if (strcmp(validationLayers[i], layerProperties.layerName) == 0) {
+				return i;
 			}
-		}
-
-		if (!layerFound) {
-			return false;
 		}
 	}
 
-	return true;
+	return -1;
 }
 
 void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
