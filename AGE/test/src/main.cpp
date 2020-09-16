@@ -2,6 +2,7 @@
 
 #include "Application.hpp"
 
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <string>
 
@@ -10,7 +11,8 @@
 #include "Audio.hpp"
 
 #include "Scene.hpp"
-#include <GLFW/glfw3.h>
+
+#include "m.hpp"
 
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""

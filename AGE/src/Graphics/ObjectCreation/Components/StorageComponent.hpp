@@ -27,6 +27,8 @@ public:
             UniformBufferCreateInfo()
             .setSize(sizeof(T))
         );
+        // upload default value
+        set(m_data);
     }
 
     inline void create(T data) {

@@ -18,8 +18,8 @@ struct TexCoords {
         ShaderComponentInfo info;
         info.add(
             ShaderComponentBuffer()
-            .addBlockMember("vec2 texCoords[4]")
-            .setVertMainInsert("\tglobals.texCoords = ?.texCoords[gl_VertexIndex];\n")
+            .addBlockMember("vec4 texCoords[4]")
+            .setVertMainInsert("\tglobals.texCoords = ?.texCoords[gl_VertexIndex].xy;\n")
         );
         info.add(
             ShaderComponentForward("vec2 texCoords")
