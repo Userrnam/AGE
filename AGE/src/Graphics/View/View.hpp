@@ -5,7 +5,6 @@
 #include "ObjectCreation/Descriptor.hpp"
 #include "MemoryHolders/Buffer.hpp"
 #include "Transformable.hpp"
-#include <bits/stdint-uintn.h>
 
 namespace age {
 
