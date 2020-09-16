@@ -20,8 +20,6 @@ class RectController : public age::ScriptComponent {
 public:
 
     RectController(Entity e) : age::ScriptComponent(e) {
-        transformable.setScale(100, 100);
-
         vars.create();
         vars.get().get<age::Transform>().set(transformable.setScale(500, 500).getTransform());
         vars.upload();

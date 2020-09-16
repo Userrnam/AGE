@@ -1,21 +1,10 @@
 #pragma once
 
 #include <unistd.h>
-#include <stdint.h>
+
+#include "Utils/utils.hpp"
 
 namespace age {
-
-constexpr uint64_t hash(const char* str) {
-    uint64_t hash = 5381;
-    int c = 0;
-
-    while ((c = *str)) {
-        hash = ((hash << 5) + hash) + c;
-        str++;
-    }
-
-    return hash;
-}
 
 class Event {
     uint64_t eventId;

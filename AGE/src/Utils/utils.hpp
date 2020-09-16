@@ -1,18 +1,21 @@
 #pragma once
 
+#include <stdint.h>
 #include <string>
 #include <vector>
 
 namespace age {
 
-template<typename... Args>
-constexpr size_t getSize(Args... args) {
-	return (sizeof(args) + ... + 0);
-}
+constexpr uint64_t hash(const char* str) {
+    uint64_t hash = 5381;
+    int c = -1;
 
-template<typename... Args>
-constexpr size_t getSize() {
-	return (sizeof(Args) + ... + 0);
+    while ((c = *str)) {
+        hash = ((hash << 4) + hash) + c;
+        str++;
+    }
+
+    return hash;
 }
 
 void setResourcePath(const std::string& path);

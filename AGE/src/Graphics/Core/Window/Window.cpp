@@ -1,3 +1,4 @@
+#include <glm/detail/type_vec.hpp>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <stdexcept>
@@ -16,6 +17,13 @@ extern CoreConfig coreConfig;
 
 namespace window {
 
+glm::ivec2 getWindowSize() {
+    glm::ivec2 size;
+    glfwGetWindowSize(apiCore.window.handle, &size.x, &size.y);
+
+    return size;
+}
+
 void windowSizeCallback(GLFWwindow* window, int width, int height) {
     glfwSetWindowSize(apiCore.window.handle, coreConfig.window.width, coreConfig.window.height);
 }
@@ -27,9 +35,7 @@ void create() {
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-    if (!coreConfig.window.resizable) {
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-    }
+    glfwWindowHint(GLFW_RESIZABLE, coreConfig.window.resizable);
 
     int width = 0;
     int height = 0;

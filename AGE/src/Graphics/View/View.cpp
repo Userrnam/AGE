@@ -21,6 +21,10 @@ void View::create(const Viewport& viewport) {
         )
     );
     
+    setViewport(viewport);
+}
+
+void View::setViewport(const Viewport& viewport) {
     m_viewport = viewport;
 
     if (viewport.width == 0 || viewport.height == 0) {

@@ -75,7 +75,8 @@ void Drawable::getPipelineLayout(const DrawableCreateInfo& info) {
 
     // add camera descriptor
     auto& view = ViewManager::getSelected();
-    m_viewport = view.getViewport();
+    // m_viewport = view.getViewport();
+    m_viewId = view.getId();
     auto cameraDescriptor = view.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
     m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
@@ -150,15 +151,10 @@ void Drawable::create(const DrawableCreateInfo& info) {
     inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
-    VkRect2D scissors = {};
-    scissors.offset = { 0, 0 };
-    scissors.extent = core::apiCore.swapchain.extent;
-
     VkPipelineViewportStateCreateInfo viewportState = {};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
     viewportState.viewportCount = 1;
     viewportState.scissorCount = 1;
-    viewportState.pScissors = &scissors;
 
     auto rasterizer = getRasterizationStateCreateInfo();
     auto multisampling = getMultisampleStateCreateInfo();
@@ -170,10 +166,10 @@ void Drawable::create(const DrawableCreateInfo& info) {
     colorBlending.attachmentCount = 1;
     colorBlending.pAttachments = &colorBlendAttachment;
 
-    VkDynamicState dynamicStates[] = { VK_DYNAMIC_STATE_VIEWPORT };
+    VkDynamicState dynamicStates[] = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
     VkPipelineDynamicStateCreateInfo dynamicState = {};
     dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-    dynamicState.dynamicStateCount = 1;
+    dynamicState.dynamicStateCount = 2;
     dynamicState.pDynamicStates = dynamicStates;
 
     VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
@@ -211,7 +207,8 @@ void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>&
     std::vector<VkDescriptorSetLayout> layouts;
     // add camera descriptor
     auto& view = ViewManager::getSelected();
-    m_viewport = view.getViewport();
+    // m_viewport = view.getViewport();
+    m_viewId = view.getId();
     auto cameraDescriptor = view.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
     m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
@@ -280,7 +277,16 @@ void Drawable::draw(int i) const {
     VkBuffer vertexBuffer = m_shapeRenderInfo.m_vertexMemoryId.buffer;
     VkBuffer indexBuffer = m_shapeRenderInfo.m_indexMemoryId.buffer;
 
-    vkCmdSetViewport(core::apiCore.commandBuffers.active[i], 0, 1, &m_viewport);
+    VkViewport viewport = ViewManager::getView(m_viewId).getViewport();
+    VkRect2D scissors;
+    scissors.offset.x = viewport.x;
+    scissors.offset.y = viewport.y;
+    scissors.extent.width = viewport.width;
+    scissors.extent.height = viewport.height;
+
+    vkCmdSetViewport(core::apiCore.commandBuffers.active[i], 0, 1, &viewport);
+    vkCmdSetScissor(core::apiCore.commandBuffers.active[i], 0, 1, &scissors);
+
     VkDeviceSize offsets[] = { m_shapeRenderInfo.m_vertexMemoryId.address };
 
     vkCmdBindPipeline(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);

@@ -23,7 +23,7 @@
 
 class TestScene : public age::Scene {
     virtual void onCreate() override {
-        createEntity<HelloText>();
+        createStaticEntity<HelloText>();
         createEntity<RectController>();
         createStaticEntity<Triangle>();
         createStaticEntity<Background>();

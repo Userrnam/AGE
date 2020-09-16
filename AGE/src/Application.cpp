@@ -1,18 +1,18 @@
+#include "Events/Event.hpp"
+#include "Graphics/Rendering/Renderer.hpp"
 #include <chrono>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 #include "Application.hpp"
-// #include "View/Viewport.hpp"
 
-// #include "Graphics/Core/coreAPI.hpp"
 #include "Graphics/Core/Window/Window.hpp"
 #include "Graphics/Core/Core.hpp"
-// #include "Core/Command.hpp"
 #include "Audio/Core.hpp"
-// #include "ShapeManager.hpp"
 #include "Scene/Scene.hpp"
 #include "Graphics/View/ViewManager.hpp"
+
+#include "Utils/utils.hpp"
 
 namespace age {
 
@@ -65,8 +65,8 @@ void Application::create() {
     // create default view
     View view;
     view.create();
-    ViewManager::add(view, "default");
-    ViewManager::select("default");
+    ViewManager::add(view, hash("default"));
+    ViewManager::select(hash("default"));
 
     Shape::createManager();
 
@@ -89,6 +89,7 @@ void Application::run() {
     }
 
     auto startTime = std::chrono::high_resolution_clock::now();
+    auto previousTime = std::chrono::high_resolution_clock::now();
 
     while (m_isRunning) {
         m_isRunning = !core::window::closed();
@@ -96,17 +97,23 @@ void Application::run() {
 
         // calculate elapsed time
         currentTime = std::chrono::high_resolution_clock::now();
-        float elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-        startTime = currentTime;
+        float elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - previousTime).count();
+        previousTime = currentTime;
 
         // handle events
         auto events = EventManager::getEvents();
         for (auto event : events) {
+            if (event == age::event::RESIZE) {
+                auto& view = ViewManager::getView(hash("default"));
+                view.setViewport();
+                // fixme:
+                // Renderer::rerender();
+            }
             this->onEvent(event);
             pActiveScene->handleEvent(event);
         }
         EventManager::clearEvents();
-        ViewManager::updateViews(elapsedTime, std::chrono::duration<float, std::chrono::seconds::period>(currentTime.time_since_epoch()).count());
+        ViewManager::updateViews(elapsedTime, std::chrono::duration<float, std::chrono::seconds::period>(startTime - currentTime).count());
 
         pActiveScene->update(elapsedTime);
 

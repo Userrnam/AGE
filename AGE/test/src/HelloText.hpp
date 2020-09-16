@@ -2,13 +2,13 @@
 
 #include "Graphics.hpp"
 
-class HelloText : public age::ScriptComponent {
+class HelloText : public age::StaticScriptComponent {
     age::TextComponent text;
     age::Transformable transformable;
     age::BundleComponent<age::Color, age::Transform> ct;
 
 public:
-    HelloText(Entity e) : age::ScriptComponent(e) {
+    HelloText(Entity e) : age::StaticScriptComponent(e) {
         text.create(getFont("courier"));
         text.setText("hello");
         ct.create();
