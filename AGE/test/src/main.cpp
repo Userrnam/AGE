@@ -9,6 +9,7 @@
 #include "Utils/utils.hpp"
 #include "Graphics.hpp"
 #include "Audio.hpp"
+#include "Animation.hpp"
 
 #include "Scene.hpp"
 
@@ -25,7 +26,7 @@
 
 class TestScene : public age::Scene {
     virtual void onCreate() override {
-        createStaticEntity<HelloText>();
+        createEntity<HelloText>();
         createEntity<RectController>();
         createStaticEntity<Triangle>();
         createStaticEntity<Background>();
@@ -43,8 +44,8 @@ class TestScene : public age::Scene {
 };
 
 class Application : public age::Application {
-    age::Sound sound;
-    age::SoundSource source;
+    // age::Sound sound;
+    // age::SoundSource source;
 
     virtual void onCoreConfig() override {
         age::setResourcePath(RESOURCE_PATH);
@@ -66,12 +67,12 @@ class Application : public age::Application {
         loadTexture(age::getResourcePath("mountains.png"), "mountains");
         loadTexture(age::getResourcePath("yoda.jpg"), "yoda");
 
-        sound.create();
-        sound.load(age::getResourcePath("test.wav"));
-        source.create();
-        source.setLooping(true);
-        source.setSound(sound);
-        source.play();
+        // sound.create();
+        // sound.load(age::getResourcePath("test.wav"));
+        // source.create();
+        // source.setLooping(true);
+        // source.setSound(sound);
+        // source.play();
 
         auto scene = new TestScene();
         scene->create(this);
@@ -79,8 +80,8 @@ class Application : public age::Application {
     }
 
     virtual void onDestroy() override {
-        source.destroy();
-        sound.destroy();
+        // source.destroy();
+        // sound.destroy();
     }
 
     virtual void onEvent(age::Event e) override {

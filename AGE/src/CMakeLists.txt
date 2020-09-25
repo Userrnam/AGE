@@ -1,5 +1,6 @@
 include_directories("External" "Graphics")
 
+add_subdirectory("Animation")
 add_subdirectory("Audio")
 add_subdirectory("Containers")
 add_subdirectory("Events")
@@ -12,6 +13,6 @@ file (GLOB sources
     "*.cpp"
 )
 add_library(age STATIC ${sources})
-target_link_libraries(age audio graphics utils scene external events)
+target_link_libraries(age audio graphics utils scene external events animation)
 
-add_dependencies(age graphics utils scene external events)
+add_dependencies(age graphics utils scene external events animation)

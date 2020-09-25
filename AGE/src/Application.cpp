@@ -13,6 +13,7 @@
 #include "Graphics/View/ViewManager.hpp"
 
 #include "Utils/utils.hpp"
+#include "Animation.hpp"
 
 namespace age {
 
@@ -113,6 +114,7 @@ void Application::run() {
             pActiveScene->handleEvent(event);
         }
         EventManager::clearEvents();
+        Animator::update(elapsedTime);
         ViewManager::updateViews(elapsedTime, std::chrono::duration<float, std::chrono::seconds::period>(startTime - currentTime).count());
 
         pActiveScene->update(elapsedTime);
