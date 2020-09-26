@@ -52,8 +52,8 @@ struct Scroll {
 };
 
 struct CursorPos {
-    double xPos;
-    double yPos;
+    double x;
+    double y;
 };
 
 struct MouseButton {

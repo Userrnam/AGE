@@ -51,6 +51,8 @@ void create() {
     }
 
     apiCore.window.handle = glfwCreateWindow(width, height, coreConfig.window.title.c_str(), nullptr, nullptr);
+    apiCore.window.width = width;
+    apiCore.window.height = height;
 
     if (fullScreen) {
         glfwSetWindowMonitor(apiCore.window.handle, monitor, 0, 0, width, height, mode->refreshRate);
@@ -98,6 +100,9 @@ void recreateSwapchain() {
         glfwGetFramebufferSize(apiCore.window.handle, &width, &height);
         glfwWaitEvents();
     }
+
+    apiCore.window.width = width;
+    apiCore.window.height = height;
 
     cleanupSwapchain();
 

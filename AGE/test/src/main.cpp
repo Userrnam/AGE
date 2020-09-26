@@ -23,10 +23,12 @@
 #include "HelloText.hpp"
 #include "Background.hpp"
 #include "Triangle.hpp"
+#include "Button.hpp"
 
 class TestScene : public age::Scene {
     virtual void onCreate() override {
         createEntity<HelloText>();
+        createEntity<Button>();
         createEntity<RectController>();
         createStaticEntity<Triangle>();
         createStaticEntity<Background>();
@@ -85,25 +87,11 @@ class Application : public age::Application {
     }
 
     virtual void onEvent(age::Event e) override {
-        switch (e) {
-
-        case age::event::MOUSE_BUTTON: {
-            auto s = e.getStructure<age::event::MouseButton>();
-            if (s.action == GLFW_PRESS && s.button == GLFW_MOUSE_BUTTON_1) {
-                std::cout << "pos: (" << s.xPos << "; " << s.yPos << ")\n";
-            }
-            break;
-        }
-
-        case age::event::KEY: {
+        if (e == age::event::KEY) {
             auto s = e.getStructure<age::event::Key>();
             if (s.action == GLFW_PRESS && s.key == GLFW_KEY_P) {
                 stop();
             }
-            break;
-        }
-        default:
-            break;
         }
     }
 };

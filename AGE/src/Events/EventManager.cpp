@@ -48,8 +48,8 @@ void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
 
 void cursorPosCallback(GLFWwindow* window, double xPos, double yPos) {
     event::CursorPos eStruct;
-    eStruct.xPos = xPos;
-    eStruct.yPos = yPos;
+    eStruct.x = xPos;
+    eStruct.y = core::apiCore.window.height - yPos;
 
     Event e;
     e.setId(hash("glfw_cursor_pos"));
@@ -63,6 +63,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     eStruct.action = action;
     eStruct.mods = mods;
     glfwGetCursorPos(core::apiCore.window.handle, &eStruct.xPos, &eStruct.yPos);
+    eStruct.yPos = core::apiCore.window.height - eStruct.yPos;
 
     Event e;
     e.setId(hash("glfw_mouse_button"));

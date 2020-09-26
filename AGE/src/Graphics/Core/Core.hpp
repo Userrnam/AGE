@@ -29,6 +29,8 @@ struct Core {
     struct {
         GLFWwindow *handle = nullptr;
         VkSurfaceKHR surface = VK_NULL_HANDLE;
+        int width = 0;
+        int height = 0;
     } window;
 
     struct {

@@ -14,6 +14,7 @@
 
 #include "Utils/utils.hpp"
 #include "Animation.hpp"
+#include "UI.hpp"
 
 namespace age {
 
@@ -110,6 +111,7 @@ void Application::run() {
                 // fixme:
                 // Renderer::rerender();
             }
+            UIManager::update(event);
             this->onEvent(event);
             pActiveScene->handleEvent(event);
         }
