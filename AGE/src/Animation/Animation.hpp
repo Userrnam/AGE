@@ -24,24 +24,34 @@ using TransitionFunction = bool(AnimationState<T>* s0, AnimationState<T>* s1, fl
 template<typename T, TransitionFunction<T> tf>
 class StateAnimation : public AnimationBase {
     // this can be pointer to user struct
-    T* m_currentState;
+    T* m_currentState = 0;
     
     std::vector<AnimationState<T>> m_states;
     uint32_t m_currentIndex = 0;
     float m_runTime = 0;
     bool m_looping = false;
-
+    // ???
+    int dummy;
 public:
+    StateAnimation() {}
+
     StateAnimation(T* pData) {
         m_currentState = pData;
     }
 
-    inline void setLooping(bool flag) {
-        m_looping = flag;
+    inline StateAnimation& setDataPointer(T* pData) {
+        m_currentState = pData;
+        return *this;
     }
 
-    inline void addState(const AnimationState<T>& state) {
+    inline StateAnimation& setLooping(bool flag) {
+        m_looping = flag;
+        return *this;
+    }
+
+    inline StateAnimation& addState(const AnimationState<T>& state) {
         m_states.push_back(state);
+        return *this;
     }
 
     virtual bool update(float elapsedTime) override {

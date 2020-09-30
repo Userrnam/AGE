@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "Animation.hpp"
 #include "Graphics.hpp"
 #include "UI.hpp"
 
@@ -45,6 +46,7 @@ public:
     }
 
     virtual void onPress(unsigned button) override {
+        std::cout << "pressed\n";
     }
 
     virtual void setSize(const glm::vec2& size) override {

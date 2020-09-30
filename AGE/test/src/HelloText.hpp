@@ -28,14 +28,12 @@ public:
 
         getComponent<age::Drawable>().setInstanceCount(5);
 
-        auto sa = new age::StateAnimation<glm::vec2, age::linearFunction>(&pos);
-        sa->setLooping(true);
-        sa->addState(age::AnimationState(pos, 1));
-        sa->addState(age::AnimationState(glm::vec2(200, 600), 2));
-        sa->addState(age::AnimationState(glm::vec2(600, 200), 2));
-
         animId = age::Animator::addAnimation(
-            sa
+            age::StateAnimation<glm::vec2, age::linearFunction>(&pos)
+            .setLooping(true)
+            .addState(age::AnimationState(pos, 1))
+            .addState(age::AnimationState(glm::vec2(200, 600), 2))
+            .addState(age::AnimationState(glm::vec2(600, 200), 2))
         );
     }
 

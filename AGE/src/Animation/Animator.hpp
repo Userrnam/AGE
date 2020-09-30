@@ -43,15 +43,19 @@ public:
     // removes animation
     // Note: animation must be running
     static inline void stopAnimation(uint64_t id) {
+        delete m_runningAnimations[id];
         m_runningAnimations.erase(id);
     }
 
     // returns animation id
-    static inline uint64_t addAnimation(AnimationBase* animation) {
+    template<typename AnimationType>
+    static inline uint64_t addAnimation(const AnimationType& animation) {
         m_id++;
 
-        animation->m_id = m_id;
-        m_runningAnimations[m_id] = animation;
+        auto pAnimation = new AnimationType();
+        *pAnimation = animation;
+        pAnimation->m_id = m_id;
+        m_runningAnimations[m_id] = pAnimation;
         return m_id;
     }
 };
