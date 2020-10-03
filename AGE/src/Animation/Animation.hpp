@@ -30,7 +30,7 @@ class StateAnimation : public AnimationBase {
     uint32_t m_currentIndex = 0;
     float m_runTime = 0;
     bool m_looping = false;
-    // ???
+    // Fixme:
     int dummy;
 public:
     StateAnimation() {}

@@ -6,10 +6,8 @@
 namespace age {
 
 struct StaticScriptComponent : public Entity {
-    StaticScriptComponent(Entity e) {
-        m_entityId = e.m_entityId;
-        m_scene = e.m_scene;
-    }
+    StaticScriptComponent(Entity e)
+        : Entity(e.m_scene, e.m_entityId) {}
 
     virtual ~StaticScriptComponent() {}
 };

@@ -9,8 +9,10 @@ class SceneAPI {
 protected:
     Application* parent = nullptr;
 	entt::registry m_registry;
+
 	friend class Entity;
 public:
+	inline entt::registry* getRegistry() { return &m_registry; }
 
 	inline FontComponent* getFont(const std::string& font) {
 		return parent->getFont(font);

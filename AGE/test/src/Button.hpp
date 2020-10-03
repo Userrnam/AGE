@@ -29,6 +29,11 @@ public:
         );
 
         updatePoints(transformable.getPosition() / 2.0f, transformable.getScale() / 2.0f);
+
+        auto av = getView<age::Drawable>();
+        for (auto e : av) {
+
+        }
     }
 
     ~Button() {

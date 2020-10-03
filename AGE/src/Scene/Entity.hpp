@@ -7,6 +7,12 @@
 
 namespace age {
 
+template<typename...>
+class SceneView;
+
+template<typename... Component, typename... Exclude>
+class SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...>;
+
 class Entity {
     entt::entity m_entityId;
     SceneAPI* m_scene;
@@ -14,6 +20,18 @@ class Entity {
     friend class Scene;
     friend class StaticScriptComponent;
 public:
+    inline SceneAPI* getScene() { return m_scene; }
+
+    Entity(SceneAPI* scene) {
+        m_entityId = scene->m_registry.create();
+        m_scene = scene;
+    }
+
+    Entity(SceneAPI* scene, entt::entity id) {
+        m_scene = scene;
+        m_entityId = id;
+    }
+
     inline FontComponent* getFont(const std::string& font) {
 		return m_scene->getFont(font);
 	}
@@ -31,6 +49,7 @@ public:
 	}
 
     // Warning: all entitiy's components must be destroyed before calling this
+    // ? possible memory leak
     void destroy() {
         m_scene->m_registry.destroy(m_entityId);
     }
@@ -59,6 +78,15 @@ public:
     template<typename T>
     inline T& getComponent() {
         return m_scene->m_registry.get<T>(m_entityId);
+    }
+
+    entt::registry* getRegistry() const {
+        return &m_scene->m_registry;
+    }
+
+    template<typename... Component, typename... Exclude>
+    SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...> getView(entt::exclude_t<Exclude...> e = {}) {
+        return SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...>(m_scene, e);
     }
 };
 

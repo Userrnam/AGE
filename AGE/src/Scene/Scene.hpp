@@ -13,7 +13,6 @@
 
 namespace age {
 
-// class Application;
 class Scene : public SceneAPI {
     void update(float elapsedTime);
 	void handleEvent(Event event);
@@ -21,21 +20,16 @@ class Scene : public SceneAPI {
 	friend class Application;
 	friend class Entity;
 protected:
-	Entity createEntity() {
-		Entity e;
-		e.m_entityId = m_registry.create();
-		e.m_scene = this;
-		return e;
-	}
+	inline Entity createEntity() { return Entity(this); }
 
 	template<typename Script, typename... Args>
-	void createEntity(Args... args) {
+	inline void createEntity(Args... args) {
 		Entity e = createEntity();
 		auto script = e.addComponentNoCreate<ScriptComponent*>(new Script(e, std::forward(args)...));
 	}
 
 	template<typename Script, typename... Args>
-	void createStaticEntity(Args... args) {
+	inline void createStaticEntity(Args... args) {
 		Entity e = createEntity();
 		auto script = e.addComponentNoCreate<StaticScriptComponent*>(new Script(e, std::forward(args)...));
 	}
@@ -49,10 +43,51 @@ public:
 	void create(Application* app);
 	void destroy();
 
-	// loads entities from file
+	// todo:
+	// load entities from file
 	void load(const std::string& filename) {}
 	// save entities to specified file
 	void save(const std::string& filename) {}
+};
+
+template<typename...>
+class SceneView;
+
+template<typename... Component, typename... Exclude>
+class SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...> {
+	SceneAPI* m_scene;
+	entt::basic_view<entt::entity, entt::exclude_t<Exclude...>, Component...> m_view;
+
+	class SceneViewIterator final {
+		SceneAPI* m_scene;
+		typename entt::basic_view<entt::entity, entt::exclude_t<Exclude...>, Component...>::iterator m_enttIterator;
+
+	public:
+		inline SceneViewIterator(SceneAPI* scene, typename entt::basic_view<entt::entity, entt::exclude_t<Exclude...>, Component...>::iterator it)
+			: m_scene(scene), m_enttIterator(it) {}
+	
+		inline SceneViewIterator & operator++()  { m_enttIterator++; return *this; }
+        inline SceneViewIterator operator++(int) { ++m_enttIterator; return *this; }
+
+        inline SceneViewIterator & operator--()  noexcept { m_enttIterator--; return *this; }
+        inline SceneViewIterator operator--(int) noexcept { --m_enttIterator; return *this; }
+
+        inline bool operator==(const SceneViewIterator &other) const noexcept { return other.m_enttIterator == m_enttIterator; }
+        inline bool operator!=(const SceneViewIterator &other) const noexcept { return other.m_enttIterator != m_enttIterator; }
+
+        inline Entity operator->() const { return Entity(m_scene, *m_enttIterator); }
+        inline Entity operator*()  const { return Entity(m_scene, *m_enttIterator); }
+	};
+
+public:
+	SceneView(SceneAPI* scene, entt::exclude_t<Exclude...> e = {})
+		: m_scene(scene), m_view(scene->getRegistry()->template view<Component...>(e)) {
+	}
+
+	using iterator = SceneViewIterator;
+
+	inline iterator begin() { return iterator(m_scene, m_view.begin()); }
+	inline iterator end()   { return iterator(m_scene, m_view.end()); }
 };
 
 } // namespace age

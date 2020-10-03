@@ -13,6 +13,7 @@ namespace age {
 
 class UIBlock {
     std::vector<IButton*> m_buttons;
+    // Fixme:
     // have no idea why but without this it crashes
     int dummy;
     IButton* m_coveredButton = nullptr;
