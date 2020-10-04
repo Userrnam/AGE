@@ -13,8 +13,6 @@
 
 #include "Scene.hpp"
 
-#include "m.hpp"
-
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""
 #endif

@@ -15,7 +15,7 @@ class Button : public age::ScriptComponent, public age::IButton {
 public:
     Button(Entity e) : age::ScriptComponent(e) {
         transform.create();
-        transform.set(transformable.setScale(200, 50).setPosition(300, 300).getTransform());
+        transform.set(transformable.setScale(100, 25).setPosition(150, 150).getTransform());
         color.create();
         color.set(glm::vec4{0, 1, 0, 1});
 
@@ -28,7 +28,7 @@ public:
             age::UIBlock().addButton(this)
         );
 
-        updatePoints(transformable.getPosition() / 2.0f, transformable.getScale() / 2.0f);
+        updatePoints(transformable.getPosition(), transformable.getScale());
 
         auto av = getView<age::Drawable>();
         for (auto e : av) {

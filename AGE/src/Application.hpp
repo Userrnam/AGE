@@ -33,7 +33,7 @@ protected:
         return m_fonts[hash(fontName.c_str())];
     }
 
-    inline void loadFont(const std::string& path, const std::string& fontName, unsigned fontSize = 100, Sampler sampler = Sampler::getDefault()) {
+    inline void loadFont(const std::string& path, const std::string& fontName, unsigned fontSize = 50, Sampler sampler = Sampler::getDefault()) {
         auto font = new FontComponent;
         font->load(path, fontSize, sampler);
         m_fonts[hash(fontName.c_str())] = font;

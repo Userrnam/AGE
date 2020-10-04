@@ -3,12 +3,10 @@
 #include "Graphics.hpp"
 #include "Utils/utils.hpp"
 
-#include "m.hpp"
-
 std::vector<age::Vertex> verticies = {
-    age::sc(800, 0, m),
-    age::sc(800, 600, m),
-    age::sc(0, 600, m)
+    { 800, 0 },
+    { 800, 600 },
+    { 0, 600 }
 };
 
 std::vector<age::Index16> indicies = {

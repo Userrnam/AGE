@@ -34,9 +34,13 @@ void View::setViewport(const Viewport& viewport) {
         m_viewport.height = static_cast<float>(core::apiCore.swapchain.extent.height);
     }
 
-    camera.setOrthoganalProjection(m_viewport);
-    setOrigin({ m_viewport.width / 2, m_viewport.height / 2 });
-    setPosition({ m_viewport.width / 2, m_viewport.height / 2 });
+    Viewport camerav = {};
+    camerav.width  = static_cast<float>(core::apiCore.window.width);
+    camerav.height = static_cast<float>(core::apiCore.window.height);
+
+    camera.setOrthoganalProjection(camerav);
+    setOrigin({ camerav.width / 2, camerav.height / 2 });
+    setPosition({ camerav.width / 2, camerav.height / 2 });
 
     m_globals.cameraTransform = camera.getProjection() * Transformable::getTransform();
     m_globals.resolution = glm::vec2(m_viewport.width, m_viewport.height);

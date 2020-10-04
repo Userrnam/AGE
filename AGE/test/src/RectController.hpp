@@ -3,7 +3,6 @@
 #include "Graphics.hpp"
 
 #include "Utils/utils.hpp"
-#include "m.hpp"
 
 class RectController : public age::ScriptComponent {
     age::Transformable transformable;
@@ -13,7 +12,7 @@ class RectController : public age::ScriptComponent {
     age::StorageComponent<age::TexCoords> texCoords;
     age::ArrayComponent<age::Color, age::PER_VERTEX> colors;
 
-    const float speed = age::sc(250.0f, m);
+    const float speed = 250.0f;
 
     virtual void onUpdate(float elapsedTime) override {
         transformable.move(
@@ -27,7 +26,7 @@ public:
 
     RectController(Entity e) : age::ScriptComponent(e) {
         vars.create();
-        vars.get().get<age::Transform>().set(transformable.setScale(age::sc(200, 200, m)).getTransform());
+        vars.get().get<age::Transform>().set(transformable.setScale(200, 200).getTransform());
         vars.upload();
 
         texCoords.create();
