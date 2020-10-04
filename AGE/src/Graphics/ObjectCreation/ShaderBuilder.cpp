@@ -19,7 +19,7 @@ inline std::string insertStructName(const std::string& mainInsert, const std::st
 }
 
 // todo: remove this and use custom variant
-const Inserts& getVariantInserts(const std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>& v) {
+static const Inserts& getVariantInserts(const std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>& v) {
     if (std::holds_alternative<ShaderComponentBuffer>(v)) {
         return std::get<ShaderComponentBuffer>(v);
     }

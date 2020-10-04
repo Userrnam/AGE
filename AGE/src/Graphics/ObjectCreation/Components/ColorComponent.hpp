@@ -21,6 +21,29 @@ public:
     }
 
     inline Color(glm::vec4 v = glm::vec4(1)) { set(v); }
+    inline Color(float r, float g, float b, float a = 1.0f) { set({r, g, b, a}); }
+
+    inline Color& operator+=(const Color& rhs) {
+        get() += rhs.get();
+        return *this;
+    }
+
+    inline Color& operator-=(const Color& rhs) {
+        get() -= rhs.get();
+        return *this;
+    }
+
+    inline Color operator+(const Color& rhs) {
+        return get() + rhs.get();
+    }
+
+    inline Color operator-(const Color& rhs) {
+        return get() + rhs.get();
+    }
 };
+
+inline Color operator*(float x, const Color& rhs) {
+    return x * rhs.get();
+}
 
 } // namespace age

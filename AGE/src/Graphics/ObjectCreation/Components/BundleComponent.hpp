@@ -10,7 +10,7 @@
 namespace age {
 
 // todo: remove this and use custom variant
-const Inserts& _getVariantInserts(const std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>& v) {
+static const Inserts& _getVariantInserts(const std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>& v) {
     if (std::holds_alternative<ShaderComponentBuffer>(v)) {
         return std::get<ShaderComponentBuffer>(v);
     }

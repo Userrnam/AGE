@@ -5,14 +5,22 @@
 #include <stdint.h>
 
 #include "State.hpp"
+#include "Graphics.hpp"
 
 namespace age {
 
 class AnimationBase {
     uint64_t m_id;
+    Buffer* m_buffer;
     friend class Animator;
 
 public:
+    AnimationBase(const AnimationBase& other)
+        : m_buffer(other.m_buffer) {}
+
+    AnimationBase(Buffer* buffer)
+        : m_buffer(buffer) {}
+
     // return true if animation completed
     virtual bool update(float elapsedTime) = 0;
     virtual ~AnimationBase() {}
@@ -33,9 +41,13 @@ class StateAnimation : public AnimationBase {
     // Fixme:
     int dummy;
 public:
-    StateAnimation() {}
+    StateAnimation(const StateAnimation& other)
+        : AnimationBase(other) {
+        *this = other;
+    }
 
-    StateAnimation(T* pData) {
+    StateAnimation(T* pData, Buffer* buffer = nullptr) 
+        : AnimationBase(buffer) {
         m_currentState = pData;
     }
 

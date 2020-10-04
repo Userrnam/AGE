@@ -10,7 +10,7 @@ class AnimationState {
     float m_runtime;
 
 public:
-    AnimationState(T data, float runtime) : m_data(data), m_runtime(runtime) {}
+    AnimationState(T data, float runtime = 0) : m_data(data), m_runtime(runtime) {}
 
     inline T& getData() { return m_data; }
     inline float getRuntime() { return m_runtime; }

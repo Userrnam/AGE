@@ -7,8 +7,8 @@ namespace age {
 
 template<typename T>
 class StorageComponent {
-    T m_data;
     Buffer m_buffer;
+    T m_data;
 
 public:
     inline ShaderComponentInfo getInfo() {

@@ -12,12 +12,14 @@ class Button : public age::ScriptComponent, public age::IButton {
     age::StorageComponent<age::Transform> transform;
     age::StorageComponent<age::Color> color;
 
+    uint64_t animId = 0;
+
 public:
     Button(Entity e) : age::ScriptComponent(e) {
         transform.create();
         transform.set(transformable.setScale(100, 25).setPosition(150, 150).getTransform());
         color.create();
-        color.set(glm::vec4{0, 1, 0, 1});
+        color.set(glm::vec4{0, 0.8, 0, 1});
 
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
             transform,
@@ -43,11 +45,25 @@ public:
     }
 
     virtual void onEnter() override {
-        color.set(glm::vec4(0, 0, 1, 1));
+        age::Animator::stopAnimation(animId);
+
+        animId = age::Animator::addAnimation(
+            age::StateAnimation<age::Color, age::linearFunction>(&color.get(), &color.getBuffer())
+            .setLooping(false)
+            .addState(age::AnimationState(color.get(), 0))
+            .addState(age::AnimationState(age::Color(0, 1, 0, 1), 0))
+        );
     }
 
     virtual void onLeave() override {
-        color.set(glm::vec4(0, 1, 0, 1));
+        age::Animator::stopAnimation(animId);
+
+        animId = age::Animator::addAnimation(
+            age::StateAnimation<age::Color, age::linearFunction>(&color.get(), &color.getBuffer())
+            .setLooping(false)
+            .addState(age::AnimationState(color.get(), 0))
+            .addState(age::AnimationState(age::Color(0, 0.8, 0, 1), 0))
+        );
     }
 
     virtual void onPress(unsigned button) override {

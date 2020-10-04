@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <unordered_set>
 
 #include "Animation.hpp"
 
@@ -14,11 +15,22 @@ class Animator {
     static std::unordered_map<uint64_t, AnimationBase*> m_pausedAnimations;
 public:
     static inline void update(float elapsedTime) {
+
+        std::unordered_set<Buffer*> animationUploadBuffers;
         for (auto& anim : m_runningAnimations) {
+            if (anim.second->m_buffer) {
+                animationUploadBuffers.emplace(anim.second->m_buffer);
+            }
             if (anim.second->update(elapsedTime)) {
                 delete anim.second;
                 m_runningAnimations.erase(anim.first);
             }
+        }
+
+        // upload changes
+        for (auto b : animationUploadBuffers) {
+            // ! Unsafe (we know that data is located after buffer)
+            b->load(b + 1, b->getSize());
         }
     }
 
@@ -43,8 +55,14 @@ public:
     // removes animation
     // Note: animation must be running
     static inline void stopAnimation(uint64_t id) {
-        delete m_runningAnimations[id];
-        m_runningAnimations.erase(id);
+        auto anim = m_runningAnimations.find(id);
+
+        if (anim == m_runningAnimations.end()) {
+            return;
+        }
+
+        delete anim->second;
+        m_runningAnimations.erase(anim);
     }
 
     // returns animation id
@@ -52,8 +70,7 @@ public:
     static inline uint64_t addAnimation(const AnimationType& animation) {
         m_id++;
 
-        auto pAnimation = new AnimationType();
-        *pAnimation = animation;
+        auto pAnimation = new AnimationType(animation);
         pAnimation->m_id = m_id;
         m_runningAnimations[m_id] = pAnimation;
         return m_id;
