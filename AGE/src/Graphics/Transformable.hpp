@@ -11,8 +11,6 @@ class Transformable {
     glm::vec2 m_position = {};
     glm::vec2 m_origin = {};
     float m_rotation = 0;
-protected:
-    glm::mat4 m_transform;
 public:
     glm::mat4 getTransform();
 
@@ -20,6 +18,11 @@ public:
     inline glm::vec2 getPosition() const { return m_position; }
     inline glm::vec2 getOrigin() const { return m_origin; }
     inline float getRotation() const { return m_rotation; }
+
+    inline glm::vec2* getScalePointer() { return &m_scale; }
+    inline glm::vec2* getPositionPointer() { return &m_position; }
+    inline glm::vec2* getOriginPointer() { return &m_origin; }
+    inline float* getRotationPointer() { return &m_rotation; }
 
     Transformable& setScale(const glm::vec2& scale);
     Transformable& setPosition(const glm::vec2& position);

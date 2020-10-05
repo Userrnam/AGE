@@ -9,17 +9,39 @@
 
 namespace age {
 
+class IResolveStructure {
+public:
+    virtual void resolve() = 0;
+    virtual ~IResolveStructure() {}
+};
+
+class TransformResolveStructure : public IResolveStructure {
+    Transform* m_transform;
+    Transformable* m_transformable;
+public:
+    TransformResolveStructure(Transform* transform, Transformable* transformable)
+        : m_transform(transform), m_transformable(transformable) {}
+
+    virtual void resolve () override {
+        m_transform->set(m_transformable->getTransform());
+    }
+};
+
 class AnimationBase {
     uint64_t m_id;
     Buffer* m_buffer;
+    IResolveStructure* m_resolveStructure;
+
     friend class Animator;
+protected:
 
 public:
-    AnimationBase(const AnimationBase& other)
-        : m_buffer(other.m_buffer) {}
+    AnimationBase(const AnimationBase& other) {
+        *this = other;
+    }
 
-    AnimationBase(Buffer* buffer)
-        : m_buffer(buffer) {}
+    AnimationBase(Buffer* buffer, IResolveStructure* pResolveStructure)
+        : m_buffer(buffer), m_resolveStructure(pResolveStructure) {}
 
     // return true if animation completed
     virtual bool update(float elapsedTime) = 0;
@@ -31,7 +53,7 @@ using TransitionFunction = bool(AnimationState<T>* s0, AnimationState<T>* s1, fl
 
 template<typename T, TransitionFunction<T> tf>
 class StateAnimation : public AnimationBase {
-    // this can be pointer to user struct
+    // this is pointer to user's struct
     T* m_currentState = 0;
     
     std::vector<AnimationState<T>> m_states;
@@ -46,8 +68,8 @@ public:
         *this = other;
     }
 
-    StateAnimation(T* pData, Buffer* buffer = nullptr) 
-        : AnimationBase(buffer) {
+    StateAnimation(T* pData, Buffer* buffer, IResolveStructure* pResolveStructure = nullptr) 
+        : AnimationBase(buffer, pResolveStructure) {
         m_currentState = pData;
     }
 

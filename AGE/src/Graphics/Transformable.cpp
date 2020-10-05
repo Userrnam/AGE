@@ -11,9 +11,9 @@ glm::mat4 Transformable::getTransform() {
     auto translateMat = glm::translate(glm::mat4(1.0f), glm::vec3(m_position.x, m_position.y, 0));
     auto rotateMat = glm::rotate(glm::mat4(1.0f), m_rotation, glm::vec3(0, 0, 1));
     auto scaleMat = glm::scale(glm::mat4(1.0f), glm::vec3(m_scale.x, m_scale.y, 1));
-    m_transform = translateMat * rotateMat * scaleMat * originMat;
+    auto transform = translateMat * rotateMat * scaleMat * originMat;
 
-    return m_transform;
+    return transform;
 }
 
 Transformable& Transformable::setScale(const glm::vec2& scale) {

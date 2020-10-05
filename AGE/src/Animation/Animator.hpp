@@ -15,16 +15,25 @@ class Animator {
     static std::unordered_map<uint64_t, AnimationBase*> m_pausedAnimations;
 public:
     static inline void update(float elapsedTime) {
-
         std::unordered_set<Buffer*> animationUploadBuffers;
+        std::unordered_set<IResolveStructure*> resolveStructures;
+
         for (auto& anim : m_runningAnimations) {
             if (anim.second->m_buffer) {
                 animationUploadBuffers.emplace(anim.second->m_buffer);
+            }
+            if (anim.second->m_resolveStructure) {
+                resolveStructures.emplace(anim.second->m_resolveStructure);
             }
             if (anim.second->update(elapsedTime)) {
                 delete anim.second;
                 m_runningAnimations.erase(anim.first);
             }
+        }
+
+        // update resolve structures
+        for (auto r : resolveStructures) {
+            r->resolve();
         }
 
         // upload changes

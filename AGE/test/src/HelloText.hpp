@@ -8,6 +8,7 @@ class HelloText : public age::ScriptComponent {
     age::TextComponent text;
     age::Transformable transformable;
     age::BundleComponent<age::Transform> ct;
+    age::TransformResolveStructure* pResolveStructure;
     glm::vec2 pos;
     uint64_t animId = 0;
 
@@ -27,8 +28,10 @@ public:
 
         getComponent<age::Drawable>().setInstanceCount(5);
 
+        pResolveStructure = new age::TransformResolveStructure(&ct.get().get<age::Transform>(), &transformable);
+
         animId = age::Animator::addAnimation(
-            age::StateAnimation<glm::vec2, age::linearFunction>(&pos)
+            age::StateAnimation<glm::vec2, age::linearFunction>(transformable.getPositionPointer(), &ct.getBuffer(), pResolveStructure)
             .setLooping(true)
             .addState(age::AnimationState(pos, 1))
             .addState(age::AnimationState(glm::vec2(100, 300), 2))
@@ -37,6 +40,8 @@ public:
     }
 
     ~HelloText() {
+        delete pResolveStructure;
+
         text.destroy();
         ct.destroy();
         getComponent<age::Drawable>().destroy();
@@ -53,10 +58,5 @@ public:
                 }
             }
         }
-    }
-
-    virtual void onUpdate(float elapsedTime) override {
-        ct.get().get<age::Transform>().set(transformable.setPosition(pos).getTransform());
-        ct.upload();
     }
 };
