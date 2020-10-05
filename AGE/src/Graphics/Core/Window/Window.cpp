@@ -9,6 +9,8 @@
 #include "Rendering/Framebuffers.hpp"
 #include "Rendering/RenderPass.hpp"
 #include "Rendering/Renderer.hpp"
+#include "View/ViewManager.hpp"
+#include "Events/Event.hpp"
 
 namespace age::core {
 
@@ -109,6 +111,10 @@ void recreateSwapchain() {
     createSwapchain();
     createMultisamplingResources();
     Framebuffers::create(RenderPass::get());
+
+    // Fixme:
+    auto view = ViewManager::getView(hash("default"));
+    view.setViewport();
 
     Renderer::rerender();
 }

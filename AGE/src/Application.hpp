@@ -16,6 +16,8 @@ class Scene;
 class Application {
     bool m_isRunning = true;
     bool m_created = false;
+    float m_fps = 0;
+
     std::unordered_map<uint64_t, FontComponent*> m_fonts;
     std::unordered_map<uint64_t, Texture> m_textures;
 
@@ -60,6 +62,13 @@ protected:
     virtual void onDestroy() {}
 
 public:
+
+    float getFps() {
+        return m_fps;
+    }
+
+    void setWindowTitle(const std::string& s);
+
     void destroy();
     void create();
     void run();

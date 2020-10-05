@@ -20,6 +20,10 @@ class Scene : public SceneAPI {
 	friend class Application;
 	friend class Entity;
 protected:
+	Application* getApplication() {
+		return parent;
+	}
+
 	inline Entity createEntity() { return Entity(this); }
 
 	template<typename Script, typename... Args>
@@ -40,7 +44,7 @@ protected:
 	virtual void onEvent(Event event) {}
 	virtual void onUpdate(float elapsedTime) {}
 public:
-	void create(Application* app);
+	void create(class Application* app);
 	void destroy();
 
 	// todo:

@@ -93,6 +93,9 @@ void Application::run() {
     auto startTime = std::chrono::high_resolution_clock::now();
     auto previousTime = std::chrono::high_resolution_clock::now();
 
+    int count = 0;
+    float timeAvg = 0;
+
     while (m_isRunning) {
         m_isRunning = !core::window::closed();
         core::window::pollEvents();
@@ -105,12 +108,6 @@ void Application::run() {
         // handle events
         auto events = EventManager::getEvents();
         for (auto event : events) {
-            if (event == age::event::RESIZE) {
-                auto& view = ViewManager::getView(hash("default"));
-                view.setViewport();
-                // fixme:
-                // Renderer::rerender();
-            }
             UIManager::update(event);
             this->onEvent(event);
             pActiveScene->handleEvent(event);
@@ -122,7 +119,21 @@ void Application::run() {
         pActiveScene->update(elapsedTime);
 
         core::window::present();
+
+        timeAvg += elapsedTime;
+
+        if (count % 20 == 0) {
+            m_fps = 20.0f / timeAvg;
+            timeAvg = 0;
+            count = 0;
+        }
+
+        count++;
     }
+}
+
+void Application::setWindowTitle(const std::string& s) {
+    glfwSetWindowTitle(core::apiCore.window.handle, s.c_str());
 }
 
 } // namespace age

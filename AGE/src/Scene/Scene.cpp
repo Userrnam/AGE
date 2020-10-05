@@ -24,7 +24,7 @@ void Scene::handleEvent(Event event) {
     }
 }
 
-void Scene::create(Application* app) {
+void Scene::create(class Application* app) {
     parent = app;
 
     onCreate();

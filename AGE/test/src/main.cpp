@@ -24,6 +24,11 @@
 #include "Button.hpp"
 
 class TestScene : public age::Scene {
+    virtual void onUpdate(float elapsedTime) override {
+        std::string s = "fps: " + std::to_string(getApplication()->getFps());
+        getApplication()->setWindowTitle(s);
+    }
+
     virtual void onCreate() override {
         createEntity<HelloText>();
         createEntity<Button>();

@@ -278,6 +278,7 @@ void createSwapchain() {
 	VkSwapchainCreateInfoKHR createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	createInfo.surface = apiCore.window.surface;
+	createInfo.oldSwapchain = apiCore.swapchain.swapchain;
 	// todo:
 	// createInfo.oldSwapchain
 	createInfo.minImageCount = imageCount;
