@@ -96,10 +96,10 @@ void cleanupSwapchain() {
 
 void recreateSwapchain() {
     int width, height;
-    glfwGetFramebufferSize(apiCore.window.handle, &width, &height);
+    glfwGetWindowSize(apiCore.window.handle, &width, &height);
 
     while (width == 0 || height == 0) {
-        glfwGetFramebufferSize(apiCore.window.handle, &width, &height);
+        glfwGetWindowSize(apiCore.window.handle, &width, &height);
         glfwWaitEvents();
     }
 
@@ -111,15 +111,9 @@ void recreateSwapchain() {
     createSwapchain();
     createMultisamplingResources();
     Framebuffers::create(RenderPass::get());
-
-    // Fixme:
-    auto view = ViewManager::getView(hash("default"));
-    view.setViewport();
-
-    Renderer::rerender();
 }
 
-void present() {
+int present() {
     vkWaitForFences(apiCore.device, 1, &apiCore.sync.inFlightFence, VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
@@ -128,7 +122,7 @@ void present() {
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         recreateSwapchain();
-        return;
+        return 1;
     } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         throw std::runtime_error("failed to acquire swap chain image");
     }
@@ -167,9 +161,12 @@ void present() {
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || apiCore.framebufferResized) {
         apiCore.framebufferResized = false;
         recreateSwapchain();
+        return 1;
     } else if (result != VK_SUCCESS) {
         throw std::runtime_error("failed to present swap chain image");
     }
+
+    return 0;
 }
 
 } // namespace age::core

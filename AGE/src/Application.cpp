@@ -118,7 +118,14 @@ void Application::run() {
 
         pActiveScene->update(elapsedTime);
 
-        core::window::present();
+        int fail = core::window::present();
+        if (fail) {
+            // Fixme:
+            auto view = ViewManager::getView(hash("default"));
+            view.setViewport();
+
+            Renderer::rerender();
+        }
 
         timeAvg += elapsedTime;
 

@@ -95,6 +95,11 @@ class Application : public age::Application {
             if (s.action == GLFW_PRESS && s.key == GLFW_KEY_P) {
                 stop();
             }
+        } else if (e == age::event::MOUSE_BUTTON) {
+            auto s = e.getStructure<age::event::MouseButton>();
+            if (s.action == GLFW_PRESS) {
+                std::cout << s.xPos << "; " << s.yPos << std::endl;
+            }
         }
     }
 };

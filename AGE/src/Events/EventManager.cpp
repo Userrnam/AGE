@@ -63,6 +63,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     eStruct.action = action;
     eStruct.mods = mods;
     glfwGetCursorPos(core::apiCore.window.handle, &eStruct.xPos, &eStruct.yPos);
+
     eStruct.yPos = core::apiCore.window.height - eStruct.yPos;
 
     Event e;

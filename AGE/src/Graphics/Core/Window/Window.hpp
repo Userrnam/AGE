@@ -8,6 +8,6 @@ glm::ivec2 getWindowSize();
 void create();
 void pollEvents();
 bool closed();
-void present();
+int present();
 
 } // namespace age::core::window
