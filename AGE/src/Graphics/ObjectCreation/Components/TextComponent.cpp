@@ -4,6 +4,8 @@ namespace age {
 
 void TextComponent::create(FontComponent* font, uint32_t maxSize) {
     m_font = font;
+    m_size.y = font->m_height;
+
     ArrayComponent<TileIndexer, PER_INSTANCE>::create(maxSize);
 }
 
@@ -23,6 +25,8 @@ void TextComponent::setText(const std::string& text) {
 
         move += character.advance;
     }
+
+    m_size.x = move;
 
     Tiles::upload();
 }

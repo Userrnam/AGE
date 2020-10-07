@@ -8,6 +8,7 @@
 
 class Button : public age::ScriptComponent, public age::IButton {
     age::Transformable transformable;
+    age::TextComponent text;
 
     age::StorageComponent<age::Transform> transform;
     age::StorageComponent<age::Color> color;
@@ -17,20 +18,26 @@ class Button : public age::ScriptComponent, public age::IButton {
 public:
     Button(Entity e) : age::ScriptComponent(e) {
         transform.create();
-        transform.set(transformable.setScale(100, 25).setPosition(150, 150).getTransform());
+        transform.set(transformable.setScale(1, 1).setPosition(150, 150).getTransform());
         color.create();
         color.set(glm::vec4{0, 0.8, 0, 1});
 
+        text.create(getFont("courier"));
+        text.setText("Button");
+
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
             transform,
+            text,
             color
         );
+
+        getComponent<age::Drawable>().setInstanceCount(6);
 
         age::UIManager::addBlock(
             age::UIBlock().addButton(this)
         );
 
-        updatePoints(transformable.getPosition(), transformable.getScale());
+        updatePoints(transformable.getPosition(), transformable.getScale() * text.getSize());
 
         auto av = getView<age::Drawable>();
         for (auto e : av) {
@@ -41,6 +48,7 @@ public:
     ~Button() {
         color.destroy();
         transform.destroy();
+        text.destroy();
         getComponent<age::Drawable>().destroy();
     }
 

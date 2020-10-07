@@ -14,6 +14,7 @@ struct _Character {
 
 class FontComponent : public TileMapComponent, public TextureComponent {
     std::unordered_map<char, _Character> m_characters;
+    float m_height = 0;
     unsigned char m_firstCharacter = 32;
 
     friend class TextComponent;

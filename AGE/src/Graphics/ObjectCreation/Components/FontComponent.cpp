@@ -3,6 +3,8 @@
 
 #include "FontComponent.hpp"
 
+#include <iostream>
+
 namespace age {
 
 FT_Library ftLibrary;
@@ -36,6 +38,9 @@ void FontComponent::load(const std::string& fontPath, unsigned fontSize, Sampler
             maxHeight = face->glyph->bitmap.rows;
         }
     }
+    
+    m_height = maxHeight;
+
     // add spacing ??
     totalWidth += lastCharacter;
 
