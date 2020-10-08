@@ -18,7 +18,7 @@ void TextComponent::setText(const std::string& text) {
         auto& character = m_font->m_characters[c];
 
         TileIndexer tile;
-        tile.setPosition({ (move + character.bearing.x), (character.bearing.y) });
+        tile.setPosition({ (float)(move + character.bearing.x), (float)(character.bearing.y) });
         tile.setIndex(c - m_font->m_firstCharacter);
 
         Tiles::add(tile);

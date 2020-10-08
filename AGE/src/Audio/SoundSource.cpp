@@ -40,12 +40,12 @@ void SoundSource::setSound(const Sound& sound) {
     ERROR_CHECK("SoundSource::setSound");
 }
 
-void SoundSource::setPosition(const glm::vec3& position) {
+void SoundSource::setPosition(const Vector3f& position) {
     alSource3f(m_alSource, AL_POSITION, position.x, position.y, position.z);
     ERROR_CHECK("SoundSource::setPosition");
 }
 
-void SoundSource::setVelocity(const glm::vec3& velocity) {
+void SoundSource::setVelocity(const Vector3f& velocity) {
     alSource3f(m_alSource, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
     ERROR_CHECK("SoundSource::setVelocity");
 }

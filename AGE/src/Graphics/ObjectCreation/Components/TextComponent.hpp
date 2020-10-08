@@ -7,7 +7,7 @@ namespace age {
 
 class TextComponent : public ArrayComponent<TileIndexer, PER_INSTANCE> {
     FontComponent* m_font;
-    glm::vec2 m_size = {};
+    Vector2f m_size = {};
 
 public:
     ShaderComponentInfo getInfo() {
@@ -24,7 +24,7 @@ public:
 
     void create(FontComponent* font, uint32_t maxSize = 128);
     void setText(const std::string& text);
-    glm::vec2 getSize() const { return m_size; }
+    Vector2f getSize() const { return m_size; }
 };
 
 } // namespace age

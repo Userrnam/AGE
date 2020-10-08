@@ -8,7 +8,7 @@
 
 namespace age {
 
-class Color : public util::GetSet<glm::vec4> {
+class Color : public util::GetSet<Vector4f> {
 public:
     static ShaderComponentInfo __getInfo() {
         ShaderComponentInfo info;
@@ -20,7 +20,7 @@ public:
         return info;
     }
 
-    inline Color(glm::vec4 v = glm::vec4(1)) { set(v); }
+    inline Color(Vector4f v = Vector4f(1)) { set(v); }
     inline Color(float r, float g, float b, float a = 1.0f) { set({r, g, b, a}); }
 
     inline Color& operator+=(const Color& rhs) {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include "Math.hpp"
 
 #include "Sound.hpp"
 
@@ -25,8 +25,8 @@ public:
     void rewind();
 
     void setSound(const Sound& sound);
-    void setPosition(const glm::vec3& position);
-    void setVelocity(const glm::vec3& velocity);
+    void setPosition(const Vector3f& position);
+    void setVelocity(const Vector3f& velocity);
     void setPitch(float pitch);
     void setGain(float gain);
     void setLooping(bool b);

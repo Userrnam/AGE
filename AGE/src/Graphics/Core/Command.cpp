@@ -8,7 +8,7 @@ namespace age::core {
 
 namespace cmd {
 
-void clear(int i, const glm::vec4& color) {
+void clear(int i, const Vector4f& color) {
 	VkImageSubresourceRange isr;
 	isr.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	isr.baseMipLevel = 0;
@@ -40,10 +40,10 @@ void clear(int i, const glm::vec4& color) {
     clearToPresentBarrier.subresourceRange = isr;
 
     VkClearColorValue colorValue = {};
-    colorValue.float32[0] = color.r;
-    colorValue.float32[1] = color.g;
-    colorValue.float32[2] = color.b;
-    colorValue.float32[3] = color.a;
+    colorValue.float32[0] = color.x;
+    colorValue.float32[1] = color.y;
+    colorValue.float32[2] = color.z;
+    colorValue.float32[3] = color.w;
 
     vkCmdPipelineBarrier(apiCore.commandBuffers.active[i], VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &presentToClearBarrier);
 

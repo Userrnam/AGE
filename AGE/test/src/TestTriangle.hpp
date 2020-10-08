@@ -2,6 +2,7 @@
 
 #include "Graphics.hpp"
 #include "Utils/utils.hpp"
+#include "PositionManager.hpp"
 
 std::vector<age::Vertex> verticies = {
     { 800, 0 },
@@ -16,7 +17,7 @@ std::vector<age::Index16> indicies = {
 class TestTriangle : public age::Drawable {
     age::ShapeId shapeId;
     age::Buffer ubo;
-    glm::vec4 blendColor;
+    age::Vector4f blendColor;
 public:
     void create() {
         ubo.create(
@@ -24,7 +25,7 @@ public:
             .setSize(sizeof(blendColor))
         );
 
-        blendColor = {1, 0, 0, 1};
+        blendColor = age::Vector4f(1, 0, 0, 1);
         ubo.load(&blendColor, sizeof(blendColor));
 
         age::Shader vertexShader;

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include "Math.hpp"
 
 namespace age {
 
-typedef glm::vec2 Vertex;
+typedef Vector2f Vertex;
 
 } // namespace age

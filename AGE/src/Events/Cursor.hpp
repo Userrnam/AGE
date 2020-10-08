@@ -1,12 +1,12 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include "Math.hpp"
 
 namespace age {
 
 struct Cursor {
-    static glm::vec2 getPosition();
-    static void setPosition(const glm::vec2& position);
+    static Vector2f getPosition();
+    static void setPosition(const Vector2f& position);
 };
 
 } // namespace age

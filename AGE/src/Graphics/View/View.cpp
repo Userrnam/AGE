@@ -42,8 +42,8 @@ void View::setViewport(const Viewport& viewport) {
     setOrigin({ camerav.width / 2, camerav.height / 2 });
     setPosition({ camerav.width / 2, camerav.height / 2 });
 
-    m_globals.cameraTransform = camera.getProjection() * Transformable::getTransform();
-    m_globals.resolution = glm::vec2(m_viewport.width, m_viewport.height);
+    m_globals.cameraTransform = camera.getProjection() * UnmanagedTransformable::getTransform();
+    m_globals.resolution = Vector2f(m_viewport.width, m_viewport.height);
 
     m_buffer.load(&m_globals, sizeof(m_globals));
 }

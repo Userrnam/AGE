@@ -2,41 +2,53 @@
 
 #include <glm/glm.hpp>
 
-#include "MemoryHolders/Buffer.hpp"
+#include "Math.hpp"
+#include "External/entt.hpp"
 
 namespace age {
 
-class Transformable {
-    glm::vec2 m_scale = glm::vec2(1.0f);
-    glm::vec2 m_position = {};
-    glm::vec2 m_origin = {};
+class UnmanagedTransformable {
+    Vector2f m_scale = Vector2f(1.0f);
+    Vector2f m_position = {};
+    Vector2f m_origin = {};
     float m_rotation = 0;
 public:
     glm::mat4 getTransform();
 
-    inline glm::vec2 getScale() const { return m_scale; }
-    inline glm::vec2 getPosition() const { return m_position; }
-    inline glm::vec2 getOrigin() const { return m_origin; }
+    inline Vector2f getScale() const { return m_scale; }
+    inline Vector2f getPosition() const { return m_position; }
+    inline Vector2f getOrigin() const { return m_origin; }
     inline float getRotation() const { return m_rotation; }
 
-    inline glm::vec2* getScalePointer() { return &m_scale; }
-    inline glm::vec2* getPositionPointer() { return &m_position; }
-    inline glm::vec2* getOriginPointer() { return &m_origin; }
+    inline Vector2f* getScalePointer() { return &m_scale; }
+    inline Vector2f* getPositionPointer() { return &m_position; }
+    inline Vector2f* getOriginPointer() { return &m_origin; }
     inline float* getRotationPointer() { return &m_rotation; }
 
-    Transformable& setScale(const glm::vec2& scale);
-    Transformable& setPosition(const glm::vec2& position);
-    Transformable& setOrigin(const glm::vec2& origin);
-    Transformable& setRotation(float rotation);
+    void setScale(const Vector2f& scale);
+    void setPosition(const Vector2f& position);
+    void setOrigin(const Vector2f& origin);
+    void setRotation(float rotation);
 
-    Transformable& move(const glm::vec2& direction);
-    Transformable& rotate(float angle);
+    void move(const Vector2f& direction);
+    void rotate(float angle);
 
-    Transformable& setScale(float scaleX, float scaleY);
-    Transformable& setPosition(float x, float y);
-    Transformable& setOrigin(float x, float y);
+    void setScale(float scaleX, float scaleY);
+    void setPosition(float x, float y);
+    void setOrigin(float x, float y);
 
-    Transformable& move(float x, float y);
+    void move(float x, float y);
+};
+
+class Entity;
+class Transformable : public UnmanagedTransformable {
+    entt::entity m_entity;
+    Vector2f m_size;
+public:
+    void create(const Entity& e, Vector2f size = {1, 1});
+    void destroy();
+
+    glm::mat4 getTransform();
 };
 
 } // namespace age

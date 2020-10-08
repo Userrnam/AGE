@@ -5,17 +5,17 @@
 
 namespace age {
 
-glm::vec3 Listener::m_position = {};
-glm::vec3 Listener::m_velocity = {};
+Vector3f Listener::m_position = {};
+Vector3f Listener::m_velocity = {};
 Orientation Listener::m_orientation = Orientation();
 
-void Listener::setVelocity(const glm::vec3& velocity) {
+void Listener::setVelocity(const Vector3f& velocity) {
     alListener3f(AL_VELOCITY, velocity.x, velocity.y, velocity.z);
     ERROR_CHECK("Velocity");
     m_velocity = velocity;
 }
 
-void Listener::setPosition(const glm::vec3& position) {
+void Listener::setPosition(const Vector3f& position) {
     alListener3f(AL_POSITION, position.x, position.y, position.z);
     ERROR_CHECK("Position");
     m_position = position;
@@ -35,11 +35,11 @@ void Listener::setPosition(float x, float y, float z) {
     Listener::setPosition({x, y, z});
 }
 
-glm::vec3 Listener::getVelocity() {
+Vector3f Listener::getVelocity() {
     return m_velocity;
 }
 
-glm::vec3 Listener::getPosition() {
+Vector3f Listener::getPosition() {
     return m_position;
 }
 

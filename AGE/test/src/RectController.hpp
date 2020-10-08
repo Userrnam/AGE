@@ -25,8 +25,11 @@ class RectController : public age::ScriptComponent {
 public:
 
     RectController(Entity e) : age::ScriptComponent(e) {
+        transformable.create(e);
+        transformable.setScale(200, 200);
+
         vars.create();
-        vars.get().get<age::Transform>().set(transformable.setScale(200, 200).getTransform());
+        vars.get().get<age::Transform>().set(transformable.getTransform());
         vars.upload();
 
         texCoords.create();
@@ -48,6 +51,7 @@ public:
     }
 
     ~RectController() {
+        transformable.destroy();
         vars.destroy();
         colors.destroy();
         texCoords.destroy();

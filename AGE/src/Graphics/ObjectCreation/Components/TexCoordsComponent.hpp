@@ -9,7 +9,7 @@
 namespace age {
 
 struct TexCoords {
-    glm::vec4 coords[4] = {
+    Vector4f coords[4] = {
         // only first two values of vec4 are used (vec4 required for alignment)
         {0, 1, 0, 0}, {1, 1, 0, 0}, {1, 0, 0, 0}, {0, 0, 0, 0}
     };

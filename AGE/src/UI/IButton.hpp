@@ -1,15 +1,15 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include "Math.hpp"
 
 namespace age {
 
 class IButton {
 protected:
-    glm::vec2 m_pos1;
-    glm::vec2 m_pos2;
+    Vector2f m_pos1;
+    Vector2f m_pos2;
 
-    void updatePoints(const glm::vec2& pos, const glm::vec2& size) {
+    void updatePoints(const Vector2f& pos, const Vector2f& size) {
         m_pos1 = pos;
         m_pos2 = pos + size;
     }
@@ -23,14 +23,14 @@ public:
     virtual void onLeave() {}
     virtual void onPress(unsigned button) {}
 
-    virtual void setPosition(const glm::vec2& pos) = 0;
-    virtual void setSize(const glm::vec2& size) = 0;
+    virtual void setPosition(const Vector2f& pos) = 0;
+    virtual void setSize(const Vector2f& size) = 0;
 
-    inline glm::vec2 getPosition() {
+    inline Vector2f getPosition() {
         return m_pos1;
     }
 
-    inline glm::vec2 getSize() {
+    inline Vector2f getSize() {
         return m_pos2 - m_pos1;
     }
 };

@@ -1,5 +1,5 @@
 #include <vulkan/vulkan.h>
-#include <glm/glm.hpp>
+#include "Math.hpp"
 #include <assert.h>
 
 #include "ShapeManager.hpp"
@@ -15,10 +15,10 @@ ShapeManager uses its own pool for buffer allocations
 namespace age {
 
 static std::vector<Vertex> verticies = {
-    glm::vec2({ 0.0, 0.0 }),
-    glm::vec2({ 1.0, 0.0 }),
-    glm::vec2({ 1.0, 1.0 }),
-    glm::vec2({ 0.0, 1.0 }),
+    Vector2f({ 0.0, 0.0 }),
+    Vector2f({ 1.0, 0.0 }),
+    Vector2f({ 1.0, 1.0 }),
+    Vector2f({ 0.0, 1.0 }),
 };
 
 static std::vector<Index16> indicies = { 0, 1, 2, 2, 3, 0 };

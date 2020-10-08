@@ -18,12 +18,15 @@ class Button : public age::ScriptComponent, public age::IButton {
 public:
     Button(Entity e) : age::ScriptComponent(e) {
         transform.create();
-        transform.set(transformable.setScale(1, 1).setPosition(150, 150).getTransform());
         color.create();
-        color.set(glm::vec4{0, 0.8, 0, 1});
+        color.set(age::Vector4f{0, 0.8, 0, 1});
 
         text.create(getFont("courier"));
         text.setText("Button");
+
+        transformable.create(e, text.getSize());
+        transformable.setPosition(150, 150);
+        transform.set(transformable.getTransform());
 
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
             transform,
@@ -49,6 +52,7 @@ public:
         color.destroy();
         transform.destroy();
         text.destroy();
+        transformable.destroy();
         getComponent<age::Drawable>().destroy();
     }
 
@@ -78,11 +82,11 @@ public:
         std::cout << "pressed\n";
     }
 
-    virtual void setSize(const glm::vec2& size) override {
+    virtual void setSize(const age::Vector2f& size) override {
         transformable.setScale(size * 2.0f);
     }
 
-    virtual void setPosition(const glm::vec2& pos) override {
+    virtual void setPosition(const age::Vector2f& pos) override {
         transformable.setPosition(pos * 2.0f);
     }
 };

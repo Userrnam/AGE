@@ -22,6 +22,7 @@
 #include "Background.hpp"
 #include "Triangle.hpp"
 #include "Button.hpp"
+#include "Graphics/PositionManager.hpp"
 
 class TestScene : public age::Scene {
     virtual void onUpdate(float elapsedTime) override {
@@ -35,15 +36,20 @@ class TestScene : public age::Scene {
         createEntity<RectController>();
         createStaticEntity<Triangle>();
         createStaticEntity<Background>();
+        
+        age::Positionable p;
+        p.pos = { 0, 0 };
+        p.size = { 800, 600 };
+        auto renderEntities = age::PositionManager::getVisibleEntities(p);
 
-        // todo: move it somewhere else
-        auto view = m_registry.view<age::Drawable>();
         std::vector<age::Drawable> targets;
-        targets.resize(view.size());
-        for (size_t i = 0; i < view.size(); ++i) {
-            targets[i] = view.get(view[i]);
+        targets.resize(renderEntities.size());
+        for (int i = 0; i < targets.size(); ++i) {
+            targets[i] = m_registry.get<age::Drawable>(renderEntities[i]);
         }
 
+        // fixme: move this from user code
+        // fixme: get visible targets before rendering
         age::Renderer::render(targets);
     }
 };

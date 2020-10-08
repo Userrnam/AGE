@@ -1,7 +1,10 @@
 #pragma once
 
+#include <iostream>
+
 #include "Graphics.hpp"
 
+#include "Graphics/PositionManager.hpp"
 #include "Utils/utils.hpp"
 
 class HelloText : public age::ScriptComponent {
@@ -9,7 +12,7 @@ class HelloText : public age::ScriptComponent {
     age::Transformable transformable;
     age::BundleComponent<age::Transform> ct;
     age::TransformResolveStructure* pResolveStructure;
-    glm::vec2 pos;
+    age::Vector2f pos;
     uint64_t animId = 0;
 
 public:
@@ -17,8 +20,14 @@ public:
         pos = { 25, 25 };
         text.create(getFont("courier"));
         text.setText("hello");
+
+        transformable.create(e, text.getSize());
+        transformable.move(25, 25);
+        transformable.setScale(2, 1);
+        transformable.rotate(0.3);
+
         ct.create();
-        ct.get().get<age::Transform>().set(transformable.move(25, 25).setScale(2, 1).rotate(0.3).getTransform());
+        ct.get().get<age::Transform>().set(transformable.getTransform());
         ct.upload();
 
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
@@ -31,11 +40,11 @@ public:
         pResolveStructure = new age::TransformResolveStructure(&ct.get().get<age::Transform>(), &transformable);
 
         animId = age::Animator::addAnimation(
-            age::StateAnimation<glm::vec2, age::linearFunction>(transformable.getPositionPointer(), &ct.getBuffer(), pResolveStructure)
+            age::StateAnimation<age::Vector2f, age::linearFunction>(transformable.getPositionPointer(), &ct.getBuffer(), pResolveStructure)
             .setLooping(true)
             .addState(age::AnimationState(pos, 1))
-            .addState(age::AnimationState(glm::vec2(100, 300), 2))
-            .addState(age::AnimationState(glm::vec2(300, 100), 2))
+            .addState(age::AnimationState(age::Vector2f(100, 300), 2))
+            .addState(age::AnimationState(age::Vector2f(300, 100), 2))
         );
     }
 
@@ -43,6 +52,7 @@ public:
         delete pResolveStructure;
 
         text.destroy();
+        transformable.destroy();
         ct.destroy();
         getComponent<age::Drawable>().destroy();
     }

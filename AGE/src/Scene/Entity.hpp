@@ -84,6 +84,10 @@ public:
         return &m_scene->m_registry;
     }
 
+    entt::entity getEntityId() const {
+        return m_entityId;
+    }
+
     template<typename... Component, typename... Exclude>
     SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...> getView(entt::exclude_t<Exclude...> e = {}) {
         return SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...>(m_scene, e);

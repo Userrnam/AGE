@@ -3,14 +3,14 @@
 
 namespace age {
 
-glm::vec2 Cursor::getPosition() {
+Vector2f Cursor::getPosition() {
     double x, y;
     glfwGetCursorPos(core::apiCore.window.handle, &x, &y);
 
-    return {x, core::apiCore.window.height - y};
+    return {(float)x, (float)(core::apiCore.window.height - y)};
 }
 
-void Cursor::setPosition(const glm::vec2& pos) {
+void Cursor::setPosition(const Vector2f& pos) {
     glfwSetCursorPos(core::apiCore.window.handle, pos.x, pos.y);
 }
 

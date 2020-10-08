@@ -8,10 +8,10 @@
 
 namespace age {
 
-class View : public Transformable {
+class View : public UnmanagedTransformable {
     struct ViewGlobals {
         glm::mat4 cameraTransform;
-        glm::vec2 resolution;
+        Vector2f resolution;
         float time;
         float deltaTime;
     };

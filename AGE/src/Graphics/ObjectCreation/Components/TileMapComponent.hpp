@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <sstream>
-#include <glm/glm.hpp>
+#include "Math.hpp"
 
 #include "ShaderComponent.hpp"
 #include "ArrayComponent.hpp"
@@ -13,13 +13,13 @@ namespace age {
 
 // text should use this
 class TileIndexer {
-    glm::vec2 m_position = {};
+    Vector2f m_position = {};
     uint32_t m_index = 0;
     float dummy;
 public:
-    inline TileIndexer& setPosition(glm::vec2 position) { m_position = position; return *this; }
+    inline TileIndexer& setPosition(Vector2f position) { m_position = position; return *this; }
     inline TileIndexer& setIndex(uint32_t index) { m_index = index; return *this; }
-    inline glm::vec2 getPosition() { return m_position; }
+    inline Vector2f getPosition() { return m_position; }
     inline uint32_t getIndex() { return m_index; }
 
     static ShaderComponentInfo __getInfo() {
@@ -45,9 +45,9 @@ public:
 };
 
 struct __Tile {
-    glm::vec2 texCoords[4];
-    glm::vec2 size;
-    glm::vec2 dummy;
+    Vector2f texCoords[4];
+    Vector2f size;
+    Vector2f dummy;
 
     static ShaderComponentInfo __getInfo() {
         ShaderComponentInfo info;

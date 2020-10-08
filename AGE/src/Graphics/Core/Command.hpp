@@ -1,9 +1,9 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include "Math.hpp"
 
 namespace age::core::cmd {
 
-void clear(int i, const glm::vec4& color);
+void clear(int i, const Vector4f& color);
 
 } // namespace age::core::cmd
