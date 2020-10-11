@@ -60,8 +60,6 @@ class Drawable {
 protected:
     VkPipelineLayout m_pipelineLayout;
     VkPipeline m_pipeline;
-    // VkViewport m_viewport;
-    uint64_t m_viewId;
 
     std::vector<uint32_t> m_poolIndicies;
     std::vector<VkDescriptorSet> m_descriptorSets;

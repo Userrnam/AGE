@@ -11,6 +11,7 @@
 #include "Audio/Core.hpp"
 #include "Scene/Scene.hpp"
 #include "Graphics/View/ViewManager.hpp"
+#include "Graphics/PositionManager.hpp"
 
 #include "Utils/utils.hpp"
 #include "Animation.hpp"
@@ -20,6 +21,9 @@ namespace age {
 
 extern FT_Library ftLibrary;
 audio::Core audioCore;
+
+PositionManager* defaultPositionManager;
+PositionManager* selectedPositionManager;
 
 auto currentTime = std::chrono::high_resolution_clock::now();
 
@@ -31,6 +35,8 @@ inline void initFreetype() {
 
 void Application::destroy() {
     vkDeviceWaitIdle(core::apiCore.device);
+
+    delete defaultPositionManager;
 
     pActiveScene->destroy();
     onDestroy();
@@ -63,6 +69,10 @@ void Application::create() {
 
     Renderer::create();
     core::deviceAlloc::init();
+
+    defaultPositionManager = new PositionManager;
+    
+    selectedPositionManager = defaultPositionManager;
 
     // create default view
     View view;
@@ -118,6 +128,8 @@ void Application::run() {
 
         pActiveScene->update(elapsedTime);
 
+        render();
+
         int fail = core::window::present();
         if (fail) {
             Renderer::rerender();
@@ -132,6 +144,35 @@ void Application::run() {
         }
 
         count++;
+    }
+}
+
+void Application::render() {
+    auto& viewIds = pActiveScene->getViewIds();
+
+    std::vector<entt::entity> ids;
+    std::vector<age::Drawable> targets;
+    targets.reserve(256);
+
+    for (auto vId : viewIds) {
+        auto& view = age::ViewManager::getView(vId);
+        auto pm = view.getPositionManager();
+
+        age::Positionable p;
+        p.pos = view.getPosition() - view.getOrigin();
+        p.size = { (float)age::core::apiCore.window.width, (float)age::core::apiCore.window.height };
+        p.size /= view.getScale();
+
+        auto ve = pm->getVisibleEntities(p);
+
+        for (auto e : ve) {
+            ids.push_back(e);
+            targets.push_back(pActiveScene->m_registry.get<age::Drawable>(e));
+        }
+    }
+
+    if (Renderer::renderRequired(ids)) {
+        Renderer::render(targets);
     }
 }
 

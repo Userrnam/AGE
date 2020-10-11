@@ -24,26 +24,19 @@ struct Positionable {
 
 class PositionManager {
     // fixme: use something better
-    static std::unordered_map<entt::entity, Positionable> m_data;
+    std::unordered_map<entt::entity, Positionable> m_data;
 public:
-    static void remove(entt::entity e) {
-        m_data.erase(e);
-    }
+    void remove(entt::entity e) { m_data.erase(e); }
+    void update(entt::entity e, const Positionable& p) { m_data[e] = p; }
+    size_t getObjectCount() { return m_data.size(); }
 
-    static void update(entt::entity e, const Positionable& p) {
-        m_data[e] = p;
-    }
-
-    static size_t getObjectCount() { return m_data.size(); }
-
-    static std::vector<entt::entity> getVisibleEntities(const Positionable& camera) {
+    std::vector<entt::entity> getVisibleEntities(const Positionable& camera) {
         std::vector<entt::entity> res;
 
         for (auto pair : m_data) {
             if (pair.second.intersect(camera)) {
                 res.push_back(pair.first);
             } else {
-                int k = 0;
                 pair.second.intersect(camera);
             }
         }
@@ -51,5 +44,8 @@ public:
         return res;
     }
 };
+
+extern PositionManager* defaultPositionManager;
+extern PositionManager* selectedPositionManager;
 
 } // namespace age

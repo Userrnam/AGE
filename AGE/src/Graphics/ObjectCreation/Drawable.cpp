@@ -75,7 +75,6 @@ void Drawable::getPipelineLayout(const DrawableCreateInfo& info) {
 
     // add camera descriptor
     auto& view = ViewManager::getSelected();
-    m_viewId = view.getId();
     auto cameraDescriptor = view.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
     m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
@@ -206,7 +205,6 @@ void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>&
     std::vector<VkDescriptorSetLayout> layouts;
     // add camera descriptor
     auto& view = ViewManager::getSelected();
-    m_viewId = view.getId();
     auto cameraDescriptor = view.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
     m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);

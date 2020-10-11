@@ -9,19 +9,20 @@
 
 namespace age {
 
-void Transformable::create(const Entity& e, Vector2f size) {
+void Transformable::create(const Entity& e, Vector2f size, PositionManager* p) {
+    m_positionManager = p;
     m_entity = e.getEntityId();
-    m_size = size;    
+    m_size = size;
 }
 
 void Transformable::destroy() {
-    PositionManager::remove(m_entity);
+    m_positionManager->remove(m_entity);
 }
 
 glm::mat4 Transformable::getTransform() {
     auto transform = UnmanagedTransformable::getTransform();
 
-    // get transformed boundingbox
+    // get transformed bounding box
     glm::vec4 bottomLeft = { 0, 0, -1, 1 };
     glm::vec4 topRight = { m_size.x, m_size.y, -1, 1 };
 
@@ -32,7 +33,7 @@ glm::mat4 Transformable::getTransform() {
     p.pos = { newBottomLeft.x, newBottomLeft.y };
     p.size = { newTopRight.x - newBottomLeft.x, newTopRight.y - newBottomLeft.y };
 
-    PositionManager::update(m_entity, p);
+    m_positionManager->update(m_entity, p);
 
     return transform;
 }

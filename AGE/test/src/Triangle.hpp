@@ -17,11 +17,11 @@ struct Triangle : public age::StaticScriptComponent {
         p.pos = {};
         p.size = { 800, 600 };
 
-        age::PositionManager::update(e.getEntityId(), p);
+        age::defaultPositionManager->update(e.getEntityId(), p);
     }
 
     ~Triangle() {
-        age::PositionManager::remove(entity);
+        age::defaultPositionManager->remove(entity);
         triangle.destroy();
     }
 };

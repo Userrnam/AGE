@@ -4,6 +4,7 @@
 
 #include "Math.hpp"
 #include "External/entt.hpp"
+#include "PositionManager.hpp"
 
 namespace age {
 
@@ -42,10 +43,11 @@ public:
 
 class Entity;
 class Transformable : public UnmanagedTransformable {
+    PositionManager* m_positionManager;
     entt::entity m_entity;
     Vector2f m_size;
 public:
-    void create(const Entity& e, Vector2f size = {1, 1});
+    void create(const Entity& e, Vector2f size = {1, 1}, PositionManager* p = selectedPositionManager);
     void destroy();
 
     glm::mat4 getTransform();

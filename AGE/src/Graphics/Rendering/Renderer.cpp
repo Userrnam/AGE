@@ -9,11 +9,34 @@
 namespace age {
 
 std::vector<Drawable> Renderer::m_previousTargets;
+std::vector<entt::entity> Renderer::m_previousTargetsIds;
+
+template<typename T>
+bool vectorsMatch(const std::vector<T>& l, const std::vector<T>& r) {
+    if (l.size() != r.size()) {
+        return false;
+    }
+
+    for (size_t i = 0; i < l.size(); ++i) {
+        if (l[i] != r[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Renderer::renderRequired(const std::vector<entt::entity>& ids) {
+    bool result = !vectorsMatch(m_previousTargetsIds, ids);
+    if (result) {
+        m_previousTargetsIds = ids;
+    }
+
+    return result;
+}
 
 void Renderer::render(const std::vector<Drawable>& targets) {
     m_previousTargets = targets;
-
-    // TODO: update only if something changed
 
     // update active commandBuffer
     if (core::apiCore.commandBuffers.active == core::apiCore.commandBuffers.data.data()) {

@@ -23,6 +23,8 @@ class Application {
 
     friend class Scene;
     friend class SceneBase;
+
+    void render();
 protected:
 
     Scene* pActiveScene = nullptr;
