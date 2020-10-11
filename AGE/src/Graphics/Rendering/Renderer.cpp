@@ -43,6 +43,18 @@ void Renderer::render(const std::vector<Drawable>& targets) {
 
         vkCmdBeginRenderPass(core::apiCore.commandBuffers.active[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+        // set viewport and scissors
+        VkViewport viewport = {};
+        viewport.width = core::apiCore.swapchain.extent.width;
+        viewport.height = core::apiCore.swapchain.extent.height;
+
+        VkRect2D scissors = {};
+        scissors.extent.width = viewport.width;
+        scissors.extent.height = viewport.height;
+
+        vkCmdSetViewport(core::apiCore.commandBuffers.active[i], 0, 1, &viewport);
+        vkCmdSetScissor(core::apiCore.commandBuffers.active[i], 0, 1, &scissors);
+
         for (auto& target : targets) {
             target.draw(i);
         }

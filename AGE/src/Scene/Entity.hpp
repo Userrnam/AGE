@@ -3,7 +3,7 @@
 #include <utility>
 
 #include "External/entt.hpp"
-#include "SceneAPI.hpp"
+#include "SceneBase.hpp"
 
 namespace age {
 
@@ -15,19 +15,19 @@ class SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...>;
 
 class Entity {
     entt::entity m_entityId;
-    SceneAPI* m_scene;
+    SceneBase* m_scene;
 
     friend class Scene;
     friend class StaticScriptComponent;
 public:
-    inline SceneAPI* getScene() { return m_scene; }
+    inline SceneBase* getScene() { return m_scene; }
 
-    Entity(SceneAPI* scene) {
+    Entity(SceneBase* scene) {
         m_entityId = scene->m_registry.create();
         m_scene = scene;
     }
 
-    Entity(SceneAPI* scene, entt::entity id) {
+    Entity(SceneBase* scene, entt::entity id) {
         m_scene = scene;
         m_entityId = id;
     }

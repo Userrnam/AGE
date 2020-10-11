@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Viewport.hpp"
 #include "Camera.hpp"
 #include "ObjectCreation/Descriptor.hpp"
 #include "MemoryHolders/Buffer.hpp"
@@ -21,8 +20,7 @@ class View : public UnmanagedTransformable {
     Buffer m_buffer;
     DescriptorSet m_descriptor;
 
-    Viewport m_viewport;
-    Camera camera;
+    Camera m_camera;
 
     uint64_t m_id;
 
@@ -30,11 +28,11 @@ class View : public UnmanagedTransformable {
 public:
     inline uint64_t getId() const { return m_id; }
 
-    inline Viewport getViewport() const { return m_viewport; }
     inline DescriptorSet getDescriptor() const { return m_descriptor; }
 
-    void create(const Viewport& viewport = {});
-    void setViewport(const Viewport& viewport = {});
+    void updateCameraTransform();
+
+    void create();
     void destroy();
 };
 

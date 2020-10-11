@@ -6,7 +6,12 @@
 
 namespace age {
 
-void View::create(const Viewport& viewport) {
+
+void View::updateCameraTransform() {
+    m_globals.cameraTransform = m_camera.getProjection() * UnmanagedTransformable::getTransform();
+}
+
+void View::create() {
     m_buffer.create(
         UniformBufferCreateInfo()
         .setSize(sizeof(ViewGlobals))
@@ -20,30 +25,16 @@ void View::create(const Viewport& viewport) {
             .setDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
         )
     );
-    
-    setViewport(viewport);
-}
 
-void View::setViewport(const Viewport& viewport) {
-    m_viewport = viewport;
+    auto width  = static_cast<float>(core::apiCore.window.width);
+    auto height = static_cast<float>(core::apiCore.window.height);
 
-    if (viewport.width == 0 || viewport.height == 0) {
-        m_viewport.x = 0.0f;
-        m_viewport.y = 0.0f;
-        m_viewport.width = static_cast<float>(core::apiCore.swapchain.extent.width);
-        m_viewport.height = static_cast<float>(core::apiCore.swapchain.extent.height);
-    }
+    m_camera.setOrthoganalProjection(width, height);
+    setOrigin({ width / 2, height / 2 });
+    setPosition({ width / 2, height / 2 });
 
-    Viewport camerav = {};
-    camerav.width  = static_cast<float>(core::apiCore.window.width);
-    camerav.height = static_cast<float>(core::apiCore.window.height);
-
-    camera.setOrthoganalProjection(camerav);
-    setOrigin({ camerav.width / 2, camerav.height / 2 });
-    setPosition({ camerav.width / 2, camerav.height / 2 });
-
-    m_globals.cameraTransform = camera.getProjection() * UnmanagedTransformable::getTransform();
-    m_globals.resolution = Vector2f(m_viewport.width, m_viewport.height);
+    m_globals.cameraTransform = m_camera.getProjection() * UnmanagedTransformable::getTransform();
+    m_globals.resolution = Vector2f(core::apiCore.swapchain.extent.width, core::apiCore.swapchain.extent.height);
 
     m_buffer.load(&m_globals, sizeof(m_globals));
 }

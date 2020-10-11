@@ -75,7 +75,6 @@ void Drawable::getPipelineLayout(const DrawableCreateInfo& info) {
 
     // add camera descriptor
     auto& view = ViewManager::getSelected();
-    // m_viewport = view.getViewport();
     m_viewId = view.getId();
     auto cameraDescriptor = view.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
@@ -207,7 +206,6 @@ void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>&
     std::vector<VkDescriptorSetLayout> layouts;
     // add camera descriptor
     auto& view = ViewManager::getSelected();
-    // m_viewport = view.getViewport();
     m_viewId = view.getId();
     auto cameraDescriptor = view.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
@@ -277,15 +275,17 @@ void Drawable::draw(int i) const {
     VkBuffer vertexBuffer = m_shapeRenderInfo.m_vertexMemoryId.buffer;
     VkBuffer indexBuffer = m_shapeRenderInfo.m_indexMemoryId.buffer;
 
-    VkViewport viewport = ViewManager::getView(m_viewId).getViewport();
-    VkRect2D scissors;
-    scissors.offset.x = viewport.x;
-    scissors.offset.y = viewport.y;
-    scissors.extent.width = viewport.width;
-    scissors.extent.height = viewport.height;
+    // move this to renderer
 
-    vkCmdSetViewport(core::apiCore.commandBuffers.active[i], 0, 1, &viewport);
-    vkCmdSetScissor(core::apiCore.commandBuffers.active[i], 0, 1, &scissors);
+    // VkViewport viewport = ViewManager::getView(m_viewId).getViewport();
+    // VkRect2D scissors;
+    // scissors.offset.x = viewport.x;
+    // scissors.offset.y = viewport.y;
+    // scissors.extent.width = viewport.width;
+    // scissors.extent.height = viewport.height;
+
+    // vkCmdSetViewport(core::apiCore.commandBuffers.active[i], 0, 1, &viewport);
+    // vkCmdSetScissor(core::apiCore.commandBuffers.active[i], 0, 1, &scissors);
 
     VkDeviceSize offsets[] = { m_shapeRenderInfo.m_vertexMemoryId.address };
 

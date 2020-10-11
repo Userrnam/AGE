@@ -120,10 +120,6 @@ void Application::run() {
 
         int fail = core::window::present();
         if (fail) {
-            // Fixme:
-            auto view = ViewManager::getView(hash("default"));
-            view.setViewport();
-
             Renderer::rerender();
         }
 

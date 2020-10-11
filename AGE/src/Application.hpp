@@ -22,7 +22,7 @@ class Application {
     std::unordered_map<uint64_t, Texture> m_textures;
 
     friend class Scene;
-    friend class SceneAPI;
+    friend class SceneBase;
 protected:
 
     Scene* pActiveScene = nullptr;

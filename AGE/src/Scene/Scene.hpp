@@ -9,11 +9,11 @@
 #include "ScriptComponent.hpp"
 
 #include "Application.hpp"
-#include "SceneAPI.hpp"
+#include "SceneBase.hpp"
 
 namespace age {
 
-class Scene : public SceneAPI {
+class Scene : public SceneBase {
     void update(float elapsedTime);
 	void handleEvent(Event event);
 
@@ -59,15 +59,15 @@ class SceneView;
 
 template<typename... Component, typename... Exclude>
 class SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...> {
-	SceneAPI* m_scene;
+	SceneBase* m_scene;
 	entt::basic_view<entt::entity, entt::exclude_t<Exclude...>, Component...> m_view;
 
 	class SceneViewIterator final {
-		SceneAPI* m_scene;
+		SceneBase* m_scene;
 		typename entt::basic_view<entt::entity, entt::exclude_t<Exclude...>, Component...>::iterator m_enttIterator;
 
 	public:
-		inline SceneViewIterator(SceneAPI* scene, typename entt::basic_view<entt::entity, entt::exclude_t<Exclude...>, Component...>::iterator it)
+		inline SceneViewIterator(SceneBase* scene, typename entt::basic_view<entt::entity, entt::exclude_t<Exclude...>, Component...>::iterator it)
 			: m_scene(scene), m_enttIterator(it) {}
 	
 		inline SceneViewIterator & operator++()  { m_enttIterator++; return *this; }
@@ -84,7 +84,7 @@ class SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...> {
 	};
 
 public:
-	SceneView(SceneAPI* scene, entt::exclude_t<Exclude...> e = {})
+	SceneView(SceneBase* scene, entt::exclude_t<Exclude...> e = {})
 		: m_scene(scene), m_view(scene->getRegistry()->template view<Component...>(e)) {
 	}
 

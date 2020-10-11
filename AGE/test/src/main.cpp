@@ -23,6 +23,7 @@
 #include "Triangle.hpp"
 #include "Button.hpp"
 #include "Graphics/PositionManager.hpp"
+#include "Graphics/View/ViewManager.hpp"
 
 class TestScene : public age::Scene {
     virtual void onUpdate(float elapsedTime) override {
@@ -36,7 +37,7 @@ class TestScene : public age::Scene {
         createEntity<RectController>();
         createStaticEntity<Triangle>();
         createStaticEntity<Background>();
-        
+
         age::Positionable p;
         p.pos = { 0, 0 };
         p.size = { 800, 600 };
@@ -77,6 +78,8 @@ class Application : public age::Application {
         loadFont(age::getResourcePath("Courier.dfont"), "courier");
         loadTexture(age::getResourcePath("mountains.png"), "mountains");
         loadTexture(age::getResourcePath("yoda.jpg"), "yoda");
+
+        auto& view = age::ViewManager::getView(age::hash("default"));
 
         // sound.create();
         // sound.load(age::getResourcePath("test.wav"));

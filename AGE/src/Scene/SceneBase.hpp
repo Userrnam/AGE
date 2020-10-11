@@ -2,16 +2,27 @@
 
 #include "Application.hpp"
 #include "External/entt.hpp"
+#include "Utils/utils.hpp"
+
 
 namespace age {
 
-class SceneAPI {
+class SceneBase {
 protected:
+	std::vector<uint64_t> m_viewIds = { hash("default") };
     Application* parent = nullptr;
 	entt::registry m_registry;
 
 	friend class Entity;
 public:
+	inline void addView(uint64_t id) {
+		m_viewIds.push_back(id);
+	}
+
+	inline const std::vector<uint64_t>& getViewIds() const {
+		return m_viewIds;
+	}
+
 	inline entt::registry* getRegistry() { return &m_registry; }
 
 	inline FontComponent* getFont(const std::string& font) {
