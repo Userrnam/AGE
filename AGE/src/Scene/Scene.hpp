@@ -88,6 +88,11 @@ public:
 		: m_scene(scene), m_view(scene->getRegistry()->template view<Component...>(e)) {
 	}
 
+	inline size_t size() const { return m_view.size(); }
+	inline entt::basic_view<entt::entity, entt::exclude_t<Exclude...>, Component...>& getEnttView() {
+		return m_view;
+	}
+
 	using iterator = SceneViewIterator;
 
 	inline iterator begin() { return iterator(m_scene, m_view.begin()); }

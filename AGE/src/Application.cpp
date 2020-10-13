@@ -9,6 +9,7 @@
 #include "Graphics/Core/Window/Window.hpp"
 #include "Graphics/Core/Core.hpp"
 #include "Audio/Core.hpp"
+#include "Audio/Listener.hpp"
 #include "Scene/Scene.hpp"
 #include "Graphics/View/ViewManager.hpp"
 #include "Graphics/PositionManager.hpp"
@@ -87,6 +88,8 @@ void Application::create() {
 
     // init audio
     audioCore.init();
+
+    Listener::setDefaults();
 
     Sampler::createDefault();
     

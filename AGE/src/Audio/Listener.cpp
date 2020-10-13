@@ -9,6 +9,12 @@ Vector3f Listener::m_position = {};
 Vector3f Listener::m_velocity = {};
 Orientation Listener::m_orientation = Orientation();
 
+void Listener::setDefaults() {
+    Listener::setPosition({});
+    Listener::setVelocity({});
+    Listener::setOrientation(Orientation());
+}
+
 void Listener::setVelocity(const Vector3f& velocity) {
     alListener3f(AL_VELOCITY, velocity.x, velocity.y, velocity.z);
     ERROR_CHECK("Velocity");

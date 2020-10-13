@@ -40,6 +40,10 @@ void WavReader::read(const std::string& path) {
 
     m_freq = fmtChunk.sampleRate;
 
+    if (fmtChunk.numChannels != 1) {
+        std::cout << "Warning: file is not mono. Some features will not work\n";
+    }
+
     // this will get unique id for each possible combination
     uint32_t id = fmtChunk.numChannels + fmtChunk.bitsPerSample;
     switch (id) {

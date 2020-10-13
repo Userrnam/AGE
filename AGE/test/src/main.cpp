@@ -42,9 +42,6 @@ class TestScene : public age::Scene {
 };
 
 class Application : public age::Application {
-    // age::Sound sound;
-    // age::SoundSource source;
-
     virtual void onCoreConfig() override {
         age::setResourcePath(RESOURCE_PATH);
 
@@ -67,21 +64,12 @@ class Application : public age::Application {
 
         auto& view = age::ViewManager::getView(age::hash("default"));
 
-        // sound.create();
-        // sound.load(age::getResourcePath("test.wav"));
-        // source.create();
-        // source.setLooping(true);
-        // source.setSound(sound);
-        // source.play();
-
         auto scene = new TestScene();
         scene->create(this);
         setActiveScene(scene);
     }
 
     virtual void onDestroy() override {
-        // source.destroy();
-        // sound.destroy();
     }
 
     virtual void onEvent(age::Event e) override {
