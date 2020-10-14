@@ -6,10 +6,7 @@
 
 class RectController : public age::ScriptComponent {
     age::Transformable transformable;
-    // TODO: transform, texcoords and color can use same array
-    // Fixme: bundle component does not work on linux
-    age::BundleComponent<age::Transform> vars;
-    age::StorageComponent<age::TexCoords> texCoords;
+    age::BundleComponent<age::Transform, age::TexCoords> bundle;
     age::ArrayComponent<age::Color, age::PER_VERTEX> colors;
 
     age::Sound sound;
@@ -20,11 +17,14 @@ class RectController : public age::ScriptComponent {
     virtual void onUpdate(float elapsedTime) override {
         auto dx = (age::isKeyPressed(GLFW_KEY_RIGHT) - age::isKeyPressed(GLFW_KEY_LEFT)) * speed * elapsedTime;
         auto dy = (age::isKeyPressed(GLFW_KEY_UP) - age::isKeyPressed(GLFW_KEY_DOWN)) * speed * elapsedTime;
+
         transformable.move(dx, dy);
-        vars.get().get<age::Transform>().set(transformable.getTransform());
-        vars.upload();
+
+        bundle.get<age::Transform>().set(transformable.getTransform());
+        bundle.upload();
 
         auto pos = transformable.getPosition();
+
         source.setPosition(pos.x / 400, pos.y / 300, 1);
         source.setVelocity(dx, dy, 1);
     }
@@ -34,11 +34,10 @@ public:
         transformable.create(e);
         transformable.setScale(200, 200);
 
-        vars.create();
-        vars.get().get<age::Transform>().set(transformable.getTransform());
-        vars.upload();
-
-        texCoords.create();
+        bundle.create();
+        bundle.set<age::Transform>(transformable.getTransform());
+        bundle.set(age::TexCoords());
+        bundle.upload();
 
         colors.create(4);
         colors.add({{1, 0, 0, 1}});
@@ -49,9 +48,8 @@ public:
 
         addComponent<age::Drawable>(
             age::RECTANGLE_SHAPE,
-            vars,
+            bundle,
             colors,
-            texCoords,
             age::TextureComponent(getTexture("mountains"))
         );
 
@@ -71,9 +69,10 @@ public:
         sound.destroy();
 
         transformable.destroy();
-        vars.destroy();
+
+        bundle.destroy();
         colors.destroy();
-        texCoords.destroy();
+
         getComponent<age::Drawable>().destroy();
     }
 };

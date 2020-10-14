@@ -31,7 +31,7 @@ public:
         set(m_data);
     }
 
-    inline void create(T data) {
+    inline void create(const T& data) {
         create();
         set(data);
     }
@@ -48,7 +48,7 @@ public:
         return m_data;
     }
 
-    inline void set(T data) {
+    inline void set(const T& data) {
         m_data = data;
         upload();
     }

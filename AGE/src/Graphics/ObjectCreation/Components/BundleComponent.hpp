@@ -7,6 +7,8 @@
 #include "StorageComponent.hpp"
 #include "ComponentCollector.hpp"
 
+#include "Containers/Tuple.hpp"
+
 namespace age {
 
 // todo: remove this and use custom variant
@@ -25,24 +27,48 @@ static inline const Inserts& _getVariantInserts(const std::variant<ShaderCompone
     return std::get<ShaderComponentBuffer>(v);
 }
 
+// Warning: does not call constructor
 template<typename... Args>
-class Bundle {
-    std::tuple<Args...> m_data;
+class Bundle : public Tuple<Args...> {
 public:
     template<typename T>
-    T& get() {
-        return std::get<T>(m_data);
-    }
-
-    template<typename T>
     Bundle& set(const T& data) {
-        std::get<T>(m_data) = data;
+        this->template get<T>() = data;
+        return *this;
     }
 };
 
+// Warning: does not call constructor
 template<typename... Args>
 class BundleComponent : public StorageComponent<Bundle<Args...>> {
 public:
+    Bundle<Args...>& get() {
+        return StorageComponent<Bundle<Args...>>::get();
+    }
+
+    const Bundle<Args...>& get() const {
+        return StorageComponent<Bundle<Args...>>::get();
+    }
+
+    void set(const Bundle<Args...>& b) {
+        StorageComponent<Bundle<Args...>>::set(b);
+    }
+
+    template<typename T>
+    T& get() {
+        return StorageComponent<Bundle<Args...>>::get().template get<T>();
+    }
+
+    template<typename T>
+    const T& get() const {
+        return StorageComponent<Bundle<Args...>>::get().template get<T>();
+    }
+
+    template<typename T>
+    Bundle<Args...>& set(const T& data) {
+        return StorageComponent<Bundle<Args...>>::get().set(data);
+    }
+
     static ShaderComponentInfo __getInfo() {
         std::vector<ShaderComponentInfo> infos;
         ComponentCollector<Args...>::collect(infos);

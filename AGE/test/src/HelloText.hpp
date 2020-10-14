@@ -12,12 +12,10 @@ class HelloText : public age::ScriptComponent {
     age::Transformable transformable;
     age::BundleComponent<age::Transform> ct;
     age::TransformResolveStructure* pResolveStructure;
-    age::Vector2f pos;
     uint64_t animId = 0;
 
 public:
     HelloText(Entity e) : age::ScriptComponent(e) {
-        pos = { 25, 25 };
         text.create(getFont("courier"));
         text.setText("hello");
 
@@ -42,7 +40,7 @@ public:
         animId = age::Animator::addAnimation(
             age::StateAnimation<age::Vector2f, age::linearFunction>(transformable.getPositionPointer(), &ct.getBuffer(), pResolveStructure)
             .setLooping(true)
-            .addState(age::AnimationState(pos, 1))
+            .addState(age::AnimationState(transformable.getPosition(), 1))
             .addState(age::AnimationState(age::Vector2f(100, 300), 2))
             .addState(age::AnimationState(age::Vector2f(300, 100), 2))
         );

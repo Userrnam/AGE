@@ -10,28 +10,27 @@ class Button : public age::ScriptComponent, public age::IButton {
     age::Transformable transformable;
     age::TextComponent text;
 
-    age::StorageComponent<age::Transform> transform;
-    age::StorageComponent<age::Color> color;
+    age::BundleComponent<age::Transform, age::Color> bundle;
 
     uint64_t animId = 0;
 
 public:
     Button(Entity e, const std::string& s, age::Vector2f pos = {0,0}) : age::ScriptComponent(e) {
-        transform.create();
-        color.create();
-        color.set(age::Vector4f{0, 0.2, 0, 1});
-
         text.create(getFont("courier"));
         text.setText(s);
 
+        bundle.create();
+        bundle.set<age::Color>(age::Vector4f(0, 0.2, 0, 1));        
+
         transformable.create(e, text.getSize());
         transformable.setPosition(pos);
-        transform.set(transformable.getTransform());
+        bundle.set<age::Transform>(transformable.getTransform());
+
+        bundle.upload();
 
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
-            transform,
-            text,
-            color
+            bundle,
+            text
         );
 
         getComponent<age::Drawable>().setInstanceCount(s.size());
@@ -45,8 +44,7 @@ public:
     }
 
     ~Button()  {
-        color.destroy();
-        transform.destroy();
+        bundle.destroy();
         text.destroy();
         transformable.destroy();
         getComponent<age::Drawable>().destroy();
@@ -56,9 +54,9 @@ public:
         age::Animator::stopAnimation(animId);
 
         animId = age::Animator::addAnimation(
-            age::StateAnimation<age::Color, age::linearFunction>(&color.get(), &color.getBuffer())
+            age::StateAnimation<age::Color, age::linearFunction>(&bundle.get<age::Color>(), &bundle.getBuffer())
             .setLooping(false)
-            .addState(age::AnimationState(color.get(), 0))
+            .addState(age::AnimationState(bundle.get<age::Color>(), 0))
             .addState(age::AnimationState(age::Color(0, 1, 0, 1), 0))
         );
     }
@@ -67,9 +65,9 @@ public:
         age::Animator::stopAnimation(animId);
 
         animId = age::Animator::addAnimation(
-            age::StateAnimation<age::Color, age::linearFunction>(&color.get(), &color.getBuffer())
+            age::StateAnimation<age::Color, age::linearFunction>(&bundle.get<age::Color>(), &bundle.getBuffer())
             .setLooping(false)
-            .addState(age::AnimationState(color.get(), 0))
+            .addState(age::AnimationState(bundle.get<age::Color>(), 0))
             .addState(age::AnimationState(age::Color(0, 0.2, 0, 1), 0))
         );
     }
@@ -81,12 +79,14 @@ public:
     virtual void setSize(const age::Vector2f& size) override {
         updatePoints(getPosition(), size);
         transformable.setScale(size);
-        transform.set(transformable.getTransform());
+        bundle.set<age::Transform>(transformable.getTransform());
+        bundle.upload();
     }
 
     virtual void setPosition(const age::Vector2f& pos) override {
         updatePoints(pos, getSize());
         transformable.setPosition(pos);
-        transform.set(transformable.getTransform());
+        bundle.set<age::Transform>(transformable.getTransform());
+        bundle.upload();
     }
 };
