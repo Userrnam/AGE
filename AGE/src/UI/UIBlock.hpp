@@ -11,6 +11,7 @@
 
 namespace age {
 
+// alignment is relative to first button
 class UIBlock {
     std::vector<IButton*> m_buttons;
     // Fixme:
@@ -21,47 +22,17 @@ class UIBlock {
 public:
     inline UIBlock& addButton(IButton* b) { m_buttons.push_back(b); return *this; }
 
-    bool update(const event::MouseButton& e) {
-        for (IButton* b : m_buttons) {
-            if (b->isCovered(e.xPos, e.yPos)) {
-                if (!m_coveredButton) {
-                    m_coveredButton = b;
-                    b->onEnter();
-                } else if (m_coveredButton != b) {
-                    m_coveredButton->onLeave();
-                    m_coveredButton = b;
-                    b->onEnter();
-                }
-                if (e.action == GLFW_PRESS) {
-                    b->onPress(e.button);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
+    bool update(const event::MouseButton& e);
+    bool update(const event::CursorPos& p);
 
-    bool update(const event::CursorPos& p) {
-        for (int i = 0; i < m_buttons.size(); ++i) {
-            IButton* b = m_buttons[i];
-            if (b->isCovered(p.x, p.y)) {
-                if (!m_coveredButton) {
-                    m_coveredButton = b;
-                    b->onEnter();
-                } else if (m_coveredButton != b) {
-                        m_coveredButton->onLeave();
-                        m_coveredButton = b;
-                        b->onEnter();
-                }
-                return true;
-            }
-        }
-        if (m_coveredButton) {
-            m_coveredButton->onLeave();
-            m_coveredButton = nullptr;
-        }
-        return false;
-    }
+    UIBlock& alignVertically(float spacing = 0);
+    UIBlock& alignHorizontally(float spacing = 0);
+
+    UIBlock& move(float x, float y) { return move({x, y}); }
+    UIBlock& setPosition(float x, float y) { return setPosition({x, y}); }
+
+    UIBlock& move(const Vector2f& v);
+    UIBlock& setPosition(const Vector2f& v);
 };
 
 } // namespace age

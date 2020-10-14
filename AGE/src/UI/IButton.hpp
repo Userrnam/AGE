@@ -26,6 +26,16 @@ public:
     virtual void setPosition(const Vector2f& pos) = 0;
     virtual void setSize(const Vector2f& size) = 0;
 
+    inline void setPosition(float x, float y) { setPosition({x, y}); }
+    inline void setSize(float x, float y) { setSize({x, y}); }
+
+    inline void move(const Vector2f& v) {
+        m_pos1 += v;
+        m_pos2 += v;
+    }
+
+    inline void move(float x, float y) { move({x, y}); }
+
     inline Vector2f getPosition() {
         return m_pos1;
     }

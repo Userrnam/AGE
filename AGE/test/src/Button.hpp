@@ -16,16 +16,16 @@ class Button : public age::ScriptComponent, public age::IButton {
     uint64_t animId = 0;
 
 public:
-    Button(Entity e) : age::ScriptComponent(e) {
+    Button(Entity e, const std::string& s, age::Vector2f pos = {0,0}) : age::ScriptComponent(e) {
         transform.create();
         color.create();
-        color.set(age::Vector4f{0, 0.8, 0, 1});
+        color.set(age::Vector4f{0, 0.2, 0, 1});
 
         text.create(getFont("courier"));
-        text.setText("Button");
+        text.setText(s);
 
         transformable.create(e, text.getSize());
-        transformable.setPosition(150, 150);
+        transformable.setPosition(pos);
         transform.set(transformable.getTransform());
 
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
@@ -34,11 +34,11 @@ public:
             color
         );
 
-        getComponent<age::Drawable>().setInstanceCount(6);
+        getComponent<age::Drawable>().setInstanceCount(s.size());
 
-        age::UIManager::addBlock(
-            age::UIBlock().addButton(this)
-        );
+        // age::UIManager::addBlock(
+        //     age::UIBlock().addButton(this)
+        // );
 
         updatePoints(transformable.getPosition(), transformable.getScale() * text.getSize());
 
@@ -74,7 +74,7 @@ public:
             age::StateAnimation<age::Color, age::linearFunction>(&color.get(), &color.getBuffer())
             .setLooping(false)
             .addState(age::AnimationState(color.get(), 0))
-            .addState(age::AnimationState(age::Color(0, 0.8, 0, 1), 0))
+            .addState(age::AnimationState(age::Color(0, 0.2, 0, 1), 0))
         );
     }
 
@@ -83,10 +83,14 @@ public:
     }
 
     virtual void setSize(const age::Vector2f& size) override {
-        transformable.setScale(size * 2.0f);
+        updatePoints(getPosition(), size);
+        transformable.setScale(size);
+        transform.set(transformable.getTransform());
     }
 
     virtual void setPosition(const age::Vector2f& pos) override {
-        transformable.setPosition(pos * 2.0f);
+        updatePoints(pos, getSize());
+        transformable.setPosition(pos);
+        transform.set(transformable.getTransform());
     }
 };

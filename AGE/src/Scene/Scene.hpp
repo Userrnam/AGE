@@ -10,6 +10,7 @@
 
 #include "Application.hpp"
 #include "SceneBase.hpp"
+#include <tuple>
 
 namespace age {
 
@@ -27,15 +28,19 @@ protected:
 	inline Entity createEntity() { return Entity(this); }
 
 	template<typename Script, typename... Args>
-	inline void createEntity(Args... args) {
+	inline std::tuple<Entity, Script*> createEntity(Args... args) {
 		Entity e = createEntity();
-		auto script = e.addComponentNoCreate<ScriptComponent*>(new Script(e, std::forward(args)...));
+		auto p = new Script(e, args...);
+		auto script = e.addComponentNoCreate<ScriptComponent*>(p);
+		return { e, p };
 	}
 
 	template<typename Script, typename... Args>
-	inline void createStaticEntity(Args... args) {
+	inline std::tuple<Entity, Script*> createStaticEntity(Args... args) {
 		Entity e = createEntity();
-		auto script = e.addComponentNoCreate<StaticScriptComponent*>(new Script(e, std::forward(args)...));
+		auto p = new Script(e, args...);
+		auto script = e.addComponentNoCreate<StaticScriptComponent*>(p);
+		return { e, p };
 	}
 
 	virtual void onDestroy() {}

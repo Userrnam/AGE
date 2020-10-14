@@ -32,9 +32,21 @@ class TestScene : public age::Scene {
         getApplication()->setWindowTitle(s);
     }
 
+    void createUIBlock() {
+        auto button1 = createEntity<Button>("button1", age::Vector2f(100, 100));
+        auto button2 = createEntity<Button>("button2", age::Vector2f(500, 500));
+
+        age::UIManager::addBlock(
+            age::UIBlock()
+            .addButton(std::get<1>(button1))
+            .addButton(std::get<1>(button2))
+            .alignVertically()
+        );
+    }
+
     virtual void onCreate() override {
         createEntity<HelloText>();
-        createEntity<Button>();
+        createUIBlock();
         createEntity<RectController>();
         createStaticEntity<Triangle>();
         createStaticEntity<Background>();

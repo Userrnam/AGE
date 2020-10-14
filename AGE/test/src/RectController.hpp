@@ -6,7 +6,7 @@
 
 class RectController : public age::ScriptComponent {
     age::Transformable transformable;
-    // TODO: these 2 can use same array
+    // TODO: transform, texcoords and color can use same array
     // Fixme: bundle component does not work on linux
     age::BundleComponent<age::Transform> vars;
     age::StorageComponent<age::TexCoords> texCoords;
