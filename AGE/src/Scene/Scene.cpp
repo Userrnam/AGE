@@ -31,6 +31,8 @@ void Scene::create(class Application* app) {
 }
 
 void Scene::destroy() {
+    onDestroy();
+
     {
         auto entities = m_registry.view<ScriptComponent*>();
         for (auto entity : entities) {
@@ -46,8 +48,6 @@ void Scene::destroy() {
             delete script;
         }
     }
-
-    onDestroy();
 
     m_registry.clear();
 }

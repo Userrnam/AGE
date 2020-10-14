@@ -45,7 +45,7 @@ void Image::create(ImageCreateInfo& info) {
 
 	vkBindImageMemory(apiCore.device, m_image, m_memory, 0);
 
-	VkImageAspectFlags aspectFlags = 0;
+//	VkImageAspectFlags aspectFlags = 0;
 	m_imageView = createImageView(m_image, info.m_format, info.m_aspectFlags);
 }
 

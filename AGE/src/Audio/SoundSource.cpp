@@ -75,6 +75,8 @@ SoundSourceState SoundSource::getState() {
     case AL_PAUSED:  return SoundSourceState::PAUSED;
     case AL_STOPPED: return SoundSourceState::STOPPED;
     }
+    
+    return SoundSourceState::ERROR;
 }
 
 } // namespace age

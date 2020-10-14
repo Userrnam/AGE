@@ -146,7 +146,7 @@ void createLogicalDevice() {
 
 	bool graphicsQueueFound = false;
 	bool transferQueueFound = false;
-	uint32_t graphicsSupportedIndex;
+    uint32_t graphicsSupportedIndex = 0;
 
 	// try to find queue that supports only transfer
 	uint32_t index = 0;

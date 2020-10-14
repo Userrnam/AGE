@@ -15,6 +15,8 @@ protected:
     }
 
 public:
+    virtual ~IButton() {}
+
     inline bool isCovered(float x, float y) {
         return (x > m_pos1.x && y > m_pos1.y) && (x < m_pos2.x && y < m_pos2.y);
     }

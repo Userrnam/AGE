@@ -31,7 +31,7 @@ protected:
 	inline std::tuple<Entity, Script*> createEntity(Args... args) {
 		Entity e = createEntity();
 		auto p = new Script(e, args...);
-		auto script = e.addComponentNoCreate<ScriptComponent*>(p);
+        e.addComponentNoCreate<ScriptComponent*>(p);
 		return { e, p };
 	}
 
@@ -39,7 +39,7 @@ protected:
 	inline std::tuple<Entity, Script*> createStaticEntity(Args... args) {
 		Entity e = createEntity();
 		auto p = new Script(e, args...);
-		auto script = e.addComponentNoCreate<StaticScriptComponent*>(p);
+		e.addComponentNoCreate<StaticScriptComponent*>(p);
 		return { e, p };
 	}
 

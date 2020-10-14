@@ -35,12 +35,17 @@ class TestScene : public age::Scene {
     void createUIBlock() {
         auto button1 = createEntity<Button>("button1", age::Vector2f(100, 100));
         auto button2 = createEntity<Button>("button2", age::Vector2f(500, 500));
+        auto button3 = createEntity<Button>("button3", age::Vector2f(100, 500));
+
+        age::UIBlock uiBlock;
+        uiBlock.create(3);
 
         age::UIManager::addBlock(
-            age::UIBlock()
+            uiBlock
             .addButton(std::get<1>(button1))
             .addButton(std::get<1>(button2))
-            .alignVertically()
+            .addButton(std::get<1>(button3))
+             .alignVertically()
         );
     }
 
@@ -79,9 +84,6 @@ class Application : public age::Application {
         auto scene = new TestScene();
         scene->create(this);
         setActiveScene(scene);
-    }
-
-    virtual void onDestroy() override {
     }
 
     virtual void onEvent(age::Event e) override {

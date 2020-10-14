@@ -17,6 +17,7 @@ public:
     static inline void update(float elapsedTime) {
         std::unordered_set<Buffer*> animationUploadBuffers;
         std::unordered_set<IResolveStructure*> resolveStructures;
+        std::vector<uint64_t> animationsToRemove;
 
         for (auto& anim : m_runningAnimations) {
             if (anim.second->m_buffer) {
@@ -26,11 +27,15 @@ public:
                 resolveStructures.emplace(anim.second->m_resolveStructure);
             }
             if (anim.second->update(elapsedTime)) {
-                delete anim.second;
-                m_runningAnimations.erase(anim.first);
+                animationsToRemove.push_back(anim.first);
             }
         }
-
+        
+        for (auto a : animationsToRemove) {
+            delete m_runningAnimations[a];
+            m_runningAnimations.erase(a);
+        }
+        
         // update resolve structures
         for (auto r : resolveStructures) {
             r->resolve();

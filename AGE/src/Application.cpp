@@ -37,10 +37,10 @@ inline void initFreetype() {
 void Application::destroy() {
     vkDeviceWaitIdle(core::apiCore.device);
 
-    delete defaultPositionManager;
-
     pActiveScene->destroy();
     onDestroy();
+    
+    delete defaultPositionManager;
 
     for (auto& font : m_fonts) {
         font.second->destroy();

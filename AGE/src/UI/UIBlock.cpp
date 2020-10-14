@@ -3,7 +3,8 @@
 namespace age {
 
 bool UIBlock::update(const event::MouseButton& e) {
-    for (IButton* b : m_buttons) {
+    for (size_t i = 0; i < m_buttons.count(); ++i) {
+        auto b = m_buttons[i];
         if (b->isCovered(e.xPos, e.yPos)) {
             if (!m_coveredButton) {
                 m_coveredButton = b;
@@ -23,7 +24,7 @@ bool UIBlock::update(const event::MouseButton& e) {
 }
 
 bool UIBlock::update(const event::CursorPos& p) {
-    for (int i = 0; i < m_buttons.size(); ++i) {
+    for (int i = 0; i < m_buttons.count(); ++i) {
         IButton* b = m_buttons[i];
         if (b->isCovered(p.x, p.y)) {
             if (!m_coveredButton) {
@@ -46,7 +47,7 @@ bool UIBlock::update(const event::CursorPos& p) {
 
 UIBlock& UIBlock::alignVertically(float spacing) {
     auto firstX = m_buttons[0]->getPosition().y;
-    for (size_t i = 1; i < m_buttons.size(); ++i) {
+    for (size_t i = 1; i < m_buttons.count(); ++i) {
         auto prevButtonY = m_buttons[i-1]->getPosition().y;
         auto prevButtonSize = m_buttons[i-1]->getSize();
         m_buttons[i]->setPosition(firstX, prevButtonSize.y + prevButtonY + spacing);
@@ -56,7 +57,7 @@ UIBlock& UIBlock::alignVertically(float spacing) {
 
 UIBlock& UIBlock::alignHorizontally(float spacing) {
     auto firstY = m_buttons[0]->getPosition().y;
-    for (size_t i = 1; i < m_buttons.size(); ++i) {
+    for (size_t i = 1; i < m_buttons.count(); ++i) {
         auto prevButtonX = m_buttons[i-1]->getPosition().x;
         auto prevButtonSize = m_buttons[i-1]->getSize();
         m_buttons[i]->setPosition(prevButtonX + prevButtonSize.x + spacing, firstY);
@@ -65,8 +66,8 @@ UIBlock& UIBlock::alignHorizontally(float spacing) {
 }
 
 UIBlock& UIBlock::move(const Vector2f& v) {
-    for (auto button : m_buttons) {
-        button->move(v);
+    for (size_t i = 0; i < m_buttons.count(); ++i) {
+        m_buttons[i]->move(v);
     }
     return *this;
 }

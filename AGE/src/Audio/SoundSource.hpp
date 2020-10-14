@@ -10,7 +10,8 @@ enum class SoundSourceState {
     INITIAL,
     PLAYING,
     PAUSED,
-    STOPPED
+    STOPPED,
+    ERROR
 };
 
 class SoundSource {

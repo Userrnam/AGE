@@ -7,20 +7,28 @@
 #include "IButton.hpp"
 #include "Events.hpp"
 
-#define ps() std::cout << __LINE__ << " cb " << m_coveredButton << "\n"
+#include "Containers/DynamicArray.hpp"
 
 namespace age {
 
 // alignment is relative to first button
 class UIBlock {
-    std::vector<IButton*> m_buttons;
-    // Fixme:
-    // have no idea why but without this it crashes
-    int dummy;
+    DynamicArray<IButton*> m_buttons;
     IButton* m_coveredButton = nullptr;
 
 public:
-    inline UIBlock& addButton(IButton* b) { m_buttons.push_back(b); return *this; }
+    void create(size_t buttonCount) {
+        m_buttons.create(buttonCount);
+    }
+
+    void destroy() {
+        for (size_t i = 0; i < m_buttons.count(); ++i) {
+            delete m_buttons[i];
+        }
+        m_buttons.destroy();
+    }
+
+    inline UIBlock& addButton(IButton* b) { m_buttons.add(b); return *this; }
 
     bool update(const event::MouseButton& e);
     bool update(const event::CursorPos& p);

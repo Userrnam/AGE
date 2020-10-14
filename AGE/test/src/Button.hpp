@@ -36,10 +36,6 @@ public:
 
         getComponent<age::Drawable>().setInstanceCount(s.size());
 
-        // age::UIManager::addBlock(
-        //     age::UIBlock().addButton(this)
-        // );
-
         updatePoints(transformable.getPosition(), transformable.getScale() * text.getSize());
 
         auto av = getView<age::Drawable>();
@@ -48,7 +44,7 @@ public:
         }
     }
 
-    ~Button() {
+    ~Button()  {
         color.destroy();
         transform.destroy();
         text.destroy();

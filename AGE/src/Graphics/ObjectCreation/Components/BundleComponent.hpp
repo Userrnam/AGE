@@ -10,7 +10,7 @@
 namespace age {
 
 // todo: remove this and use custom variant
-static const Inserts& _getVariantInserts(const std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>& v) {
+static inline const Inserts& _getVariantInserts(const std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>& v) {
     if (std::holds_alternative<ShaderComponentBuffer>(v)) {
         return std::get<ShaderComponentBuffer>(v);
     }
@@ -20,6 +20,9 @@ static const Inserts& _getVariantInserts(const std::variant<ShaderComponentBuffe
     if (std::holds_alternative<ShaderComponentForward>(v)) {
         return std::get<ShaderComponentForward>(v);
     }
+    
+    // shut up xcode
+    return std::get<ShaderComponentBuffer>(v);
 }
 
 template<typename... Args>

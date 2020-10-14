@@ -29,6 +29,9 @@ static const Inserts& getVariantInserts(const std::variant<ShaderComponentBuffer
     if (std::holds_alternative<ShaderComponentForward>(v)) {
         return std::get<ShaderComponentForward>(v);
     }
+    
+    // just to shut up xcode
+    return std::get<ShaderComponentBuffer>(v);;
 }
 
 inline std::string getVariableName(const std::string& s) {
@@ -272,8 +275,9 @@ void ShaderBuilder::saveShader(const std::string& path) {
 
 Shader ShaderBuilder::compileVertexShader(const std::vector<ShaderComponentInfo>& components) {
     generateVertexShaderSource(components);
-    saveShader("tmp.vert");
-    if (std::system("glslc tmp.vert")) {
+    saveShader("/tmp/tmp.vert");
+    auto res = std::system("/usr/local/bin/glslc /tmp/tmp.vert");
+    if (res) {
         throw std::runtime_error("[ShaderBuilder]: failed to compile vertex shader");
     }
 
@@ -282,15 +286,15 @@ Shader ShaderBuilder::compileVertexShader(const std::vector<ShaderComponentInfo>
     out.setEntry("main");
     out.setStage(VK_SHADER_STAGE_VERTEX_BIT);
 
-    std::system("rm tmp.vert a.spv");
+    std::system("rm /tmp/tmp.vert a.spv");
 
     return out;
 }
 
 Shader ShaderBuilder::compileFragmentShader(const std::vector<ShaderComponentInfo>& components) {
     generateFragmentShaderSource(components);
-    saveShader("tmp.frag");
-    if (std::system("glslc tmp.frag")) {
+    saveShader("/tmp/tmp.frag");
+    if (std::system("/usr/local/bin/glslc /tmp/tmp.frag")) {
         throw std::runtime_error("[ShaderBuilder]: failed to compile fragment shader");
     }
 
@@ -299,7 +303,7 @@ Shader ShaderBuilder::compileFragmentShader(const std::vector<ShaderComponentInf
     out.setEntry("main");
     out.setStage(VK_SHADER_STAGE_FRAGMENT_BIT);
 
-    std::system("rm tmp.frag a.spv");
+    std::system("rm /tmp/tmp.frag a.spv");
 
     return out;
 }

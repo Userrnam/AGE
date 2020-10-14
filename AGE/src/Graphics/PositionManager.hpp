@@ -28,6 +28,7 @@ class PositionManager {
 public:
     void remove(entt::entity e) { m_data.erase(e); }
     void update(entt::entity e, const Positionable& p) { m_data[e] = p; }
+
     size_t getObjectCount() { return m_data.size(); }
 
     std::vector<entt::entity> getVisibleEntities(const Positionable& camera) {
