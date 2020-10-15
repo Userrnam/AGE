@@ -4,6 +4,7 @@
 
 #include "Animation.hpp"
 #include "Graphics.hpp"
+#include "Scene.hpp"
 #include "UI.hpp"
 
 class Button : public age::ScriptComponent, public age::IButton {
@@ -56,7 +57,7 @@ public:
         animId = age::Animator::addAnimation(
             age::StateAnimation<age::Color, age::linearFunction>(&bundle.get<age::Color>(), &bundle.getBuffer())
             .setLooping(false)
-            .addState(age::AnimationState(bundle.get<age::Color>(), 0))
+            .addState(age::AnimationState(bundle.get<age::Color>(), 0.2))
             .addState(age::AnimationState(age::Color(0, 1, 0, 1), 0))
         );
     }
@@ -67,7 +68,7 @@ public:
         animId = age::Animator::addAnimation(
             age::StateAnimation<age::Color, age::linearFunction>(&bundle.get<age::Color>(), &bundle.getBuffer())
             .setLooping(false)
-            .addState(age::AnimationState(bundle.get<age::Color>(), 0))
+            .addState(age::AnimationState(bundle.get<age::Color>(), 0.1))
             .addState(age::AnimationState(age::Color(0, 0.2, 0, 1), 0))
         );
     }

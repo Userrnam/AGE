@@ -1,10 +1,10 @@
-#include "Events/Event.hpp"
-#include "Graphics/Rendering/Renderer.hpp"
 #include <chrono>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 #include "Application.hpp"
+
+#include "Graphics/Rendering/Renderer.hpp"
 
 #include "Graphics/Core/Window/Window.hpp"
 #include "Graphics/Core/Core.hpp"

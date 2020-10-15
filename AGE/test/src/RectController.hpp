@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Graphics.hpp"
+#include "Scene.hpp"
+#include "Audio.hpp"
 
 #include "Utils/utils.hpp"
 

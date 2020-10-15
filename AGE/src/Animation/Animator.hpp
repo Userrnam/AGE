@@ -5,8 +5,6 @@
 
 #include "Animation.hpp"
 
-#include <iostream>
-
 namespace age {
 
 class Animator {

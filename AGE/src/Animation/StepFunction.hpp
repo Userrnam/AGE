@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "State.hpp"
+#include "AnimationState.hpp"
 
 namespace age {
 

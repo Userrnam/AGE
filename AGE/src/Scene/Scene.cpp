@@ -1,5 +1,3 @@
-#include <chrono>
-
 #include "Scene.hpp"
 
 namespace age {

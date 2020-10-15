@@ -1,10 +1,8 @@
 #pragma once
 
-#include <vector>
-#include <stdint.h>
 #include <stdint.h>
 
-#include "State.hpp"
+#include "AnimationState.hpp"
 #include "Graphics.hpp"
 
 namespace age {

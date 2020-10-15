@@ -1,7 +1,5 @@
 #pragma once
 
-#include <utility>
-
 #include "External/entt.hpp"
 #include "SceneBase.hpp"
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AnimationState.hpp"
+
 namespace age {
 
 template <typename T>

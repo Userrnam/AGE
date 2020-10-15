@@ -1,15 +1,8 @@
-#include <math.h>
-
 #include "Application.hpp"
 
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 #include <string>
 
 #include "Utils/utils.hpp"
-#include "Graphics.hpp"
-#include "Audio.hpp"
-#include "Animation.hpp"
 
 #include "Scene.hpp"
 
@@ -22,9 +15,7 @@
 #include "Background.hpp"
 #include "Triangle.hpp"
 #include "Button.hpp"
-#include "Graphics/PositionManager.hpp"
-#include "Graphics/View/ViewManager.hpp"
-#include "Graphics/Core/Core.hpp"
+
 
 class TestScene : public age::Scene {
     virtual void onUpdate(float elapsedTime) override {
@@ -78,8 +69,6 @@ class Application : public age::Application {
         loadFont(age::getResourcePath("Courier.dfont"), "courier");
         loadTexture(age::getResourcePath("mountains.png"), "mountains");
         loadTexture(age::getResourcePath("yoda.jpg"), "yoda");
-
-        auto& view = age::ViewManager::getView(age::hash("default"));
 
         auto scene = new TestScene();
         scene->create(this);

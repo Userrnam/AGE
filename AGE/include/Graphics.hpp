@@ -1,5 +1,8 @@
 #pragma once
 
+#include <GLFW/glfw3.h>
+
+#include "../src/Graphics/ObjectCreation/Drawable.hpp"
 #include "../src/Graphics/Objects/Texture.hpp"
 #include "../src/Graphics/Transformable.hpp"
 #include "../src/Graphics/ObjectCreation/Components/ArrayComponent.hpp"

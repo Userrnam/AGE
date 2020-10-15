@@ -4,7 +4,8 @@
 
 #include "Graphics.hpp"
 
-#include "Graphics/PositionManager.hpp"
+#include "Animation.hpp"
+#include "Scene.hpp"
 #include "Utils/utils.hpp"
 
 class HelloText : public age::ScriptComponent {
