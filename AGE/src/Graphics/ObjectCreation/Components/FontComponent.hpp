@@ -26,6 +26,7 @@ struct FontInfo {
 class FontComponent : public TileMapComponent, public TextureComponent {
     std::unordered_map<char, _Character> m_characters;
     float m_height = 0;
+    float m_yShift = 0;
 
     friend class TextComponent;
 public:

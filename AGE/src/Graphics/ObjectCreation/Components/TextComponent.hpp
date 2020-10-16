@@ -24,7 +24,9 @@ public:
 
     void create(FontComponent* font, uint32_t maxSize = 128);
     void setText(const std::string& text);
+
     Vector2f getSize() const { return m_size; }
+    float getYShift() { return m_font->m_yShift; }
 };
 
 } // namespace age

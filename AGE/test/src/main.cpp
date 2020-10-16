@@ -24,20 +24,23 @@ class TestScene : public age::Scene {
     }
 
     void createUIBlock() {
-        auto button1 = createEntity<Button>("button1", age::Vector2f(100, 100));
-        auto button2 = createEntity<Button>("button2", age::Vector2f(500, 500));
-        auto button3 = createEntity<Button>("button3", age::Vector2f(100, 500));
+        auto button1 = createEntity<Button>("button1", age::Vector2f(0, 0));
+        auto button2 = createEntity<Button>("button2", age::Vector2f(0, 0));
+        auto button3 = createEntity<Button>("button3", age::Vector2f(0, 0));
 
         age::UIBlock uiBlock;
         uiBlock.create(3);
 
-        age::UIManager::addBlock(
+        auto id = age::UIManager::addBlock(
             uiBlock
             .addButton(std::get<1>(button1))
             .addButton(std::get<1>(button2))
             .addButton(std::get<1>(button3))
-             .alignVertically()
+            .alignVertically(10)
         );
+
+        auto& block = age::UIManager::getBlock(id);
+        block.move(100, 100);
     }
 
     virtual void onCreate() override {

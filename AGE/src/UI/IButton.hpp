@@ -4,47 +4,72 @@
 
 namespace age {
 
-class IButton {
-protected:
-    Vector2f m_pos1;
-    Vector2f m_pos2;
+struct HitBox {
+    Vector2f pos1 = 0;
+    Vector2f pos2 = 0;
 
-    void updatePoints(const Vector2f& pos, const Vector2f& size) {
-        m_pos1 = pos;
-        m_pos2 = pos + size;
+    bool isCovered(const Vector2f& pos) {
+        return (pos.x > pos1.x && pos.y > pos1.y) && (pos.x < pos2.x && pos.y < pos2.y);
+    }
+
+    void update(const Vector2f& pos, const Vector2f& size) {
+        pos1 = pos;
+        pos2 =pos + size;
+    }
+
+    void move(const Vector2f& v) {
+        pos1 += v;
+        pos2 += v;
+    }
+
+    void setPosition(const Vector2f& pos) {
+        this->move(pos - pos1);
+    }
+
+    void setSize(const Vector2f& size) {
+        pos2 = pos1 + size;
+    }
+
+    Vector2f getPosition() {
+        return pos1;
+    }
+
+    Vector2f getSize() {
+        return pos2 - pos1;
+    }
+};
+
+class IButton {
+    HitBox m_hitbox;
+
+    void __setSize(const Vector2f& size) {
+        m_hitbox.setSize(size);
+        setSize(size);
+    }
+
+    void __move(const Vector2f& v) {
+        m_hitbox.move(v);
+        move(v);
+    }
+
+    friend class UIBlock;
+protected:
+    void updateHitBox(const Vector2f& pos, const Vector2f& size) {
+        m_hitbox.update(pos, size);
     }
 
 public:
     virtual ~IButton() {}
 
-    inline bool isCovered(float x, float y) {
-        return (x > m_pos1.x && y > m_pos1.y) && (x < m_pos2.x && y < m_pos2.y);
-    }
-
     virtual void onEnter() {}
     virtual void onLeave() {}
     virtual void onPress(unsigned button) {}
 
-    virtual void setPosition(const Vector2f& pos) = 0;
+    virtual void move(const Vector2f& v) = 0;
     virtual void setSize(const Vector2f& size) = 0;
 
-    inline void setPosition(float x, float y) { setPosition({x, y}); }
-    inline void setSize(float x, float y) { setSize({x, y}); }
-
-    inline void move(const Vector2f& v) {
-        m_pos1 += v;
-        m_pos2 += v;
-    }
-
     inline void move(float x, float y) { move({x, y}); }
-
-    inline Vector2f getPosition() {
-        return m_pos1;
-    }
-
-    inline Vector2f getSize() {
-        return m_pos2 - m_pos1;
-    }
+    inline void setSize(float x, float y) { setSize({x, y}); }
 };
 
 } // namespace age

@@ -39,6 +39,8 @@ void FontComponent::load(const std::string& fontPath, const FontInfo& info) {
     // FIXME: image is long, may be there is a better way
     unsigned maxHeight = 0;
     unsigned totalWidth = 0;
+    unsigned yShift = 0;
+
     for (auto c : *loadChars) {
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
             throw std::runtime_error("Font::load: failed to load Glyph");
@@ -47,7 +49,12 @@ void FontComponent::load(const std::string& fontPath, const FontInfo& info) {
         if (face->glyph->bitmap.rows > maxHeight) {
             maxHeight = face->glyph->bitmap.rows;
         }
+        if (yShift < face->glyph->bitmap.rows - face->glyph->bitmap_top) {
+            yShift = face->glyph->bitmap.rows - face->glyph->bitmap_top;
+        }
     }
+
+    m_yShift = yShift;
     
     m_height = maxHeight;
 

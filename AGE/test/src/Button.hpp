@@ -36,7 +36,7 @@ public:
 
         getComponent<age::Drawable>().setInstanceCount(s.size());
 
-        updatePoints(transformable.getPosition(), transformable.getScale() * text.getSize());
+        updateHitBox({ transformable.getPosition().x, transformable.getPosition().y - text.getYShift() }, transformable.getScale() * text.getSize());
 
         auto av = getView<age::Drawable>();
         for (auto e : av) {
@@ -78,15 +78,13 @@ public:
     }
 
     virtual void setSize(const age::Vector2f& size) override {
-        updatePoints(getPosition(), size);
         transformable.setScale(size);
         bundle.set<age::Transform>(transformable.getTransform());
         bundle.upload();
     }
 
-    virtual void setPosition(const age::Vector2f& pos) override {
-        updatePoints(pos, getSize());
-        transformable.setPosition(pos);
+    virtual void move(const age::Vector2f& v) override {
+        transformable.move(v);
         bundle.set<age::Transform>(transformable.getTransform());
         bundle.upload();
     }

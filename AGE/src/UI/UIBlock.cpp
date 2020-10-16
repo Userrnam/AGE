@@ -5,7 +5,7 @@ namespace age {
 bool UIBlock::update(const event::MouseButton& e) {
     for (size_t i = 0; i < m_buttons.count(); ++i) {
         auto b = m_buttons[i];
-        if (b->isCovered(e.xPos, e.yPos)) {
+        if (b->m_hitbox.isCovered(Vector2f(e.xPos, e.yPos))) {
             if (!m_coveredButton) {
                 m_coveredButton = b;
                 b->onEnter();
@@ -26,7 +26,7 @@ bool UIBlock::update(const event::MouseButton& e) {
 bool UIBlock::update(const event::CursorPos& p) {
     for (int i = 0; i < m_buttons.count(); ++i) {
         IButton* b = m_buttons[i];
-        if (b->isCovered(p.x, p.y)) {
+        if (b->m_hitbox.isCovered(Vector2f(p.x, p.y))) {
             if (!m_coveredButton) {
                 m_coveredButton = b;
                 b->onEnter();
@@ -46,34 +46,32 @@ bool UIBlock::update(const event::CursorPos& p) {
 }
 
 UIBlock& UIBlock::alignVertically(float spacing) {
-    auto firstX = m_buttons[0]->getPosition().y;
     for (size_t i = 1; i < m_buttons.count(); ++i) {
-        auto prevButtonY = m_buttons[i-1]->getPosition().y;
-        auto prevButtonSize = m_buttons[i-1]->getSize();
-        m_buttons[i]->setPosition(firstX, prevButtonSize.y + prevButtonY + spacing);
+        auto prevButtonY = m_buttons[i-1]->m_hitbox.getPosition().y;
+        auto prevButtonSize = m_buttons[i-1]->m_hitbox.getSize();
+        m_buttons[i]->__move({0, prevButtonSize.y + prevButtonY + spacing});
     }
     return *this;
 }
 
 UIBlock& UIBlock::alignHorizontally(float spacing) {
-    auto firstY = m_buttons[0]->getPosition().y;
     for (size_t i = 1; i < m_buttons.count(); ++i) {
-        auto prevButtonX = m_buttons[i-1]->getPosition().x;
-        auto prevButtonSize = m_buttons[i-1]->getSize();
-        m_buttons[i]->setPosition(prevButtonX + prevButtonSize.x + spacing, firstY);
+        auto prevButtonX = m_buttons[i-1]->m_hitbox.getPosition().x;
+        auto prevButtonSize = m_buttons[i-1]->m_hitbox.getSize();
+        m_buttons[i]->__move({prevButtonX + prevButtonSize.x + spacing, 0});
     }
     return *this;
 }
 
 UIBlock& UIBlock::move(const Vector2f& v) {
     for (size_t i = 0; i < m_buttons.count(); ++i) {
-        m_buttons[i]->move(v);
+        m_buttons[i]->__move(v);
     }
     return *this;
 }
 
 UIBlock& UIBlock::setPosition(const Vector2f& v) {
-    auto firstPos = m_buttons[0]->getPosition();
+    auto firstPos = m_buttons[0]->m_hitbox.getPosition();
     return this->move(v - firstPos);
 }
 
