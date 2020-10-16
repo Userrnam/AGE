@@ -10,12 +10,22 @@ namespace age {
 struct _Character {
     glm::ivec2 bearing;
     unsigned advance;
+    unsigned index;
+};
+
+struct FontInfo {
+    unsigned fontSize = 50;
+    std::string loadChars;
+    Sampler sampler = Sampler::getDefault();
+
+    FontInfo& setFontSize(unsigned size) { fontSize = size; return *this; }
+    FontInfo& setLoadChars(const std::string& chars) { loadChars = chars; return *this; }
+    FontInfo& setSampler(const Sampler& _sampler) { sampler = _sampler; return *this; }
 };
 
 class FontComponent : public TileMapComponent, public TextureComponent {
     std::unordered_map<char, _Character> m_characters;
     float m_height = 0;
-    unsigned char m_firstCharacter = 32;
 
     friend class TextComponent;
 public:
@@ -37,7 +47,7 @@ public:
         return info;
     }
 
-    void load(const std::string& fontPath, unsigned fontSize = 100, Sampler sampler = Sampler::getDefault());
+    void load(const std::string& fontPath, const FontInfo& info = FontInfo());
     void destroy();
 };
 

@@ -9,27 +9,37 @@ namespace age {
 
 FT_Library ftLibrary;
 
-void FontComponent::load(const std::string& fontPath, unsigned fontSize, Sampler sampler) {
-    const unsigned char lastCharacter = 128;
-    m_firstCharacter = 32;
+void FontComponent::load(const std::string& fontPath, const FontInfo& info) {
+    const std::string *loadChars;
+    std::string defaultChars;
+
+    if (info.loadChars.size()) {
+        loadChars = &info.loadChars;
+    } else {
+
+        defaultChars.reserve(128 - 32);
+        for (unsigned char c = 32; c < 128; ++c) {
+            defaultChars.push_back(c);
+        }
+        loadChars = &defaultChars;
+    }
 
     // create tilemap buffer
-    TileMapComponent::create(lastCharacter - m_firstCharacter);
+    TileMapComponent::create(loadChars->size());
 
     FT_Face face;
     if (FT_New_Face(ftLibrary, fontPath.c_str(), 0, &face)) {
         throw std::runtime_error("Font::load: failed to load font");
     }
 
-    if (FT_Set_Pixel_Sizes(face, 0, fontSize)) {
+    if (FT_Set_Pixel_Sizes(face, 0, info.fontSize)) {
         throw std::runtime_error("Font::load: failed to set font size");
     }
 
-    // FIXME: image is long now, may be there is a better way
-    // to determine size of atlas
+    // FIXME: image is long, may be there is a better way
     unsigned maxHeight = 0;
     unsigned totalWidth = 0;
-    for (unsigned char c = 0; c < lastCharacter; ++c) {
+    for (auto c : *loadChars) {
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
             throw std::runtime_error("Font::load: failed to load Glyph");
         }
@@ -42,7 +52,7 @@ void FontComponent::load(const std::string& fontPath, unsigned fontSize, Sampler
     m_height = maxHeight;
 
     // add spacing ??
-    totalWidth += lastCharacter;
+    totalWidth += 128;
 
     // create texture
     float textureWidth = static_cast<float>(totalWidth);
@@ -52,7 +62,8 @@ void FontComponent::load(const std::string& fontPath, unsigned fontSize, Sampler
     unsigned curX = 0;
 
     // fill characters map
-    for (unsigned char c = m_firstCharacter; c < lastCharacter; ++c) {
+    unsigned index = 0;
+    for (char c : *loadChars) {
         FT_Load_Char(face, c, FT_LOAD_RENDER);
         FT_Bitmap* bitmap = &face->glyph->bitmap;
 
@@ -69,6 +80,9 @@ void FontComponent::load(const std::string& fontPath, unsigned fontSize, Sampler
         character.advance = face->glyph->advance.x >> 6;
         character.bearing.x = face->glyph->bitmap_left;
         character.bearing.y = face->glyph->bitmap_top - face->glyph->bitmap.rows;
+        character.index = index;
+
+        index++;
 
         // add tile
         {
@@ -127,7 +141,7 @@ void FontComponent::load(const std::string& fontPath, unsigned fontSize, Sampler
     stagingBuffer.destroy();
 
     Texture texture;
-    texture.create(image, sampler);
+    texture.create(image, info.sampler);
 
     TextureComponent::setTexture(texture);
 }

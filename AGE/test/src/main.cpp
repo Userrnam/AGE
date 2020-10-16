@@ -66,7 +66,9 @@ class Application : public age::Application {
     }
 
     virtual void onCreate() override {
-        loadFont(age::getResourcePath("Courier.dfont"), "courier");
+        age::FontInfo info;
+        info.loadChars = "button1hello23";
+        loadFont(age::getResourcePath("Courier.dfont"), "courier", info);
         loadTexture(age::getResourcePath("mountains.png"), "mountains");
         loadTexture(age::getResourcePath("yoda.jpg"), "yoda");
 

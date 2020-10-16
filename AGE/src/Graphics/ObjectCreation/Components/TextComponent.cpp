@@ -19,7 +19,7 @@ void TextComponent::setText(const std::string& text) {
 
         TileIndexer tile;
         tile.setPosition({ (float)(move + character.bearing.x), (float)(character.bearing.y) });
-        tile.setIndex(c - m_font->m_firstCharacter);
+        tile.setIndex(character.index);
 
         Tiles::add(tile);
 
