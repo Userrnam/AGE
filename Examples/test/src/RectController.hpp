@@ -1,10 +1,16 @@
 #pragma once
 
-#include "Graphics.hpp"
-#include "Scene.hpp"
-#include "Audio.hpp"
+#include <GLFW/glfw3.h>
 
-#include "Utils/utils.hpp"
+#include <AGE/Graphics.hpp>
+#include <AGE/Scene.hpp>
+#include <AGE/Audio.hpp>
+#include <AGE/Utils.hpp>
+
+// #include "Scene.hpp"
+// #include "Audio.hpp"
+
+// #include "Utils/utils.hpp"
 
 class RectController : public age::ScriptComponent {
     age::Transformable transformable;

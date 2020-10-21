@@ -3,15 +3,13 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-#include "View/View.hpp"
+#include "../View/View.hpp"
 #include "Shader.hpp"
 #include "Descriptor.hpp"
-#include "MemoryHolders/Buffer.hpp"
-#include "Vertex.hpp"
+#include "../MemoryHolders/Buffer.hpp"
 #include "Index.hpp"
-#include "Containers/Shared.hpp"
-#include "ShaderBuilder.hpp"
 #include "ShapeManager.hpp"
+#include "../../Math/Vector.hpp"
 
 #include "Components/ComponentCollector.hpp"
 

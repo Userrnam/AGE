@@ -1,3 +1,5 @@
+#include <GLFW/glfw3.h>
+
 #include "UIBlock.hpp"
 
 namespace age {

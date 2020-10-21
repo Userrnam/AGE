@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MemoryHolders/Buffer.hpp"
+#include "../../MemoryHolders/Buffer.hpp"
 #include "ShaderComponent.hpp"
 
 namespace age {

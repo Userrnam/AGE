@@ -1,6 +1,4 @@
 .build/
 .vscode/
+.vimrc
 .DS_Store
-.build
-.*
-@*

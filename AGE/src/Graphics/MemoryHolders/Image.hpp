@@ -2,8 +2,6 @@
 
 #include <vulkan/vulkan.h>
 
-#include "Memory/DeviceAlloc.hpp"
-
 namespace age::core {
 
 // Images are always device local

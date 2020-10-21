@@ -61,7 +61,4 @@ if (NOT ${FREETYPE_FOUND})
     endif()
 endif()
 
-include_directories("src" "include")
-
 ADD_SUBDIRECTORY("src")
-ADD_SUBDIRECTORY("test")

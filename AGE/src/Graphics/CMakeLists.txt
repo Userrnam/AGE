@@ -19,7 +19,6 @@ if (NOT ${Vulkan_FOUND})
     endif()
 endif()
 
-include_directories("${CMAKE_CURRENT_LIST_DIR}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I ${CMAKE_CURRENT_LIST_DIR}")
 
 file(GLOB sources
@@ -40,8 +39,6 @@ find_package(Freetype)
 find_package(glfw3)
 
 add_library(graphics STATIC ${sources})
-target_include_directories(graphics PRIVATE "$CMAKE_CURRENT_LIST_DIR")
-target_compile_options(graphics PUBLIC "-I${CMAKE_CURRENT_LIST_DIR}")
 if (APPLE)
 target_include_directories(graphics PUBLIC "${FREETYPE_INCLUDE_DIRS}")
 target_link_libraries(graphics containers glfw vulkan utils freetype)
@@ -49,4 +46,3 @@ else ()
 target_include_directories(graphics PUBLIC "${FREETYPE_INCLUDE_DIRS}" "${GLFW3_INCLUDE_DIR}")
 target_link_libraries(graphics containers vulkan ${GLFW3_LIBRARY} rt m dl X11 pthread xcb Xau Xdmcp utils ${FREETYPE_LIBRARIES})
 endif ()
-target_include_directories(graphics PRIVATE "$CMAKE_CURRENT_LIST_DIR")

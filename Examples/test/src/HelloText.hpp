@@ -2,11 +2,14 @@
 
 #include <iostream>
 
-#include "Graphics.hpp"
+// #include "Graphics.hpp"
+#include <AGE/Graphics.hpp>
+#include <AGE/Animation.hpp>
+#include <AGE/Scene.hpp>
 
-#include "Animation.hpp"
-#include "Scene.hpp"
-#include "Utils/utils.hpp"
+// #include "Animation.hpp"
+// #include "Scene.hpp"
+// #include "Utils/utils.hpp"
 
 class HelloText : public age::ScriptComponent {
     age::TextComponent text;

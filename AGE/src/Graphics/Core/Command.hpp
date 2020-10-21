@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Math.hpp"
+#include "../Math/Vector.hpp"
 
 namespace age::core::cmd {
 

@@ -2,8 +2,8 @@
 
 #include <glm/glm.hpp>
 
-#include "Math.hpp"
-#include "External/entt.hpp"
+#include "../Math/Vector.hpp"
+#include "../External/entt.hpp"
 #include "PositionManager.hpp"
 
 namespace age {

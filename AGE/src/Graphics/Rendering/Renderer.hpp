@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "External/entt.hpp"
+#include "../../External/entt.hpp"
 
-#include "ObjectCreation/Drawable.hpp"
+#include "../ObjectCreation/Drawable.hpp"
 
 namespace age {
 

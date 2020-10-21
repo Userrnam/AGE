@@ -3,7 +3,9 @@
 #include <stdint.h>
 
 #include "AnimationState.hpp"
-#include "Graphics.hpp"
+
+#include "../Graphics/Transformable.hpp"
+#include "../Graphics/ObjectCreation/Components/TransformComponent.hpp"
 
 namespace age {
 

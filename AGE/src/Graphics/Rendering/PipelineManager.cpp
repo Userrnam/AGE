@@ -169,7 +169,7 @@ std::pair<VkPipeline, VkPipelineLayout> createPipeline(const PipelineCreateInfo&
     // auto& vertexDescription = Shape::getPipelineCreateDescription(info.getShapeId());
     VkVertexInputBindingDescription bindingDescription = {};
     bindingDescription.binding = 0;
-    bindingDescription.stride = sizeof(Vertex);
+    bindingDescription.stride = sizeof(Vector2f);
     bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
     VkVertexInputAttributeDescription attributeDescription = {};

@@ -1,5 +1,5 @@
 #include "Cursor.hpp"
-#include "Graphics/Core/Core.hpp"
+#include "../Graphics/Core/Core.hpp"
 
 namespace age {
 

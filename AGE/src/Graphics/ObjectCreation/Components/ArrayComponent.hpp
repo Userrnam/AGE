@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <sstream>
 
-#include "Containers/DynamicBuffer.hpp"
 #include "ShaderComponent.hpp"
 
 namespace age {

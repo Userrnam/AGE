@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Events/Event.hpp"
-#include "Scene/Entity.hpp"
+#include "../Events/Event.hpp"
+#include "Entity.hpp"
 
 namespace age {
 

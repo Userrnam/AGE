@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "Math.hpp"
-
 namespace age {
 
 constexpr uint64_t hash(const char* str) {

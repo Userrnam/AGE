@@ -1,17 +1,17 @@
 #pragma once
 
 #include <unordered_map>
+#include <string>
 
-#include "Events/EventManager.hpp"
-#include "Events/Event.hpp"
-#include "Graphics/ObjectCreation/Components/FontComponent.hpp"
+#include "../Events/EventManager.hpp"
+#include "../Events/Event.hpp"
+#include "../Graphics/ObjectCreation/Components/FontComponent.hpp"
 
 namespace age {
 
 class Scene;
 class Application {
     bool m_isRunning = true;
-    bool m_created = false;
     float m_fps = 0;
 
     std::unordered_map<uint64_t, FontComponent*> m_fonts;
@@ -21,8 +21,9 @@ class Application {
     friend class SceneBase;
 
     void render();
-protected:
+    void create();
 
+protected:
     Scene* pActiveScene = nullptr;
 
     void setActiveScene(Scene* scene) {
@@ -55,11 +56,12 @@ protected:
     }
 
     virtual void onEvent(Event event) {}
-    virtual void onCoreConfig() {}
     virtual void onCreate() {}
     virtual void onDestroy() {}
 
 public:
+    Application(const std::string& name, int width, int height);
+    ~Application();
 
     float getFps() {
         return m_fps;
@@ -67,8 +69,6 @@ public:
 
     void setWindowTitle(const std::string& s);
 
-    void destroy();
-    void create();
     void run();
     void stop() {
         m_isRunning = false;

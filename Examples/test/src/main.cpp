@@ -1,10 +1,12 @@
-#include "Application.hpp"
+// #include "Scene.hpp"
+#include <AGE/Scene.hpp>
+#include <AGE/Utils.hpp>
 
 #include <string>
 
-#include "Utils/utils.hpp"
+// #include "Utils/utils.hpp"
 
-#include "Scene.hpp"
+// #include "Scene.hpp"
 
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""
@@ -17,7 +19,7 @@
 #include "Button.hpp"
 
 
-class TestScene : public age::Scene {
+class TestScene : public age::Scene {    
     virtual void onUpdate(float elapsedTime) override {
         std::string s = "fps: " + std::to_string(getApplication()->getFps());
         getApplication()->setWindowTitle(s);
@@ -28,13 +30,10 @@ class TestScene : public age::Scene {
         auto button2 = createEntity<Button>("button2", age::Vector2f(0, 0));
         auto button3 = createEntity<Button>("button3", age::Vector2f(0, 0));
 
-        age::UIBlock uiBlock;
-        uiBlock.create(3);
-
         auto id = age::UIManager::addBlock(
-            uiBlock
-            .addButton(std::get<1>(button1))
+            age::UIBlock(3)
             .addButton(std::get<1>(button2))
+            .addButton(std::get<1>(button1))
             .addButton(std::get<1>(button3))
             .alignVertically(10)
         );
@@ -52,25 +51,14 @@ class TestScene : public age::Scene {
     }
 };
 
-class Application : public age::Application {
-    virtual void onCoreConfig() override {
-        age::setResourcePath(RESOURCE_PATH);
-
-        age::config::setApplicationName("app");
-        age::config::setApplicationVersion(VK_MAKE_VERSION(1,0,0));
-        age::config::setDebugEnable(true);
-        age::config::setSampleCount(VK_SAMPLE_COUNT_4_BIT);
-        age::config::setWindowProperties(
-            age::config::WindowProperties()
-            .setResizeEnable(true)
-            .setSize(800, 600)
-            .setTitle("app")
-        );
-    }
+struct Application : public age::Application {
+    Application(const std::string& name, int width, int height)
+        : age::Application(name, width, height) {}
 
     virtual void onCreate() override {
         age::FontInfo info;
         info.loadChars = "button1hello23";
+
         loadFont(age::getResourcePath("Courier.dfont"), "courier", info);
         loadTexture(age::getResourcePath("mountains.png"), "mountains");
         loadTexture(age::getResourcePath("yoda.jpg"), "yoda");
@@ -96,10 +84,13 @@ class Application : public age::Application {
 };
 
 int main(int argc, char* argv[]) {
-    Application app;
-    app.create();
-    app.run();
-    app.destroy();
+    age::setResourcePath(RESOURCE_PATH);
+
+    Application* app = new Application("app", 800, 600);
+
+    app->run();
+
+    delete app;
 
     return 0;
 }

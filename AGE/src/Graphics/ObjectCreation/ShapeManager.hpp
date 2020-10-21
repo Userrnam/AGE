@@ -3,10 +3,9 @@
 #include <string.h>
 #include <vector>
 
-#include "Containers/Shared.hpp"
-#include "Memory/MemoryId.hpp"
+#include "../Memory/MemoryId.hpp"
+#include "../../Math/Vector.hpp"
 
-#include "Vertex.hpp"
 #include "Index.hpp"
 
 namespace age {
@@ -29,8 +28,8 @@ class ShapeCreateInfo {
 
     friend class Shape;
 public:
-    inline ShapeCreateInfo& loadVerticies(const std::vector<Vertex>& verticies) {
-        m_vertex.data.resize(verticies.size() * sizeof(Vertex));
+    inline ShapeCreateInfo& loadVerticies(const std::vector<Vector2f>& verticies) {
+        m_vertex.data.resize(verticies.size() * sizeof(Vector2f));
         memcpy(m_vertex.data.data(), verticies.data(), m_vertex.data.size());
 
         return *this;

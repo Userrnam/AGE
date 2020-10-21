@@ -1,10 +1,13 @@
 #pragma once
 
-#include "Graphics.hpp"
-#include "Utils/utils.hpp"
-#include "PositionManager.hpp"
+// #include "Graphics.hpp"
+// #include "Utils/utils.hpp"
+// #include "PositionManager.hpp"
 
-std::vector<age::Vertex> verticies = {
+#include <AGE/Graphics.hpp>
+#include <AGE/Utils.hpp>
+
+std::vector<age::Vector2f> verticies = {
     { 800, 0 },
     { 800, 600 },
     { 0, 600 }

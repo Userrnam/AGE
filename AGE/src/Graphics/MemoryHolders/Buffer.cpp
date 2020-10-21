@@ -3,7 +3,7 @@
 #include "Core/Core.hpp"
 #include "Core/Utils/utils.hpp"
 #include "Core/Utils/TransitionImageLayout.hpp"
-#include "Debug.hpp"
+#include "Memory/DeviceAlloc.hpp"
 
 namespace age {
 
@@ -12,7 +12,6 @@ void Buffer::destroy() {
 }
 
 void Buffer::create(const BufferCreateInfo& info) {
-	ASSERT(info.m_size, "Buffer::create: buffer size must be grater than 0")
 	m_size = info.m_size;
 	m_memoryId = core::deviceAlloc::allocBuffer(info.m_size, info.m_usage);
 }

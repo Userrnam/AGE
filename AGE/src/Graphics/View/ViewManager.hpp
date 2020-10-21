@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "View.hpp"
-#include "Math.hpp"
+#include "../../Math/Vector.hpp"
 
 namespace age {
 

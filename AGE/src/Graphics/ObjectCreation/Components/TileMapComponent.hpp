@@ -2,12 +2,12 @@
 
 #include <vector>
 #include <sstream>
-#include "Math.hpp"
+#include "../../../Math/Vector.hpp"
 
 #include "ShaderComponent.hpp"
 #include "ArrayComponent.hpp"
 
-#include "MemoryHolders/Buffer.hpp"
+#include "../../MemoryHolders/Buffer.hpp"
 
 namespace age {
 

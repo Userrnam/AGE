@@ -5,9 +5,9 @@
 #include <iostream>
 
 #include "IButton.hpp"
-#include "Events.hpp"
+#include "../Events/Event.hpp"
 
-#include "Containers/DynamicArray.hpp"
+#include "../Containers/DynamicArray.hpp"
 
 namespace age {
 
@@ -17,6 +17,9 @@ class UIBlock {
     IButton* m_coveredButton = nullptr;
 
 public:
+    UIBlock() {}
+    UIBlock(size_t buttonCount) { create(buttonCount); }
+
     void create(size_t buttonCount) {
         m_buttons.create(buttonCount);
     }

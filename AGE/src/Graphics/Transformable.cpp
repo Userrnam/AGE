@@ -5,7 +5,7 @@
 #include "Transformable.hpp"
 
 #include "PositionManager.hpp"
-#include "Scene/Entity.hpp"
+#include "../Scene/Entity.hpp"
 
 namespace age {
 

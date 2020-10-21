@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Application.hpp"
-#include "External/entt.hpp"
-#include "Utils/utils.hpp"
+#include "../External/entt.hpp"
+#include "../Utils/utils.hpp"
 
 
 namespace age {

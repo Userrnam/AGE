@@ -1,5 +1,5 @@
 #include <vulkan/vulkan.h>
-#include "Math.hpp"
+#include "../Math/Vector.hpp"
 #include <assert.h>
 
 #include "ShapeManager.hpp"
@@ -14,7 +14,7 @@ ShapeManager uses its own pool for buffer allocations
 
 namespace age {
 
-static std::vector<Vertex> verticies = {
+static std::vector<Vector2f> verticies = {
     Vector2f({ 0.0, 0.0 }),
     Vector2f({ 1.0, 0.0 }),
     Vector2f({ 1.0, 1.0 }),

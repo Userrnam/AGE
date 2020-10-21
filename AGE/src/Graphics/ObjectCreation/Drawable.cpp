@@ -9,6 +9,7 @@
 #include "Rendering/RenderPass.hpp"
 #include "View/ViewManager.hpp"
 #include "Core/Pool.hpp"
+#include "ShaderBuilder.hpp"
 
 namespace age::core {
     extern CoreConfig coreConfig;
@@ -128,7 +129,7 @@ void Drawable::create(const DrawableCreateInfo& info) {
 
     VkVertexInputBindingDescription bindingDescription = {};
     bindingDescription.binding = 0;
-    bindingDescription.stride = sizeof(Vertex);
+    bindingDescription.stride = sizeof(Vector2f);
     bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
     VkVertexInputAttributeDescription attributeDescription = {};

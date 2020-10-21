@@ -1,7 +1,9 @@
-#include "Graphics.hpp"
-#include "Scene.hpp"
+// #include "Graphics.hpp"
+// #include "Scene.hpp"
 #include "TestTriangle.hpp"
 
+#include <AGE/Graphics.hpp>
+#include <AGE/Scene.hpp>
 
 struct Triangle : public age::StaticScriptComponent {
     TestTriangle triangle;

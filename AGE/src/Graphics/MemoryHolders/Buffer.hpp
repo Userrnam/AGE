@@ -5,7 +5,8 @@
 #include <cstring>
 
 #include "Image.hpp"
-#include "Memory/DeviceAlloc.hpp"
+#include "../Memory/MemoryId.hpp"
+
 
 namespace age {
 

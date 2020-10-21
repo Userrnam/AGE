@@ -1,10 +1,10 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#include "Graphics/Core/Core.hpp"
+#include "../Graphics/Core/Core.hpp"
 
 #include "EventManager.hpp"
-#include "Containers.hpp"
+#include "../Containers/Arena.hpp"
 
 namespace age {
 extern Arena eventArena;

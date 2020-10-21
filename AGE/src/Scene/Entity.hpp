@@ -1,6 +1,6 @@
 #pragma once
 
-#include "External/entt.hpp"
+#include "../External/entt.hpp"
 #include "SceneBase.hpp"
 
 namespace age {

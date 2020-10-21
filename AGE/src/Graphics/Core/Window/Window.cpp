@@ -3,14 +3,14 @@
 #include <stdexcept>
 
 #include "Window.hpp"
-#include "Core/Core.hpp"
-#include "Core/CoreConfig.hpp"
-#include "Core/coreAPI.hpp"
-#include "Rendering/Framebuffers.hpp"
-#include "Rendering/RenderPass.hpp"
-#include "Rendering/Renderer.hpp"
-#include "View/ViewManager.hpp"
-#include "Events/Event.hpp"
+#include "../Core.hpp"
+#include "../CoreConfig.hpp"
+#include "../coreAPI.hpp"
+#include "../../Rendering/Framebuffers.hpp"
+#include "../../Rendering/RenderPass.hpp"
+#include "../../Rendering/Renderer.hpp"
+#include "../../View/ViewManager.hpp"
+#include "../../../Events/Event.hpp"
 
 namespace age::core {
 

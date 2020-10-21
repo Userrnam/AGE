@@ -1,16 +1,16 @@
 #pragma once
 
 #include <vector>
+#include <tuple>
 
-#include "External/entt.hpp"
-#include "Graphics/View/View.hpp"
-#include "Events/Event.hpp"
+#include "../External/entt.hpp"
+#include "../Graphics/View/View.hpp"
+#include "../Events/Event.hpp"
 #include "Entity.hpp"
 #include "ScriptComponent.hpp"
 
 #include "Application.hpp"
 #include "SceneBase.hpp"
-#include <tuple>
 
 namespace age {
 

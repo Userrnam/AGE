@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 #include "UIBlock.hpp"
-#include "Events.hpp"
+#include "../Events/Event.hpp"
 
 namespace age {
 
@@ -16,7 +16,9 @@ public:
 
     static inline UIBlock& getBlock(uint64_t id) { return m_blocks[id]; }
     static inline void eraseBlock(uint64_t id) {
-        if (m_blocks.find(id) != m_blocks.end()) {
+        auto it = m_blocks.find(id);
+        if (it != m_blocks.end()) {
+            it->second.destroy();
             m_blocks.erase(id);
         }
     }

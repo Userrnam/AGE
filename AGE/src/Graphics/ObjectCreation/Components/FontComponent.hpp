@@ -4,11 +4,12 @@
 
 #include "TileMapComponent.hpp"
 #include "TextureComponent.hpp"
+#include "../../../Math/Vector.hpp"
 
 namespace age {
 
 struct _Character {
-    glm::ivec2 bearing;
+    Vector2i bearing;
     unsigned advance;
     unsigned index;
 };

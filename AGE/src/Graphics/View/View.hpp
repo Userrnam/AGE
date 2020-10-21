@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Camera.hpp"
-#include "ObjectCreation/Descriptor.hpp"
-#include "MemoryHolders/Buffer.hpp"
-#include "Transformable.hpp"
-#include "PositionManager.hpp"
+#include "../ObjectCreation/Descriptor.hpp"
+#include "../MemoryHolders/Buffer.hpp"
+#include "../Transformable.hpp"
+#include "../PositionManager.hpp"
 
 namespace age {
 

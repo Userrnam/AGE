@@ -1,12 +1,11 @@
 #pragma once
 
 #include <sstream>
-#include <glm/glm.hpp>
 #include <vector>
 
 #include "ShaderComponent.hpp"
 
-#include "Objects/Texture.hpp"
+#include "../../Objects/Texture.hpp"
 
 namespace age {
 

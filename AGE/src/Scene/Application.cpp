@@ -4,19 +4,22 @@
 
 #include "Application.hpp"
 
-#include "Graphics/Rendering/Renderer.hpp"
+#include "../Graphics/Rendering/Renderer.hpp"
+#include "../Graphics/View/ViewManager.hpp"
+#include "../Graphics/PositionManager.hpp"
+#include "../Graphics/Core/Window/Window.hpp"
+#include "../Graphics/Core/Core.hpp"
+#include "../Graphics/Memory/DeviceAlloc.hpp"
+#include "../Graphics/Core/CoreConfiguration.hpp"
 
-#include "Graphics/Core/Window/Window.hpp"
-#include "Graphics/Core/Core.hpp"
-#include "Audio/Core.hpp"
-#include "Audio/Listener.hpp"
-#include "Scene/Scene.hpp"
-#include "Graphics/View/ViewManager.hpp"
-#include "Graphics/PositionManager.hpp"
+#include "../Audio/Core.hpp"
+#include "../Audio/Listener.hpp"
 
-#include "Utils/utils.hpp"
-#include "Animation.hpp"
-#include "UI.hpp"
+#include "../Scene/Scene.hpp"
+
+#include "../Utils/utils.hpp"
+#include "../Animation/Animator.hpp"
+#include "../UI/UIManager.hpp"
 
 namespace age {
 
@@ -34,11 +37,20 @@ inline void initFreetype() {
     }
 }
 
-void Application::destroy() {
-    vkDeviceWaitIdle(core::apiCore.device);
+Application::Application(const std::string& name, int width, int height) {
+    config::setApplicationName(name);
+    config::setWindowProperties(
+        config::WindowProperties()
+        .setTitle(name)
+        .setResizeEnable(false)
+        .setSize(width, height)
+    );
 
+    create();
+}
+
+Application::~Application() {
     pActiveScene->destroy();
-    onDestroy();
     
     delete defaultPositionManager;
 
@@ -64,10 +76,6 @@ void Application::destroy() {
 
 // maybe pass coreConfig here
 void Application::create() {
-    m_created = true;
-
-    onCoreConfig();
-
     Renderer::create();
     core::deviceAlloc::init();
 
@@ -94,14 +102,10 @@ void Application::create() {
     Sampler::createDefault();
     
     EventManager::init();
-
-    onCreate();
 }
 
 void Application::run() {
-    if (!m_created) {
-        throw std::runtime_error("Application has not been created");
-    }
+    onCreate();
 
     auto startTime = std::chrono::high_resolution_clock::now();
     auto previousTime = std::chrono::high_resolution_clock::now();
@@ -148,6 +152,9 @@ void Application::run() {
 
         count++;
     }
+
+    vkDeviceWaitIdle(core::apiCore.device);
+    onDestroy();
 }
 
 void Application::render() {

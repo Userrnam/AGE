@@ -4,8 +4,8 @@
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 
-#include "MemoryHolders/Image.hpp"
-#include "ObjectCreation/DescriptorLayout.hpp"
+#include "../MemoryHolders/Image.hpp"
+#include "../ObjectCreation/DescriptorLayout.hpp"
 #include "Pool.hpp"
 
 namespace age::core {

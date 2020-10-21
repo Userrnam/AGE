@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "Debug.hpp"
-
 namespace age {
 
 class ShaderSpecialization {
@@ -43,10 +41,6 @@ class Shader {
     VkShaderStageFlagBits m_stage;
     ShaderSpecialization m_specialization;
 
-#ifndef NDEBUG
-    bool stageSet = false;
-#endif
-
 public:
     Shader& create(const std::string& filename);
     void destroy();
@@ -55,14 +49,10 @@ public:
     const std::string& getEntry() const { return m_entry; }
     const ShaderSpecialization& getSpecialization() const { return m_specialization; }
     VkShaderStageFlagBits getStage() const {
-        ASSERT(stageSet, "Shader stage has not been set")
         return m_stage;
     }
 
     inline Shader& setStage(VkShaderStageFlagBits stage) {
-#ifndef NDEBUG
-        stageSet = true;
-#endif
         m_stage = stage;
         return *this;
     }
