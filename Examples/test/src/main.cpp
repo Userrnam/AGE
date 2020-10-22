@@ -1,12 +1,7 @@
-// #include "Scene.hpp"
 #include <AGE/Scene.hpp>
 #include <AGE/Utils.hpp>
 
 #include <string>
-
-// #include "Utils/utils.hpp"
-
-// #include "Scene.hpp"
 
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""
@@ -59,9 +54,9 @@ struct Application : public age::Application {
         age::FontInfo info;
         info.loadChars = "button1hello23";
 
-        loadFont(age::getResourcePath("Courier.dfont"), "courier", info);
-        loadTexture(age::getResourcePath("mountains.png"), "mountains");
-        loadTexture(age::getResourcePath("yoda.jpg"), "yoda");
+        loadFont(age::getAssetPath("Courier.dfont"), "courier", info);
+        loadTexture(age::getAssetPath("mountains.png"), "mountains");
+        loadTexture(age::getAssetPath("yoda.jpg"), "yoda");
 
         auto scene = new TestScene();
         scene->create(this);
@@ -84,7 +79,7 @@ struct Application : public age::Application {
 };
 
 int main(int argc, char* argv[]) {
-    age::setResourcePath(RESOURCE_PATH);
+    age::setAssetsPath(RESOURCE_PATH);
 
     Application* app = new Application("app", 800, 600);
 

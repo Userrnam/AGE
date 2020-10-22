@@ -1,9 +1,5 @@
 #pragma once
 
-// #include "Graphics.hpp"
-// #include "Utils/utils.hpp"
-// #include "PositionManager.hpp"
-
 #include <AGE/Graphics.hpp>
 #include <AGE/Utils.hpp>
 
@@ -34,8 +30,8 @@ public:
         age::Shader vertexShader;
         age::Shader fragmentShader;
 
-        vertexShader.setStage(VK_SHADER_STAGE_VERTEX_BIT).create(age::getResourcePath("test.vert.spv"));
-        fragmentShader.setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(age::getResourcePath("test.frag.spv"));
+        vertexShader.setStage(VK_SHADER_STAGE_VERTEX_BIT).create(age::getAssetPath("test.vert.spv"));
+        fragmentShader.setStage(VK_SHADER_STAGE_FRAGMENT_BIT).create(age::getAssetPath("test.frag.spv"));
 
         shapeId = age::Shape::create(
             age::ShapeCreateInfo().loadIndicies(indicies).loadVerticies(verticies)

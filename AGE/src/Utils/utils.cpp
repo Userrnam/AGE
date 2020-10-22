@@ -7,11 +7,11 @@ namespace age {
 
 std::string resourcePath;
 
-void setResourcePath(const std::string& path) {
+void setAssetsPath(const std::string& path) {
     resourcePath = path;
 }
 
-std::string getResourcePath(const std::string& resource) {
+std::string getAssetPath(const std::string& resource) {
     return resourcePath + resource;
 }
 

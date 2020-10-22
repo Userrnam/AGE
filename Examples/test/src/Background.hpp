@@ -1,5 +1,3 @@
-// #include "Graphics.hpp"
-// #include "Scene.hpp"
 #include <AGE/Graphics.hpp>
 #include <AGE/Scene.hpp>
 

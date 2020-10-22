@@ -2,11 +2,6 @@
 
 #include <iostream>
 
-// #include "Animation.hpp"
-// #include "Graphics.hpp"
-// #include "Scene.hpp"
-// #include "UI.hpp"
-
 #include <AGE/Animation.hpp>
 #include <AGE/Graphics.hpp>
 #include <AGE/Scene.hpp>

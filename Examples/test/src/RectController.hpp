@@ -7,10 +7,6 @@
 #include <AGE/Audio.hpp>
 #include <AGE/Utils.hpp>
 
-// #include "Scene.hpp"
-// #include "Audio.hpp"
-
-// #include "Utils/utils.hpp"
 
 class RectController : public age::ScriptComponent {
     age::Transformable transformable;
@@ -62,7 +58,7 @@ public:
         );
 
         sound.create();
-        sound.load(age::getResourcePath("test.wav"));
+        sound.load(age::getAssetPath("test.wav"));
 
         source.create();
         source.setLooping(true);

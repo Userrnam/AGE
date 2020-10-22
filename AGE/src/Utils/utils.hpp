@@ -18,8 +18,8 @@ constexpr uint64_t hash(const char* str) {
     return hash;
 }
 
-void setResourcePath(const std::string& path);
-std::string getResourcePath(const std::string& resource);
+void setAssetsPath(const std::string& path);
+std::string getAssetPath(const std::string& resource);
 std::vector<char> readFile(const std::string& filename);
 
 } // namespace age
