@@ -21,10 +21,6 @@ class Scene : public SceneBase {
 	friend class Application;
 	friend class Entity;
 protected:
-	Application* getApplication() {
-		return parent;
-	}
-
 	inline Entity createEntity() { return Entity(this); }
 
 	template<typename Script, typename... Args>
@@ -43,20 +39,16 @@ protected:
 		return { e, p };
 	}
 
-	virtual void onDestroy() {}
-	virtual void onCreate() {}
+    template<typename... Component, typename... Exclude>
+    SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...> getView(entt::exclude_t<Exclude...> e = {}) {
+        return SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...>(this, e);
+    }
 
 	virtual void onEvent(Event event) {}
 	virtual void onUpdate(float elapsedTime) {}
 public:
-	void create(class Application* app);
-	void destroy();
-
-	// todo:
-	// load entities from file
-	void load(const std::string& filename) {}
-	// save entities to specified file
-	void save(const std::string& filename) {}
+	Scene(class Application* app);
+	virtual ~Scene();
 };
 
 template<typename...>

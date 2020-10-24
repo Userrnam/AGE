@@ -1,3 +1,5 @@
+#pragma once
+
 #include "TestTriangle.hpp"
 
 #include <AGE/Graphics.hpp>

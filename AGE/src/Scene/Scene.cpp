@@ -22,15 +22,11 @@ void Scene::handleEvent(Event event) {
     }
 }
 
-void Scene::create(class Application* app) {
+Scene::Scene(class Application* app) {
     parent = app;
-
-    onCreate();
 }
 
-void Scene::destroy() {
-    onDestroy();
-
+Scene::~Scene() {
     {
         auto entities = m_registry.view<ScriptComponent*>();
         for (auto entity : entities) {

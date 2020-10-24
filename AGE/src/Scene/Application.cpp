@@ -50,7 +50,9 @@ Application::Application(const std::string& name, int width, int height) {
 }
 
 Application::~Application() {
-    pActiveScene->destroy();
+    if (m_activeScene) {
+        delete m_activeScene;
+    }
     
     delete defaultPositionManager;
 
@@ -127,13 +129,24 @@ void Application::run() {
         for (auto event : events) {
             UIManager::update(event);
             this->onEvent(event);
-            pActiveScene->handleEvent(event);
+            m_activeScene->handleEvent(event);
         }
         EventManager::clearEvents();
         Animator::update(elapsedTime);
         ViewManager::updateViews(elapsedTime, std::chrono::duration<float, std::chrono::seconds::period>(startTime - currentTime).count());
 
-        pActiveScene->update(elapsedTime);
+        m_activeScene->update(elapsedTime);
+
+        if (m_switchScene) {
+            vkDeviceWaitIdle(core::apiCore.device);
+
+            delete m_activeScene;
+
+            m_activeScene = m_switchScene;
+            m_switchScene = nullptr;
+
+            continue;
+        }
 
         render();
 
@@ -158,7 +171,7 @@ void Application::run() {
 }
 
 void Application::render() {
-    auto& viewIds = pActiveScene->getViewIds();
+    auto& viewIds = m_activeScene->getViewIds();
 
     std::vector<entt::entity> ids;
     std::vector<age::Drawable> targets;
@@ -177,13 +190,17 @@ void Application::render() {
 
         for (auto e : ve) {
             ids.push_back(e);
-            targets.push_back(pActiveScene->m_registry.get<age::Drawable>(e));
+            targets.push_back(m_activeScene->m_registry.get<age::Drawable>(e));
         }
     }
 
     if (Renderer::renderRequired(ids)) {
         Renderer::render(targets);
     }
+}
+
+void Application::deleteActiveScene() {
+    delete m_activeScene;
 }
 
 void Application::setWindowTitle(const std::string& s) {

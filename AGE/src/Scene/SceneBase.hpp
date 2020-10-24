@@ -22,6 +22,8 @@ public:
 	inline FontComponent* getFont(const std::string& font) { return parent->getFont(font); }
 	inline Texture& getTexture(const std::string& texture) { return parent->getTexture(texture); }
 
+	Application* getApplication() { return parent; }
+
 	inline void loadTexture(const std::string& path, const std::string& textureName, const Sampler& sampler = Sampler::getDefault()) {
 		parent->loadTexture(path, textureName, sampler);
 	}

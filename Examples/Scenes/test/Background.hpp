@@ -1,3 +1,5 @@
+#pragma once
+
 #include <AGE/Graphics.hpp>
 #include <AGE/Scene.hpp>
 

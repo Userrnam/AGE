@@ -50,7 +50,9 @@ void FontComponent::load(const std::string& fontPath, const FontInfo& info) {
             maxHeight = face->glyph->bitmap.rows;
         }
         if (yShift < face->glyph->bitmap.rows - face->glyph->bitmap_top) {
-            yShift = face->glyph->bitmap.rows - face->glyph->bitmap_top;
+            if (face->glyph->bitmap.rows > face->glyph->bitmap_top) {
+                yShift = face->glyph->bitmap.rows - face->glyph->bitmap_top;
+            }
         }
     }
 

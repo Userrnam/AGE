@@ -49,6 +49,8 @@ public:
         text.destroy();
         transformable.destroy();
         getComponent<age::Drawable>().destroy();
+
+        destroy();
     }
 
     virtual void onEnter() override {
