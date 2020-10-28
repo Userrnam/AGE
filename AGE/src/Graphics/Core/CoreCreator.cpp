@@ -4,6 +4,7 @@
 #include "Core.hpp"
 #include "VulkanDebug.hpp"
 #include "Memory/DeviceAlloc.hpp"
+#include <GLFW/glfw3.h>
 
 namespace age::core {
 
@@ -58,7 +59,8 @@ void destroyCore() {
 
     vkDestroySurfaceKHR(apiCore.instance, apiCore.window.surface, nullptr);
 	vkDestroyInstance(apiCore.instance, nullptr);
-	glfwDestroyWindow(apiCore.window.handle);
+
+	window::destroy();
 	glfwTerminate();
 }
 

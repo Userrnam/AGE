@@ -119,7 +119,6 @@ void Application::run() {
             m_activeScene->handleEvent(event);
         }
         EventManager::clearEvents();
-        Animator::update(elapsedTime);
         ViewManager::updateViews(elapsedTime, std::chrono::duration<float, std::chrono::seconds::period>(startTime - currentTime).count());
 
         m_activeScene->update(elapsedTime);

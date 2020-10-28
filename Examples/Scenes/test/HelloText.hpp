@@ -1,5 +1,7 @@
 #pragma once
 
+#include <GLFW/glfw3.h>
+
 #include <iostream>
 
 #include <AGE/Graphics.hpp>
@@ -36,7 +38,7 @@ public:
 
         pResolveStructure = new age::TransformResolveStructure(&ct.get().get<age::Transform>(), &transformable);
 
-        animId = age::Animator::addAnimation(
+        animId = getScene()->addAnimation(
             age::StateAnimation<age::Vector2f, age::linearFunction>(transformable.getPositionPointer(), &ct.getBuffer(), pResolveStructure)
             .setLooping(true)
             .addState(age::AnimationState(transformable.getPosition(), 1))
@@ -59,9 +61,9 @@ public:
             auto s = e.getStructure<age::event::Key>();
             if (s.action == GLFW_PRESS) {
                 if (s.key == GLFW_KEY_T) {
-                    age::Animator::pauseAnimation(animId);
+                    getScene()->pauseAnimation(animId);
                 } else if (s.key == GLFW_KEY_C) {
-                    age::Animator::continueAnimation(animId);
+                    getScene()->continueAnimation(animId);
                 }
             }
         }

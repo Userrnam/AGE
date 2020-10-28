@@ -52,9 +52,9 @@ public:
     }
 
     virtual void onEnter() override {
-        age::Animator::stopAnimation(animId);
+        getScene()->stopAnimation(animId);
 
-        animId = age::Animator::addAnimation(
+        animId = getScene()->addAnimation(
             age::StateAnimation<age::Color, age::linearFunction>(&bundle.get<age::Color>(), &bundle.getBuffer())
             .setLooping(false)
             .addState(age::AnimationState(bundle.get<age::Color>(), 0.2))
@@ -63,9 +63,9 @@ public:
     }
 
     virtual void onLeave() override {
-        age::Animator::stopAnimation(animId);
+        getScene()->stopAnimation(animId);
 
-        animId = age::Animator::addAnimation(
+        animId = getScene()->addAnimation(
             age::StateAnimation<age::Color, age::linearFunction>(&bundle.get<age::Color>(), &bundle.getBuffer())
             .setLooping(false)
             .addState(age::AnimationState(bundle.get<age::Color>(), 0.1))

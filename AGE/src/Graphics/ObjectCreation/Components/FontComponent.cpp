@@ -116,6 +116,8 @@ void FontComponent::load(const std::string& fontPath, const FontInfo& info) {
         curX += bitmap->width + 1;
     }
 
+    FT_Done_Face(face);
+
     TileMapComponent::upload();
 
     // FIXME:

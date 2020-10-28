@@ -1,5 +1,6 @@
 #include "Core.hpp"
 #include "OpenAL.hpp"
+#include <AL/alc.h>
 
 namespace age::audio {
 
@@ -20,6 +21,7 @@ void Core::init() {
 }
 
 void Core::destroy() {
+    alcMakeContextCurrent(nullptr);
     alcDestroyContext(m_context);
     alcCloseDevice(m_device);
 }

@@ -69,6 +69,10 @@ void create() {
     }
 }
 
+void destroy() {
+    glfwDestroyWindow(apiCore.window.handle);
+}
+
 void pollEvents() {
     glfwPollEvents();
 }

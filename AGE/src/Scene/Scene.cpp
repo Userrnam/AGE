@@ -3,6 +3,8 @@
 namespace age {
 
 void Scene::update(float elapsedTime) {
+    m_animator.update(elapsedTime);
+
     onUpdate(elapsedTime);
 
     auto entities = m_registry.view<ScriptComponent*>();

@@ -133,6 +133,8 @@ void Renderer::destroy() {
     Framebuffers::destroy();
     RenderPass::destroy();
     core::destroyCore();
+    
+    FT_Done_FreeType(ftLibrary);
 }
 
 } // namespace age

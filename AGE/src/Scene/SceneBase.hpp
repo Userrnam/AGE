@@ -4,6 +4,7 @@
 #include "../External/entt.hpp"
 #include "../Utils/utils.hpp"
 #include "../UI/UIManager.hpp"
+#include "../Animation/Animator.hpp"
 
 namespace age {
 
@@ -13,12 +14,23 @@ protected:
     Application* parent = nullptr;
 	entt::registry m_registry;
 	UIManager m_uiManager;
+	Animator m_animator;
 
 	friend class Entity;
 public:
 	virtual ~SceneBase() { m_uiManager.destroy(); }
 
 	void handleEvent(const Event& e) { m_uiManager.update(e); }
+
+	// Animation
+
+	template<typename Anim>
+	inline uint64_t addAnimation(const Anim& animation) { m_animator.addAnimation(animation); }
+	inline void pauseAnimation(uint64_t id) { m_animator.pauseAnimation(id); }
+	inline void continueAnimation(uint64_t id) { m_animator.continueAnimation(id); }
+	inline void stopAnimation(uint64_t id) { m_animator.stopAnimation(id); }
+
+	// UI
 
 	inline uint64_t addUIBlock(const UIBlock& block) { return m_uiManager.addBlock(block); }
 	inline UIBlock& getUIBlock(uint64_t id) { return m_uiManager.getBlock(id); }
