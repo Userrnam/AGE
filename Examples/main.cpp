@@ -1,5 +1,6 @@
 #include "Scenes/test/testScene.hpp"
 #include "Scenes/mainMenu/menu.hpp"
+#include <GLFW/glfw3.h>
 
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""
@@ -23,7 +24,7 @@ struct Application : public age::Application {
             if (s.action == GLFW_PRESS && s.key == GLFW_KEY_P) {
                 stop();
             }
-            if (s.action == GLFW_PRESS && s.key == GLFW_KEY_R) {
+            if (s.action == GLFW_PRESS && s.key == GLFW_KEY_R && (age::isKeyPressed(GLFW_KEY_RIGHT_CONTROL) || age::isKeyPressed(GLFW_KEY_LEFT_CONTROL) )) {
                 selectScene<MainMenu>();
             }
         }

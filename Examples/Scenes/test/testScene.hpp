@@ -7,7 +7,7 @@
 
 #include "RectController.hpp"
 #include "HelloText.hpp"
-#include "Background.hpp"
+#include "../Background.hpp"
 #include "Triangle.hpp"
 #include "Button.hpp"
 
@@ -21,7 +21,7 @@ public:
         createEntity<HelloText>();
         createEntity<RectController>();
         createStaticEntity<Triangle>();
-        createStaticEntity<Background>();
+        createStaticEntity<Background>(age::Color(1, 0, 0, 1));
     }
 
     virtual void onUpdate(float elapsedTime) override {
@@ -30,9 +30,9 @@ public:
     }
 
     void createUIBlock() {
-        auto button1 = createEntity<Button>("button1", age::Vector2f(0, 0));
-        auto button2 = createEntity<Button>("button2", age::Vector2f(0, 0));
-        auto button3 = createEntity<Button>("button3", age::Vector2f(0, 0));
+        auto button1 = createEntity<Button>("button1");
+        auto button2 = createEntity<Button>("button2");
+        auto button3 = createEntity<Button>("button3");
 
         uiblockId = addUIBlock(
             age::UIBlock(3)

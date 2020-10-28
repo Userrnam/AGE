@@ -4,6 +4,7 @@
 #include "AGE/UI.hpp"
 
 #include "Options.hpp"
+#include "../Background.hpp"
 
 class MainMenu : public age::Scene {
     uint64_t uiblockId;
@@ -11,6 +12,7 @@ class MainMenu : public age::Scene {
 public:
     MainMenu(age::Application* app) : age::Scene(app) {
         auto button1 = createEntity<TestSceneButton>();
+        createStaticEntity<Background>(age::Color(0, 0, 0, 1));
 
         uiblockId = addUIBlock(
             age::UIBlock(1)

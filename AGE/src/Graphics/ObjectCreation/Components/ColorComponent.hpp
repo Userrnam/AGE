@@ -1,15 +1,13 @@
 #pragma once
 
 #include <sstream>
-#include <glm/glm.hpp>
 
+#include "../../../Math/Vector.hpp"
 #include "ShaderComponent.hpp"
-#include "GetSet.hpp"
 
 namespace age {
 
-class Color : public util::GetSet<Vector4f> {
-public:
+struct Color : public Vector4f{
     static ShaderComponentInfo __getInfo() {
         ShaderComponentInfo info;
         info.add(
@@ -20,26 +18,15 @@ public:
         return info;
     }
 
-    inline Color(Vector4f v = Vector4f(1)) { set(v); }
-    inline Color(float r, float g, float b, float a = 1.0f) { set({r, g, b, a}); }
-
-    inline Color& operator+=(const Color& rhs) {
-        get() += rhs.get();
-        return *this;
+    inline Color(const Vector4f& v = Vector4f(1)) {
+        x = v.x; y = v.y; z = v.z; w = v.w;
     }
+    inline Color(float r, float g, float b, float a = 1.0f) { *this = Vector4f{r, g, b, a}; }
 
-    inline Color& operator-=(const Color& rhs) {
-        get() -= rhs.get();
-        return *this;
-    }
+    inline const Color& get() const { return *this; }
+    inline Color& get() { return *this; }
 
-    inline Color operator+(const Color& rhs) {
-        return get() + rhs.get();
-    }
-
-    inline Color operator-(const Color& rhs) {
-        return get() + rhs.get();
-    }
+    inline void set(const Vector4f& data) { *this = data; }
 };
 
 inline Color operator*(float x, const Color& rhs) {
