@@ -24,10 +24,6 @@ public:
         createStaticEntity<Background>();
     }
 
-    ~TestScene() {
-        age::UIManager::eraseBlock(uiblockId);
-    }
-
     virtual void onUpdate(float elapsedTime) override {
         std::string s = "fps: " + std::to_string(getApplication()->getFps());
         getApplication()->setWindowTitle(s);
@@ -38,7 +34,7 @@ public:
         auto button2 = createEntity<Button>("button2", age::Vector2f(0, 0));
         auto button3 = createEntity<Button>("button3", age::Vector2f(0, 0));
 
-        uiblockId = age::UIManager::addBlock(
+        uiblockId = addUIBlock(
             age::UIBlock(3)
             .addButton(std::get<1>(button3))
             .addButton(std::get<1>(button2))
@@ -46,7 +42,7 @@ public:
             .alignVertically(10)
         );
 
-        auto& block = age::UIManager::getBlock(uiblockId);
+        auto& block = getUIBlock(uiblockId);
         block.move(100, 100);
     }
 

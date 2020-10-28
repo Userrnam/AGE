@@ -35,7 +35,7 @@ struct TestSceneButton : public age::ScriptComponent, public age::IButton {
     }
 
     virtual void onPress(unsigned button) override {
-        getScene()->getApplication()->selectScene<TestScene>();
+        // getScene()->getApplication()->selectScene<TestScene>();
     }
 
     virtual void onEnter() override {
@@ -65,7 +65,5 @@ struct TestSceneButton : public age::ScriptComponent, public age::IButton {
         text.destroy();
         transformable.destroy();
         getComponent<age::Drawable>().destroy();
-
-        destroy();
     }
 };

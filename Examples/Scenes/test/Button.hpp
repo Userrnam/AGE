@@ -44,13 +44,11 @@ public:
         }
     }
 
-    ~Button()  {
+    ~Button() {
         bundle.destroy();
         text.destroy();
         transformable.destroy();
         getComponent<age::Drawable>().destroy();
-
-        destroy();
     }
 
     virtual void onEnter() override {

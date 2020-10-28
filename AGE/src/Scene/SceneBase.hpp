@@ -3,7 +3,7 @@
 #include "Application.hpp"
 #include "../External/entt.hpp"
 #include "../Utils/utils.hpp"
-
+#include "../UI/UIManager.hpp"
 
 namespace age {
 
@@ -12,9 +12,18 @@ protected:
 	std::vector<uint64_t> m_viewIds = { hash("default") };
     Application* parent = nullptr;
 	entt::registry m_registry;
+	UIManager m_uiManager;
 
 	friend class Entity;
 public:
+	virtual ~SceneBase() { m_uiManager.destroy(); }
+
+	void handleEvent(const Event& e) { m_uiManager.update(e); }
+
+	inline uint64_t addUIBlock(const UIBlock& block) { return m_uiManager.addBlock(block); }
+	inline UIBlock& getUIBlock(uint64_t id) { return m_uiManager.getBlock(id); }
+	inline void eraseUIBlock(uint64_t id) { m_uiManager.eraseBlock(id); }
+
 	inline void addViewId(uint64_t id) { m_viewIds.push_back(id); }
 	inline const std::vector<uint64_t>& getViewIds() const { return m_viewIds; }
 

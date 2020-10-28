@@ -12,16 +12,12 @@ public:
     MainMenu(age::Application* app) : age::Scene(app) {
         auto button1 = createEntity<TestSceneButton>();
 
-        uiblockId = age::UIManager::addBlock(
+        uiblockId = addUIBlock(
             age::UIBlock(1)
             .addButton(std::get<1>(button1))
         );
 
-        auto& block = age::UIManager::getBlock(uiblockId);
+        auto& block = getUIBlock(uiblockId);
         block.move(100, 100);
-    }
-
-    ~MainMenu() {
-        age::UIManager::eraseBlock(uiblockId);
     }
 };

@@ -15,6 +15,8 @@ void Scene::update(float elapsedTime) {
 void Scene::handleEvent(Event event) {
     onEvent(event);
 
+    SceneBase::handleEvent(event);
+
     auto entities = m_registry.view<ScriptComponent*>();
     for (auto entity : entities) {
         auto script = entities.get(entity);

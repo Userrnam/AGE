@@ -9,21 +9,16 @@
 namespace age {
 
 class UIManager {
-    static std::unordered_map<uint64_t, UIBlock> m_blocks;
-    static uint64_t m_id;
+    std::unordered_map<uint64_t, UIBlock> m_blocks;
+    uint64_t m_id = 0;
 public:
-    static uint64_t addBlock(const UIBlock& b);
+    inline UIBlock& getBlock(uint64_t id) { return m_blocks[id]; }
 
-    static inline UIBlock& getBlock(uint64_t id) { return m_blocks[id]; }
-    static inline void eraseBlock(uint64_t id) {
-        auto it = m_blocks.find(id);
-        if (it != m_blocks.end()) {
-            it->second.destroy();
-            m_blocks.erase(id);
-        }
-    }
+    uint64_t addBlock(const UIBlock& b);
 
-    static bool update(Event e);
+    void eraseBlock(uint64_t id);
+    bool update(Event e);
+    void destroy();
 };
 
 } // namespace age

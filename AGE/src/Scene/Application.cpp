@@ -127,7 +127,6 @@ void Application::run() {
         // handle events
         auto events = EventManager::getEvents();
         for (auto event : events) {
-            UIManager::update(event);
             this->onEvent(event);
             m_activeScene->handleEvent(event);
         }
@@ -137,16 +136,16 @@ void Application::run() {
 
         m_activeScene->update(elapsedTime);
 
-        if (m_switchScene) {
-            vkDeviceWaitIdle(core::apiCore.device);
+        // if (m_switchScene) {
+        //     vkDeviceWaitIdle(core::apiCore.device);
 
-            delete m_activeScene;
+        //     delete m_activeScene;
 
-            m_activeScene = m_switchScene;
-            m_switchScene = nullptr;
+        //     m_activeScene = m_switchScene;
+        //     m_switchScene = nullptr;
 
-            continue;
-        }
+        //     continue;
+        // }
 
         render();
 

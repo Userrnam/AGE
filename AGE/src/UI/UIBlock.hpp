@@ -25,9 +25,7 @@ public:
     }
 
     void destroy() {
-        for (size_t i = 0; i < m_buttons.count(); ++i) {
-            delete m_buttons[i];
-        }
+        // buttons will be deleted when deleting ScriptComponent
         m_buttons.destroy();
     }
 
