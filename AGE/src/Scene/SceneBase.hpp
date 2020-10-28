@@ -5,6 +5,7 @@
 #include "../Utils/utils.hpp"
 #include "../UI/UIManager.hpp"
 #include "../Animation/Animator.hpp"
+#include "../Graphics/PositionManager.hpp"
 
 namespace age {
 
@@ -15,10 +16,13 @@ protected:
 	entt::registry m_registry;
 	UIManager m_uiManager;
 	Animator m_animator;
+	PositionManager m_positionManager;
 
 	friend class Entity;
 public:
 	virtual ~SceneBase() { m_uiManager.destroy(); }
+
+	PositionManager* getPositionManager() { return &m_positionManager; }
 
 	void handleEvent(const Event& e) { m_uiManager.update(e); }
 

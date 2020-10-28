@@ -7,11 +7,8 @@
 
 struct Triangle : public age::StaticScriptComponent {
     TestTriangle triangle;
-    entt::entity entity;
 
     Triangle(Entity e) : age::StaticScriptComponent(e) {
-        entity = e.getEntityId();
-
         triangle.create();
         addComponentNoCreate<age::Drawable>(triangle);
 
@@ -19,11 +16,11 @@ struct Triangle : public age::StaticScriptComponent {
         p.pos = {};
         p.size = { 800, 600 };
 
-        age::defaultPositionManager->update(e.getEntityId(), p);
+        getScene()->getPositionManager()->update(getEntityId(), p);
     }
 
     ~Triangle() {
-        age::defaultPositionManager->remove(entity);
+        getScene()->getPositionManager()->remove(getEntityId());
         triangle.destroy();
     }
 };

@@ -2,7 +2,6 @@
 
 #include "../Math/Vector.hpp"
 #include <unordered_map>
-#include <iostream>
 
 #include "../External/entt.hpp"
 
@@ -45,8 +44,5 @@ public:
         return res;
     }
 };
-
-extern PositionManager* defaultPositionManager;
-extern PositionManager* selectedPositionManager;
 
 } // namespace age

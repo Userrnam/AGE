@@ -20,6 +20,7 @@ public:
 
     ~Background() {
         transformable.destroy();
+        getScene()->getPositionManager()->remove(getEntityId());
         
         getComponent<age::Drawable>().destroy();
         getComponent<age::StorageComponent<age::Transform>>().destroy();

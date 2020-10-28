@@ -1,11 +1,10 @@
 #pragma once
 
 #include <stdint.h>
+#include <vector>
 
 #include "AnimationState.hpp"
-
-#include "../Graphics/Transformable.hpp"
-#include "../Graphics/ObjectCreation/Components/TransformComponent.hpp"
+#include "../Graphics/MemoryHolders/Buffer.hpp"
 
 namespace age {
 
@@ -13,18 +12,6 @@ class IResolveStructure {
 public:
     virtual void resolve() = 0;
     virtual ~IResolveStructure() {}
-};
-
-class TransformResolveStructure : public IResolveStructure {
-    Transform* m_transform;
-    Transformable* m_transformable;
-public:
-    TransformResolveStructure(Transform* transform, Transformable* transformable)
-        : m_transform(transform), m_transformable(transformable) {}
-
-    virtual void resolve () override {
-        m_transform->set(m_transformable->getTransform());
-    }
 };
 
 class AnimationBase {

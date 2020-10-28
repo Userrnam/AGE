@@ -49,6 +49,7 @@ public:
         text.destroy();
         transformable.destroy();
         getComponent<age::Drawable>().destroy();
+        getScene()->getPositionManager()->remove(getEntityId());
     }
 
     virtual void onEnter() override {

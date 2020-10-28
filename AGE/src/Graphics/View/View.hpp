@@ -3,8 +3,7 @@
 #include "Camera.hpp"
 #include "../ObjectCreation/Descriptor.hpp"
 #include "../MemoryHolders/Buffer.hpp"
-#include "../Transformable.hpp"
-#include "../PositionManager.hpp"
+#include "../UnmanagedTransformable.hpp"
 
 namespace age {
 
@@ -25,8 +24,6 @@ class View : public UnmanagedTransformable {
 
     uint64_t m_id;
 
-    PositionManager* m_positionManager = defaultPositionManager;
-
     friend class ViewManager;
 public:
     inline uint64_t getId() const { return m_id; }
@@ -35,9 +32,7 @@ public:
 
     void updateCameraTransform();
 
-    PositionManager* getPositionManager() { return m_positionManager; }
-
-    void create(PositionManager* p = defaultPositionManager);
+    void create();
     void destroy();
 };
 

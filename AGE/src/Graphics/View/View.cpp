@@ -11,9 +11,7 @@ void View::updateCameraTransform() {
     m_globals.cameraTransform = m_camera.getProjection() * UnmanagedTransformable::getTransform();
 }
 
-void View::create(PositionManager* p) {
-    m_positionManager = p;
-
+void View::create() {
     m_buffer.create(
         UniformBufferCreateInfo()
         .setSize(sizeof(ViewGlobals))

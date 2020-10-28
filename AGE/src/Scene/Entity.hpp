@@ -17,6 +17,10 @@ class Entity {
 
     friend class Scene;
     friend class StaticScriptComponent;
+    friend class Transformable;
+
+    Entity() {}
+
 public:
     inline SceneBase* getScene() { return m_scene; }
 

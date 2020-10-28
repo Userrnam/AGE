@@ -77,7 +77,8 @@ def install(include_path, lib_path):
         'AnimationState.hpp',
         'Animator.hpp',
         'LinearFunction.hpp',
-        'StepFunction.hpp'
+        'StepFunction.hpp',
+        "TransformResolveStructure.hpp"
     ])
 
     copy_module_headers(include_path, 'Audio', [
@@ -108,6 +109,7 @@ def install(include_path, lib_path):
     copy_module_headers(include_path, 'Graphics', [
         'PositionManager.hpp',
         'Transformable.hpp',
+        'UnmanagedTransformable.hpp',
         'MemoryHolders/Buffer.hpp',
         'MemoryHolders/Image.hpp',
         "ObjectCreation/Components/ArrayComponent.hpp",

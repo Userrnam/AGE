@@ -23,9 +23,6 @@ namespace age {
 
 audio::Core audioCore;
 
-PositionManager* defaultPositionManager;
-PositionManager* selectedPositionManager;
-
 auto currentTime = std::chrono::high_resolution_clock::now();
 
 Application::Application(const std::string& name, int width, int height) {
@@ -45,8 +42,6 @@ Application::~Application() {
         delete m_activeScene;
     }
     
-    delete defaultPositionManager;
-
     for (auto& font : m_fonts) {
         font.second->destroy();
         delete font.second;
@@ -71,10 +66,6 @@ Application::~Application() {
 void Application::create() {
     Renderer::create();
     core::deviceAlloc::init();
-
-    defaultPositionManager = new PositionManager();
-    
-    selectedPositionManager = defaultPositionManager;
 
     // create default view
     View view;
@@ -165,7 +156,7 @@ void Application::render() {
 
     for (auto vId : viewIds) {
         auto& view = age::ViewManager::getView(vId);
-        auto pm = view.getPositionManager();
+        auto pm = m_activeScene->getPositionManager();
 
         age::Positionable p;
         p.pos = view.getPosition() - view.getOrigin();

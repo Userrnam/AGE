@@ -78,5 +78,6 @@ public:
         colors.destroy();
 
         getComponent<age::Drawable>().destroy();
+        getScene()->getPositionManager()->remove(getEntityId());
     }
 };
