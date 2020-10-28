@@ -1,6 +1,4 @@
 #include <chrono>
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 #include "Application.hpp"
 
@@ -23,19 +21,12 @@
 
 namespace age {
 
-extern FT_Library ftLibrary;
 audio::Core audioCore;
 
 PositionManager* defaultPositionManager;
 PositionManager* selectedPositionManager;
 
 auto currentTime = std::chrono::high_resolution_clock::now();
-
-inline void initFreetype() {
-    if (FT_Init_FreeType(&ftLibrary)) {
-        throw std::runtime_error("initFreeType: failed to init");
-    }
-}
 
 Application::Application(const std::string& name, int width, int height) {
     config::setApplicationName(name);
@@ -81,7 +72,7 @@ void Application::create() {
     Renderer::create();
     core::deviceAlloc::init();
 
-    defaultPositionManager = new PositionManager;
+    defaultPositionManager = new PositionManager();
     
     selectedPositionManager = defaultPositionManager;
 
@@ -92,9 +83,6 @@ void Application::create() {
     ViewManager::select(hash("default"));
 
     Shape::createManager();
-
-    // init freetype
-    initFreetype();
 
     // init audio
     audioCore.init();

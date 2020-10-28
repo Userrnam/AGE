@@ -1,4 +1,5 @@
 #include <vulkan/vulkan.h>
+#include <stdexcept>
 
 #include "Shader.hpp"
 #include "../Utils/utils.hpp"

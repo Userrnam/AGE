@@ -1,24 +1,3 @@
-#install vulkan
-find_package(Freetype)
-if (NOT ${Vulkan_FOUND})
-    message("freetype not found")
-    if (UNIX AND NOT APPLE)
-        if ((${LINUX_DISTRO} STREQUAL "Ubuntu") OR ${LINUX_DISTRO} STREQUAL "Debian")
-            message("Installing vulkan")
-            message("sudo apt-get install vulkan-tools libvulkan-dev vulkan-validationlayers-dev -y")
-            execute_process(
-                COMMAND bash -c "sudo apt-get install vulkan-tools libvulkan-dev vulkan-validationlayers-dev -y"
-                OUTPUT_VARIABLE OUT_VAR
-            )
-        else ()
-            message("Unsupported distro " ${LINUX_DISTRO})
-            message(FATAL_ERROR "Manual library installation required")
-        endif ()
-    else ()
-        message(FATAL_ERROR "Manual library installation required")
-    endif()
-endif()
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I ${CMAKE_CURRENT_LIST_DIR}")
 
 file(GLOB sources
@@ -35,14 +14,13 @@ file(GLOB sources
     "View/*.cpp"
 )
 
-find_package(Freetype)
-find_package(glfw3)
+find_package(Freetype REQUIRED FATAL_ERROR)
+find_package(glfw3 REQUIRED FATAL_ERROR)
+find_package(glm REQUIRED FATAL_ERROR)
+find_package(Vulkan REQUIRED FATAL_ERROR)
 
 add_library(graphics STATIC ${sources})
-if (APPLE)
-target_include_directories(graphics PUBLIC "${FREETYPE_INCLUDE_DIRS}")
-target_link_libraries(graphics containers glfw vulkan utils freetype)
-else ()
-target_include_directories(graphics PUBLIC "${FREETYPE_INCLUDE_DIRS}" "${GLFW3_INCLUDE_DIR}")
-target_link_libraries(graphics containers vulkan ${GLFW3_LIBRARY} rt m dl X11 pthread xcb Xau Xdmcp utils ${FREETYPE_LIBRARIES})
-endif ()
+
+target_include_directories(graphics PRIVATE ${Vulkan_INCLUDE_DIRS} ${GLM_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLFW3_INCLUDE_DIR})
+target_link_libraries(graphics ${Vulkan_LIBRARIES} ${GLFW3_LIBRARY} ${FREETYPE_LIBRARIES} utils containers)
+add_dependencies(graphics utis containers)

@@ -1,3 +1,6 @@
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "Renderer.hpp"
 #include "Core/Command.hpp"
 #include "Core/CoreCreator.hpp"
@@ -7,6 +10,15 @@
 #include "RenderPass.hpp"
 
 namespace age {
+
+
+extern FT_Library ftLibrary;
+
+inline void initFreetype() {
+    if (FT_Init_FreeType(&ftLibrary)) {
+        throw std::runtime_error("initFreeType: failed to init");
+    }
+}
 
 std::vector<Drawable> Renderer::m_previousTargets;
 std::vector<entt::entity> Renderer::m_previousTargetsIds;
@@ -91,6 +103,7 @@ void Renderer::render(const std::vector<Drawable>& targets) {
 }
 
 void Renderer::create() {
+    initFreetype();
     core::initCore();
     RenderPass::create();
     Framebuffers::create(RenderPass::get());
