@@ -23,4 +23,4 @@ add_library(graphics STATIC ${sources})
 
 target_include_directories(graphics PRIVATE ${Vulkan_INCLUDE_DIRS} ${GLM_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLFW3_INCLUDE_DIR})
 target_link_libraries(graphics ${Vulkan_LIBRARIES} ${GLFW3_LIBRARY} ${FREETYPE_LIBRARIES} utils containers)
-add_dependencies(graphics utis containers)
+add_dependencies(graphics utils containers)

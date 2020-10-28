@@ -56,7 +56,7 @@ Application::~Application() {
 
     Sampler::destroyDefault();
 
-    audioCore.destroy();
+    audio::Core::destroy();
 
     EventManager::destroy();
     Renderer::destroy();
@@ -75,8 +75,7 @@ void Application::create() {
 
     Shape::createManager();
 
-    // init audio
-    audioCore.init();
+    audio::Core::init();
 
     Listener::setDefaults();
 
