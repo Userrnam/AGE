@@ -1,7 +1,11 @@
 #include "Core.hpp"
 #include "OpenAL.hpp"
 
+
 namespace age::audio {
+
+ALCdevice* m_device;
+ALCcontext* m_context;
 
 void Core::init() {
     m_device = alcOpenDevice(nullptr);
