@@ -14,8 +14,7 @@ struct Application : public age::Application {
         loadTexture(age::getAssetPath("mountains.png"), "mountains");
         loadTexture(age::getAssetPath("yoda.jpg"), "yoda");
 
-        // selectScene<MainMenu>();
-        setActiveScene<TestScene>();
+        selectScene<MainMenu>();
     }
 
     virtual void onEvent(age::Event e) override {
@@ -24,9 +23,9 @@ struct Application : public age::Application {
             if (s.action == GLFW_PRESS && s.key == GLFW_KEY_P) {
                 stop();
             }
-            // if (s.action == GLFW_PRESS && s.key == GLFW_KEY_R) {
-            //     selectScene<TestScene>();
-            // }
+            if (s.action == GLFW_PRESS && s.key == GLFW_KEY_R) {
+                selectScene<MainMenu>();
+            }
         }
     }
 };

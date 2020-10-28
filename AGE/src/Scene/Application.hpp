@@ -76,19 +76,13 @@ protected:
 
 public: 
     template<typename S, typename... Args>
-    void setActiveScene(Args... args) {
-        m_activeScene = new S(this, args...);
-        std::cout << "!remove setActiveScene\n";
+    void selectScene(Args... args) {
+        if (!m_activeScene) {
+            m_activeScene = new S(this, args...);
+        } else {
+            m_switchScene = new S(this, args...);
+        }
     }
-
-    // template<typename S, typename... Args>
-    // void selectScene(Args... args) {
-    //     if (!m_activeScene) {
-    //         m_activeScene = new S(this, args...);
-    //     } else {
-    //         m_switchScene = new S(this, args...);
-    //     }
-    // }
 
     Application(const std::string& name, int width, int height);
     virtual ~Application();

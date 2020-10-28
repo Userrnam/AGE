@@ -1,6 +1,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include <iostream>
+
 #include "Renderer.hpp"
 #include "Core/Command.hpp"
 #include "Core/CoreCreator.hpp"
@@ -21,7 +23,6 @@ inline void initFreetype() {
 }
 
 std::vector<Drawable> Renderer::m_previousTargets;
-std::vector<entt::entity> Renderer::m_previousTargetsIds;
 
 template<typename T>
 bool vectorsMatch(const std::vector<T>& l, const std::vector<T>& r) {
@@ -36,15 +37,6 @@ bool vectorsMatch(const std::vector<T>& l, const std::vector<T>& r) {
     }
 
     return true;
-}
-
-bool Renderer::renderRequired(const std::vector<entt::entity>& ids) {
-    bool result = !vectorsMatch(m_previousTargetsIds, ids);
-    if (result) {
-        m_previousTargetsIds = ids;
-    }
-
-    return result;
 }
 
 void Renderer::render(const std::vector<Drawable>& targets) {

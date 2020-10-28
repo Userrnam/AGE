@@ -113,16 +113,14 @@ void Application::run() {
 
         m_activeScene->update(elapsedTime);
 
-        // if (m_switchScene) {
-        //     vkDeviceWaitIdle(core::apiCore.device);
+        if (m_switchScene) {
+            vkDeviceWaitIdle(core::apiCore.device);
 
-        //     delete m_activeScene;
+            delete m_activeScene;
 
-        //     m_activeScene = m_switchScene;
-        //     m_switchScene = nullptr;
-
-        //     continue;
-        // }
+            m_activeScene = m_switchScene;
+            m_switchScene = nullptr;
+        }
 
         render();
 
@@ -149,7 +147,6 @@ void Application::run() {
 void Application::render() {
     auto& viewIds = m_activeScene->getViewIds();
 
-    std::vector<entt::entity> ids;
     std::vector<age::Drawable> targets;
     targets.reserve(256);
 
@@ -165,14 +162,11 @@ void Application::render() {
         auto ve = pm->getVisibleEntities(p);
 
         for (auto e : ve) {
-            ids.push_back(e);
             targets.push_back(m_activeScene->m_registry.get<age::Drawable>(e));
         }
     }
 
-    if (Renderer::renderRequired(ids)) {
-        Renderer::render(targets);
-    }
+    Renderer::render(targets);
 }
 
 void Application::deleteActiveScene() {
