@@ -1,6 +1,7 @@
+#include <GLFW/glfw3.h>
+
 #include "Scenes/test/testScene.hpp"
 #include "Scenes/mainMenu/menu.hpp"
-#include <GLFW/glfw3.h>
 
 #ifndef CMAKE_DEFINITION
 #define RESOURCE_PATH ""

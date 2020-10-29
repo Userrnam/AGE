@@ -3,9 +3,6 @@
 #include <unordered_map>
 #include <string>
 
-// FIXME:
-#include <iostream>
-
 #include "../Events/EventManager.hpp"
 #include "../Events/Event.hpp"
 #include "../Graphics/ObjectCreation/Components/FontComponent.hpp"

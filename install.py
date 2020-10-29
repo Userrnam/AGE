@@ -125,7 +125,6 @@ def install(include_path, lib_path):
         "ObjectCreation/Components/TextureComponent.hpp",
         "ObjectCreation/Components/TileMapComponent.hpp",
         "ObjectCreation/Components/TransformComponent.hpp",
-        # "Core/CoreConfiguration.hpp",
         "ObjectCreation/Descriptor.hpp",
         "ObjectCreation/Drawable.hpp",
         "ObjectCreation/Shader.hpp",
@@ -147,7 +146,8 @@ def install(include_path, lib_path):
         'Scene.hpp',
         'SceneBase.hpp',
         'ScriptComponent.hpp',
-        'Application.hpp'
+        'Application.hpp',
+        'ParticleSystem.hpp'
     ])
 
     copy_module_headers(include_path, 'UI', [

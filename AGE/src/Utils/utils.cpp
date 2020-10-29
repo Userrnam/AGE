@@ -1,5 +1,6 @@
 #include <string>
 #include <fstream>
+#include <stdlib.h>
 
 #include "utils.hpp"
 
@@ -31,6 +32,10 @@ std::vector<char> readFile(const std::string& filename) {
     file.close();
 
     return buffer;
+}
+
+int random(int min, int max) {
+    return min + rand() % (max - min);
 }
 
 } // namespace age

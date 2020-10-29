@@ -25,6 +25,10 @@ public:
         return m_data[i];
     }
 
+    size_t count() const {
+        return m_data.size();
+    }
+
     inline void add(T elem) {
         m_data.push_back(elem);
     }
@@ -33,12 +37,18 @@ public:
         m_data.erase(m_data.begin() + i);
     }
 
+    inline void erase(size_t start, size_t end) {
+        m_data.erase(m_data.begin() + start, m_data.begin() + end);
+    }
+
     inline void clear() {
         m_data.clear();
     }
 
     void upload() {
-        m_buffer.load(m_data.data(), sizeof(T) * m_data.size());
+        if (m_data.size()) {
+            m_buffer.load(m_data.data(), sizeof(T) * m_data.size());
+        }
     }
 
     void destroy() {

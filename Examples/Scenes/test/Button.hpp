@@ -1,6 +1,5 @@
 #pragma once
 
-#include <bits/stdint-uintn.h>
 #include <iostream>
 
 #include <AGE/Animation.hpp>

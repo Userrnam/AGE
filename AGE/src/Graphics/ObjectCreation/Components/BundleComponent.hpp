@@ -36,38 +36,6 @@ public:
         this->template get<T>() = data;
         return *this;
     }
-};
-
-// Warning: does not call constructor
-template<typename... Args>
-class BundleComponent : public StorageComponent<Bundle<Args...>> {
-public:
-    Bundle<Args...>& get() {
-        return StorageComponent<Bundle<Args...>>::get();
-    }
-
-    const Bundle<Args...>& get() const {
-        return StorageComponent<Bundle<Args...>>::get();
-    }
-
-    void set(const Bundle<Args...>& b) {
-        StorageComponent<Bundle<Args...>>::set(b);
-    }
-
-    template<typename T>
-    T& get() {
-        return StorageComponent<Bundle<Args...>>::get().template get<T>();
-    }
-
-    template<typename T>
-    const T& get() const {
-        return StorageComponent<Bundle<Args...>>::get().template get<T>();
-    }
-
-    template<typename T>
-    Bundle<Args...>& set(const T& data) {
-        return StorageComponent<Bundle<Args...>>::get().set(data);
-    }
 
     static ShaderComponentInfo __getInfo() {
         std::vector<ShaderComponentInfo> infos;
@@ -111,12 +79,37 @@ public:
 
         return shaderComponentInfo;
     }
+};
 
-    ShaderComponentInfo getInfo() {
-        auto info = __getInfo();
-        info.setId<BundleComponent<Args...>>();
-        info.setBuffer(StorageComponent<Bundle<Args...>>::getBuffer());
-        return info;
+// Warning: does not call constructor
+template<typename... Args>
+class BundleComponent : public StorageComponent<Bundle<Args...>> {
+public:
+    Bundle<Args...>& get() {
+        return StorageComponent<Bundle<Args...>>::get();
+    }
+
+    const Bundle<Args...>& get() const {
+        return StorageComponent<Bundle<Args...>>::get();
+    }
+
+    void set(const Bundle<Args...>& b) {
+        StorageComponent<Bundle<Args...>>::set(b);
+    }
+
+    template<typename T>
+    T& get() {
+        return StorageComponent<Bundle<Args...>>::get().template get<T>();
+    }
+
+    template<typename T>
+    const T& get() const {
+        return StorageComponent<Bundle<Args...>>::get().template get<T>();
+    }
+
+    template<typename T>
+    Bundle<Args...>& set(const T& data) {
+        return StorageComponent<Bundle<Args...>>::get().set(data);
     }
 };
 

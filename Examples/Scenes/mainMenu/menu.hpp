@@ -1,5 +1,6 @@
 #pragma once
 
+#include <AGE/Math/Vector.hpp>
 #include <AGE/Scene.hpp>
 #include "AGE/UI.hpp"
 
