@@ -35,6 +35,9 @@ std::vector<char> readFile(const std::string& filename) {
 }
 
 int random(int min, int max) {
+    if (min == max) {
+        return min;
+    }
     return min + rand() % (max - min);
 }
 

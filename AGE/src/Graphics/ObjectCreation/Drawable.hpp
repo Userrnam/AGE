@@ -77,6 +77,7 @@ public:
 
     void addInstanceCount(int i) { assert((int)m_instanceCount + i >= 0); m_instanceCount += i; }
     void setInstanceCount(uint32_t i) { m_instanceCount = i; }
+    uint32_t getInstanceCount() const { return m_instanceCount; }
 
     void create(const DrawableCreateInfo& createInfo);
     void destroy();

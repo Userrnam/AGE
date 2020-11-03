@@ -111,6 +111,7 @@ void Application::run() {
         EventManager::clearEvents();
         ViewManager::updateViews(elapsedTime, std::chrono::duration<float, std::chrono::seconds::period>(startTime - currentTime).count());
 
+        onUpdate(elapsedTime);
         m_activeScene->update(elapsedTime);
 
         if (m_switchScene) {

@@ -24,11 +24,6 @@ public:
         createStaticEntity<Background>(age::Color(1, 0, 0, 1));
     }
 
-    virtual void onUpdate(float elapsedTime) override {
-        std::string s = "fps: " + std::to_string(getApplication()->getFps());
-        getApplication()->setWindowTitle(s);
-    }
-
     void createUIBlock() {
         auto button1 = createEntity<Button>("button1");
         auto button2 = createEntity<Button>("button2");

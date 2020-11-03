@@ -68,6 +68,7 @@ protected:
     }
 
     virtual void onEvent(Event event) {}
+    virtual void onUpdate(float elapsedTime) {}
     virtual void onCreate() {}
     virtual void onDestroy() {}
 

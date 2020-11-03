@@ -10,7 +10,7 @@ struct Vector2 {
     T y = {};
 
     Vector2() {}
-    Vector2(T _x, T _y) { x = _x; y = _y; }
+    constexpr Vector2(T _x, T _y) { x = _x; y = _y; }
     Vector2(T f) { x = f; y = f; }
 
     Vector2& operator+=(const Vector2& rhs) {
@@ -87,7 +87,7 @@ struct Vector3 {
     T z = {};
 
     Vector3() {}
-    Vector3(T _x, T _y, T _z) { x = _x; y = _y; z = _z; }
+    constexpr Vector3(T _x, T _y, T _z) { x = _x; y = _y; z = _z; }
     Vector3(T f) { x = f; y = f; z = f; }
 
     Vector3& operator+=(const Vector3& rhs) {
@@ -170,7 +170,7 @@ struct Vector4 {
     T w = {};
 
     Vector4() {}
-    Vector4(T _x, T _y, T _z, T _w) { x = _x; y = _y; z = _z; w = _w; }
+    constexpr Vector4(T _x, T _y, T _z, T _w) { x = _x; y = _y; z = _z; w = _w; }
     Vector4(T f) { x = f; y = f; z = f; w = f; }
 
     Vector4& operator+=(const Vector4& rhs) {

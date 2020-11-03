@@ -19,6 +19,11 @@ struct Application : public age::Application {
         selectScene<MainMenu>();
     }
 
+    virtual void onUpdate(float elapsedTime) override {
+        std::string s = "fps: " + std::to_string(getFps());
+        setWindowTitle(s);
+    }
+
     virtual void onEvent(age::Event e) override {
         if (e == age::event::KEY) {
             auto s = e.getStructure<age::event::Key>();

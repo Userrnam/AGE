@@ -29,7 +29,7 @@ public:
 	// Animation
 
 	template<typename Anim>
-	inline uint64_t addAnimation(const Anim& animation) { m_animator.addAnimation(animation); }
+	inline uint64_t addAnimation(const Anim& animation) { return m_animator.addAnimation(animation); }
 	inline void pauseAnimation(uint64_t id) { m_animator.pauseAnimation(id); }
 	inline void continueAnimation(uint64_t id) { m_animator.continueAnimation(id); }
 	inline void stopAnimation(uint64_t id) { m_animator.stopAnimation(id); }
