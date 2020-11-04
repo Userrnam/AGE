@@ -35,8 +35,8 @@ void View::handleWindowResize(const Vector2i &oldSize, const Vector2i newSize) {
 
 void View::update(float elapsedTime, float currentTime) {
     m_globals.deltaTime = elapsedTime;
-    m_globals.deltaTime = currentTime;
-    m_buffer.load(&m_globals, sizeof(m_globals));
+    m_globals.time = currentTime;
+    m_buffer.load(&m_globals, sizeof(View::ViewGlobals));
 }
 
 void View::create() {

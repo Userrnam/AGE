@@ -11,5 +11,5 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 include_directories("/usr/local/include")
 link_directories("/usr/local/lib")
 
-add_subdirectory(AGE)
-# add_subdirectory(Examples)
+# add_subdirectory(AGE)
+add_subdirectory(Examples)

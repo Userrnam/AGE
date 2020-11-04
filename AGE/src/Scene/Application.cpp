@@ -106,7 +106,7 @@ void Application::run() {
         }
         EventManager::clearEvents();
 
-        float runTime = std::chrono::duration<float, std::chrono::seconds::period>(startTime - currentTime).count();
+        float runTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
         onUpdate(elapsedTime);
         m_activeScene->update(elapsedTime, runTime);
 

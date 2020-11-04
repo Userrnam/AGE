@@ -83,6 +83,8 @@ class DescriptorSetInfo {
     }
 
 public:
+    inline uint32_t getBindingCount() const { return m_bindings.size(); }
+
     inline DescriptorSetInfo& addBinding(const DescriptorBinding& binding) {
         m_bindings.push_back(binding);
         return *this;

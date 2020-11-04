@@ -114,7 +114,9 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<ShaderComponent
 
             else if (std::holds_alternative<ShaderComponentForward>(sc)) {
                 auto forward = std::get<ShaderComponentForward>(sc);
-                globalNames.push_back(forward.m_data);
+                if (forward.m_data.size()) {
+                    globalNames.push_back(forward.m_data);
+                }
             }
         }
     }
@@ -215,7 +217,9 @@ void ShaderBuilder::generateFragmentShaderSource(const std::vector<ShaderCompone
 
             else if (std::holds_alternative<ShaderComponentForward>(sc)) {
                 auto forward = std::get<ShaderComponentForward>(sc);
-                globalNames.push_back(forward.m_data);
+                if (forward.m_data.size()) {
+                    globalNames.push_back(forward.m_data);
+                }
             }
         }
     }
