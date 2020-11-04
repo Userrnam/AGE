@@ -1,18 +1,32 @@
 import os
 import shutil
-
+import time
 
 INCLUDE_PATH = "/usr/local/include/"
 LIBRARY_PATH = "/usr/local/lib/"
 
 
-def build():
+def build(target):
+    print("building " + target)
     if not os.access(".build", os.O_RDONLY):
         os.mkdir(".build")
-    
+
+    with open("CMakeLists.txt", "r") as f:
+        previous_lines = f.readlines()
+
+    with open("CMakeLists.txt", "a") as f:
+        f.writelines([
+            "add_subdirectory(" + target + ")\n"
+        ])
+
     os.chdir(".build")
     os.system("cmake ..")
     os.system("cmake --build .")
+
+    os.chdir("..")
+
+    with open("CMakeLists.txt", "w") as f:
+        f.writelines(previous_lines)
 
 def remove_prefix(s, prefix):
     if s.startswith(prefix):
@@ -163,4 +177,7 @@ def install(include_path, lib_path):
     ])
 
 if __name__ == '__main__':
+    build("AGE")
     install(INCLUDE_PATH, LIBRARY_PATH)
+    print("installed")
+    build("Examples")
