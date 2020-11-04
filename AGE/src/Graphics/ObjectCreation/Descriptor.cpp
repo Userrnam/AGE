@@ -1,6 +1,6 @@
 #include "Descriptor.hpp"
-#include "Core/Pool.hpp"
-#include "Core/Core.hpp"
+#include "../Core/Pool.hpp"
+#include "../Core/Core.hpp"
 
 namespace age {
 

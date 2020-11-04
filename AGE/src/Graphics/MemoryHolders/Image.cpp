@@ -2,8 +2,8 @@
 
 #include "Image.hpp"
 
-#include "Core/Core.hpp"
-#include "Core/Utils/utils.hpp"
+#include "../Core/Core.hpp"
+#include "../Core/Utils/utils.hpp"
 
 namespace age::core {
 

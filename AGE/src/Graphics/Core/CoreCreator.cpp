@@ -3,7 +3,7 @@
 #include "Window/Window.hpp"
 #include "Core.hpp"
 #include "VulkanDebug.hpp"
-#include "Memory/DeviceAlloc.hpp"
+#include "../Memory/DeviceAlloc.hpp"
 #include <GLFW/glfw3.h>
 
 namespace age::core {

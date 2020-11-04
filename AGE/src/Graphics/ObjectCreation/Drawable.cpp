@@ -3,12 +3,12 @@
 
 #include "Drawable.hpp"
 
-#include "Core/Core.hpp"
-#include "Core/CoreConfig.hpp"
-#include "Rendering/PipelineManager.hpp"
-#include "Rendering/RenderPass.hpp"
-#include "View/ViewManager.hpp"
-#include "Core/Pool.hpp"
+#include "../Core/Core.hpp"
+#include "../Core/CoreConfig.hpp"
+#include "../Rendering/PipelineManager.hpp"
+#include "../Rendering/RenderPass.hpp"
+#include "../View/ViewManager.hpp"
+#include "../Core/Pool.hpp"
 #include "ShaderBuilder.hpp"
 
 namespace age::core {

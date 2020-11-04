@@ -4,8 +4,8 @@
 #include <vector>
 #include <utility>
 
-#include "ObjectCreation/Shader.hpp"
-#include "ObjectCreation/ShapeManager.hpp"
+#include "../ObjectCreation/Shader.hpp"
+#include "../ObjectCreation/ShapeManager.hpp"
 
 /*
 

@@ -1,10 +1,10 @@
 #include <vulkan/vulkan.h>
-#include "../Math/Vector.hpp"
+#include "../../Math/Vector.hpp"
 #include <assert.h>
 
 #include "ShapeManager.hpp"
-#include "MemoryHolders/Buffer.hpp"
-#include "Memory/BufferPool.hpp"
+#include "../MemoryHolders/Buffer.hpp"
+#include "../Memory/BufferPool.hpp"
 
 /*
 

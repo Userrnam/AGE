@@ -3,7 +3,7 @@
 
 #include "DeviceAlloc.hpp"
 #include "BufferPool.hpp"
-#include "Core/Core.hpp"
+#include "../Core/Core.hpp"
 
 namespace age::core::deviceAlloc {
 

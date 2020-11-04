@@ -1,9 +1,9 @@
 #include "Buffer.hpp"
 
-#include "Core/Core.hpp"
-#include "Core/Utils/utils.hpp"
-#include "Core/Utils/TransitionImageLayout.hpp"
-#include "Memory/DeviceAlloc.hpp"
+#include "../Core/Core.hpp"
+#include "../Core/Utils/utils.hpp"
+#include "../Core/Utils/TransitionImageLayout.hpp"
+#include "../Memory/DeviceAlloc.hpp"
 
 namespace age {
 

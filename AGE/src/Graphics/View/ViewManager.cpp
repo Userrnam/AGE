@@ -1,7 +1,7 @@
 #include <unordered_map>
 
 #include "ViewManager.hpp"
-#include "Core/Core.hpp"
+#include "../Core/Core.hpp"
 
 namespace age {
 

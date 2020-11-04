@@ -1,7 +1,7 @@
 #include <unordered_map>
 
-#include "Core/CoreConfig.hpp"
-#include "Core/Core.hpp"
+#include "../Core/CoreConfig.hpp"
+#include "../Core/Core.hpp"
 #include "PipelineManager.hpp"
 #include "RenderPass.hpp"
 

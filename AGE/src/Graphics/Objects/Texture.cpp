@@ -1,7 +1,7 @@
 #include <cmath>
 
 #include "Texture.hpp"
-#include "../External/stb_image.h"
+#include "../../External/stb_image.h"
 #include "../MemoryHolders/Buffer.hpp"
 #include "../Core/Core.hpp"
 #include "../Core/Utils/TransitionImageLayout.hpp"

@@ -1,8 +1,8 @@
 #include <assert.h>
 
 #include "View.hpp"
-#include "Core/Core.hpp"
-#include "Core/Command.hpp"
+#include "../Core/Core.hpp"
+#include "../Core/Command.hpp"
 
 namespace age {
 

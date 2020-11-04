@@ -4,11 +4,11 @@
 #include <string>
 
 #include "utils.hpp"
-#include "Core/Window/QueueFamilyIndicies.hpp"
-#include "Core/Window/SwapchainSupportDetails.hpp"
+#include "../Window/QueueFamilyIndicies.hpp"
+#include "../Window/SwapchainSupportDetails.hpp"
 
-#include "Core/CoreConfig.hpp"
-#include "Core/Core.hpp"
+#include "../CoreConfig.hpp"
+#include "../Core.hpp"
 
 namespace age::core {
 

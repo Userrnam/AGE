@@ -4,9 +4,9 @@
 #include <iostream>
 
 #include "Renderer.hpp"
-#include "Core/Command.hpp"
-#include "Core/CoreCreator.hpp"
-#include "Core/Core.hpp"
+#include "../Core/Command.hpp"
+#include "../Core/CoreCreator.hpp"
+#include "../Core/Core.hpp"
 #include "PipelineManager.hpp"
 #include "Framebuffers.hpp"
 #include "RenderPass.hpp"

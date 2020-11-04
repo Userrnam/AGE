@@ -2,8 +2,8 @@
 #include <stdexcept>
 
 #include "Shader.hpp"
-#include "../Utils/utils.hpp"
-#include "Core/Core.hpp"
+#include "../../Utils/utils.hpp"
+#include "../Core/Core.hpp"
 
 namespace age {
 
