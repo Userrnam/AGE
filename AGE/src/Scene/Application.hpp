@@ -90,6 +90,7 @@ public:
     }
 
     void setWindowTitle(const std::string& s);
+    Vector2i getWindowSize();
 
     void run();
     void stop() {

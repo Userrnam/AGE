@@ -178,4 +178,9 @@ void Application::setWindowTitle(const std::string& s) {
     glfwSetWindowTitle(core::apiCore.window.handle, s.c_str());
 }
 
+Vector2i Application::getWindowSize() {
+    auto s = core::window::getWindowSize();
+    return Vector2i(s.x, s.y);
+}
+
 } // namespace age

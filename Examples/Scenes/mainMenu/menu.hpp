@@ -45,12 +45,15 @@ class MainMenu : public age::Scene {
 public:
     MainMenu(age::Application* app) : age::Scene(app) {
         auto button1 = createEntity<TestSceneButton>();
+        auto button2 = createEntity<FlappyBirdButton>();
         createEntity<age::ParticleSystem<Particle>>(1000);
         createStaticEntity<Background>(age::Color(0, 0, 0, 1));
 
         uiblockId = addUIBlock(
-            age::UIBlock(1)
+            age::UIBlock(2)
             .addButton(std::get<1>(button1))
+            .addButton(std::get<1>(button2))
+            .alignVertically(10)
         );
 
         auto& block = getUIBlock(uiblockId);

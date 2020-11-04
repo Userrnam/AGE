@@ -11,6 +11,7 @@ namespace age {
 
 class SceneBase {
 protected:
+	// TODO: remove this and use just 1 view
 	std::vector<uint64_t> m_viewIds = { hash("default") };
     Application* parent = nullptr;
 	entt::registry m_registry;

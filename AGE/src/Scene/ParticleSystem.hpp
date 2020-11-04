@@ -130,6 +130,10 @@ void ParticleSystem<ParticleType>::onUpdate(float elapsedTime) {
     m_elapsedTotal += elapsedTime;
     int spawnCount = m_elapsedTotal * m_spawnRate;
     if (spawnCount > 0) {
+        int dif = m_particles.size() + spawnCount - m_maxParticles;
+        if (dif > 0) {
+            spawnCount -= dif;
+        }
         for (int i = 0; i < spawnCount; ++i) {
             m_particles.push_back(ParticleType());
 

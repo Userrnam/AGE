@@ -139,7 +139,8 @@ def install(include_path, lib_path):
 
     copy_module_headers(include_path, 'Math', [
         'Vector.hpp',
-        "Functions.hpp"
+        "Functions.hpp",
+        "Rectangle.hpp"
     ])
 
     copy_module_headers(include_path, 'Scene', [

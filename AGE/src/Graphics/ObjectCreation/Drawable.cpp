@@ -194,7 +194,7 @@ void Drawable::create(const DrawableCreateInfo& info) {
     }
 }
 
-#ifndef NDEBUG
+#ifndef NO_COMPONENT_ORDER_CHECK
 
 std::unordered_map<PipelineInfo, std::vector<PipelineInfo>> shaderComponentsOrder;
 
@@ -219,7 +219,7 @@ void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>&
     m_poolIndicies.push_back(descriptor.m_poolIndex);
     layouts.push_back(descriptor.m_layout);
 
-#ifndef NDEBUG
+#ifndef NO_COMPONENT_ORDER_CHECK
     std::vector<PipelineInfo> currentComponentsOrder;
 #endif
 
@@ -228,12 +228,12 @@ void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>&
     PipelineInfo pipelineInfo = 1;
     for (auto& component : compoents) {
         pipelineInfo |= component.m_id;
-#ifndef NDEBUG
+#ifndef NO_COMPONENT_ORDER_CHECK
         currentComponentsOrder.push_back(component.m_id);
 #endif
     }
 
-#ifndef NDEBUG
+#ifndef NO_COMPONENT_ORDER_CHECK
     auto previousComponentsOrder = shaderComponentsOrder.find(pipelineInfo);
     if (previousComponentsOrder == shaderComponentsOrder.end()) {
         shaderComponentsOrder[pipelineInfo] = currentComponentsOrder;
@@ -273,18 +273,6 @@ void Drawable::destroy() {
 void Drawable::draw(int i) const {
     VkBuffer vertexBuffer = m_shapeRenderInfo.m_vertexMemoryId.buffer;
     VkBuffer indexBuffer = m_shapeRenderInfo.m_indexMemoryId.buffer;
-
-    // move this to renderer
-
-    // VkViewport viewport = ViewManager::getView(m_viewId).getViewport();
-    // VkRect2D scissors;
-    // scissors.offset.x = viewport.x;
-    // scissors.offset.y = viewport.y;
-    // scissors.extent.width = viewport.width;
-    // scissors.extent.height = viewport.height;
-
-    // vkCmdSetViewport(core::apiCore.commandBuffers.active[i], 0, 1, &viewport);
-    // vkCmdSetScissor(core::apiCore.commandBuffers.active[i], 0, 1, &scissors);
 
     VkDeviceSize offsets[] = { m_shapeRenderInfo.m_vertexMemoryId.address };
 
