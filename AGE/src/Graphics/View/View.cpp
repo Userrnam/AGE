@@ -6,9 +6,37 @@
 
 namespace age {
 
+Vector2i maxSizeResizeHandler(Vector2i oldSize, Vector2i newSize) {
+    return newSize;
+}
+
+Vector2i preserveWidthResizeHandler(Vector2i oldSize, Vector2i newSize) {
+    Vector2i result;
+    result.x = oldSize.x;
+    result.y = newSize.y * oldSize.x / newSize.x;
+    return result;
+}
+
+Vector2i preserveHeighthResizeHandler(Vector2i oldSize, Vector2i newSize) {
+    Vector2i result;
+    result.x = newSize.x * oldSize.y / newSize.y;
+    result.y = oldSize.y;
+    return result;
+}
 
 void View::updateCameraTransform() {
     m_globals.cameraTransform = m_camera.getProjection() * UnmanagedTransformable::getTransform();
+}
+
+void View::handleWindowResize(const Vector2i &oldSize, const Vector2i newSize) {
+    auto s = m_resizeHandler(oldSize, newSize);
+    m_camera.setOrthoganalProjection(s.x, s.y);
+}
+
+void View::update(float elapsedTime, float currentTime) {
+    m_globals.deltaTime = elapsedTime;
+    m_globals.deltaTime = currentTime;
+    m_buffer.load(&m_globals, sizeof(m_globals));
 }
 
 void View::create() {

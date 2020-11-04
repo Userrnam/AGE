@@ -2,8 +2,9 @@
 
 namespace age {
 
-void Scene::update(float elapsedTime) {
+void Scene::update(float elapsedTime, float runTime) {
     m_animator.update(elapsedTime);
+    SceneBase::update(elapsedTime, runTime);
 
     onUpdate(elapsedTime);
 

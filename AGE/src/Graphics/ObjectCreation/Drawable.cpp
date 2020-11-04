@@ -7,7 +7,7 @@
 #include "../Core/CoreConfig.hpp"
 #include "../Rendering/PipelineManager.hpp"
 #include "../Rendering/RenderPass.hpp"
-#include "../View/ViewManager.hpp"
+#include "../View/SelectedView.hpp"
 #include "../Core/Pool.hpp"
 #include "ShaderBuilder.hpp"
 
@@ -75,8 +75,7 @@ void Drawable::getPipelineLayout(const DrawableCreateInfo& info) {
     m_descriptorSets.reserve(info.m_descriptors.size() + 1);
 
     // add camera descriptor
-    auto& view = ViewManager::getSelected();
-    auto cameraDescriptor = view.getDescriptor();
+    auto cameraDescriptor = selectedView.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
     m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
     layouts.push_back(cameraDescriptor.m_layout);
@@ -205,8 +204,7 @@ void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>&
 
     std::vector<VkDescriptorSetLayout> layouts;
     // add camera descriptor
-    auto& view = ViewManager::getSelected();
-    auto cameraDescriptor = view.getDescriptor();
+    auto cameraDescriptor = selectedView.getDescriptor();
     m_descriptorSets.push_back(cameraDescriptor.m_set);
     m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
     layouts.push_back(cameraDescriptor.m_layout);

@@ -7,6 +7,13 @@
 
 namespace age {
 
+typedef Vector2i(*ResizeHandler)(Vector2i oldSize, Vector2i newSize);
+
+Vector2i maxSizeResizeHandler(Vector2i oldSize, Vector2i newSize);
+Vector2i preserveWidthResizeHandler(Vector2i oldSize, Vector2i newSize);
+Vector2i preserveHeighthResizeHandler(Vector2i oldSize, Vector2i newSize);
+
+
 class View : public UnmanagedTransformable {
     struct ViewGlobals {
         glm::mat4 cameraTransform;
@@ -21,19 +28,19 @@ class View : public UnmanagedTransformable {
     DescriptorSet m_descriptor;
 
     Camera m_camera;
-
-    uint64_t m_id;
-
-    friend class ViewManager;
+    ResizeHandler m_resizeHandler = maxSizeResizeHandler;
 public:
-    inline uint64_t getId() const { return m_id; }
+    void create();
+    void destroy();
 
     inline DescriptorSet getDescriptor() const { return m_descriptor; }
 
-    void updateCameraTransform();
+    inline void setResizeHandler(ResizeHandler handler) { m_resizeHandler = handler; }
+    inline ResizeHandler getResizeHandler() const { return m_resizeHandler; }
 
-    void create();
-    void destroy();
+    void updateCameraTransform();
+    void handleWindowResize(const Vector2i& oldSize, const Vector2i newSize);
+    void update(float elapsedTime, float currentTime);
 };
 
 } // namespace age

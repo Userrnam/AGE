@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #include "../Utils/utils.hpp"
+#include "../Math/Vector.hpp"
 
 namespace age {
 
@@ -22,7 +23,7 @@ public:
     }
 
     template<typename T>
-    T& getStructure() {
+    const T& getStructure() const {
         return *((T*)m_structure);
     }
 
@@ -47,26 +48,23 @@ struct Key {
 };
 
 struct Scroll {
-    double xOffset;
-    double yOffset;
+    Vector2<double> offset;
 };
 
 struct CursorPos {
-    double x;
-    double y;
+    Vector2<double> pos;
 };
 
 struct MouseButton {
-    double xPos;
-    double yPos;
+    Vector2<double> pos;
     int button;
     int action;
     int mods;
 };
 
 struct Resize {
-    int width;
-    int height;
+    Vector2i oldSize;
+    Vector2i newSize;
 };
 
 } // namespace event

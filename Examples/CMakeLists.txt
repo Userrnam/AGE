@@ -9,5 +9,3 @@ target_compile_definitions(tst PRIVATE RESOURCE_PATH="${CMAKE_CURRENT_LIST_DIR}/
 # save exe path
 file(RELATIVE_PATH exe_path ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 file(WRITE ${PROJECT_SOURCE_DIR}/.build/exe_path.txt ".build/${exe_path}/tst")
-
-add_dependencies(tst age)

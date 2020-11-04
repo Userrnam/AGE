@@ -15,7 +15,7 @@
 namespace age {
 
 class Scene : public SceneBase {
-    void update(float elapsedTime);
+    void update(float elapsedTime, float runTime);
 	void handleEvent(Event event);
 
 	friend class Application;

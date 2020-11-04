@@ -7,7 +7,7 @@ namespace age {
 bool UIBlock::update(const event::MouseButton& e) {
     for (size_t i = 0; i < m_buttons.count(); ++i) {
         auto b = m_buttons[i];
-        if (b->m_hitbox.isCovered(Vector2f(e.xPos, e.yPos))) {
+        if (b->m_hitbox.isCovered(Vector2f(e.pos.x, e.pos.y))) {
             if (!m_coveredButton) {
                 m_coveredButton = b;
                 b->onEnter();
@@ -28,7 +28,7 @@ bool UIBlock::update(const event::MouseButton& e) {
 bool UIBlock::update(const event::CursorPos& p) {
     for (int i = 0; i < m_buttons.count(); ++i) {
         IButton* b = m_buttons[i];
-        if (b->m_hitbox.isCovered(Vector2f(p.x, p.y))) {
+        if (b->m_hitbox.isCovered(Vector2f(p.pos.x, p.pos.y))) {
             if (!m_coveredButton) {
                 m_coveredButton = b;
                 b->onEnter();

@@ -9,7 +9,6 @@
 #include "../../Rendering/Framebuffers.hpp"
 #include "../../Rendering/RenderPass.hpp"
 #include "../../Rendering/Renderer.hpp"
-#include "../../View/ViewManager.hpp"
 #include "../../../Events/Event.hpp"
 
 namespace age::core {

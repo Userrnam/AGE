@@ -6,13 +6,16 @@
 #include "../UI/UIManager.hpp"
 #include "../Animation/Animator.hpp"
 #include "../Graphics/PositionManager.hpp"
+#include "../Graphics/View/View.hpp"
 
 namespace age {
 
 class SceneBase {
 protected:
-	// TODO: remove this and use just 1 view
-	std::vector<uint64_t> m_viewIds = { hash("default") };
+	View m_dynamicView;
+	View m_staticView;
+	float m_runTime;
+
     Application* parent = nullptr;
 	entt::registry m_registry;
 	UIManager m_uiManager;
@@ -21,11 +24,33 @@ protected:
 
 	friend class Entity;
 public:
-	virtual ~SceneBase() { m_uiManager.destroy(); }
+	SceneBase() { m_dynamicView.create(); m_staticView.create(); selectStaticView(); }
+	virtual ~SceneBase() { m_uiManager.destroy(); m_dynamicView.destroy(); m_staticView.destroy(); }
+
+	void selectDynamicView();
+	void selectStaticView();
+
+	View& getDynamicView() { return m_dynamicView; }
+	View& getStaticView() { return m_staticView; }
 
 	PositionManager* getPositionManager() { return &m_positionManager; }
 
-	void handleEvent(const Event& e) { m_uiManager.update(e); }
+	void handleEvent(const Event& e) {
+		if (e == age::event::RESIZE) {
+			auto s = e.getStructure<age::event::Resize>();
+			m_dynamicView.handleWindowResize(s.oldSize, s.newSize);
+			m_staticView.handleWindowResize(s.oldSize, s.newSize);
+		}
+		m_uiManager.update(e);
+	}
+
+	void update(float elapsedTime, float runTime) {
+		m_runTime = runTime;
+		m_staticView.update(elapsedTime, runTime);
+		m_dynamicView.update(elapsedTime, runTime);
+	}
+
+	float getRunTime() const { return m_runTime; }
 
 	// Animation
 
@@ -40,9 +65,6 @@ public:
 	inline uint64_t addUIBlock(const UIBlock& block) { return m_uiManager.addBlock(block); }
 	inline UIBlock& getUIBlock(uint64_t id) { return m_uiManager.getBlock(id); }
 	inline void eraseUIBlock(uint64_t id) { m_uiManager.eraseBlock(id); }
-
-	inline void addViewId(uint64_t id) { m_viewIds.push_back(id); }
-	inline const std::vector<uint64_t>& getViewIds() const { return m_viewIds; }
 
 	inline entt::registry* getRegistry() { return &m_registry; }
 	inline FontComponent* getFont(const std::string& font) { return parent->getFont(font); }

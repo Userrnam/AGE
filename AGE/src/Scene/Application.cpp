@@ -3,7 +3,6 @@
 #include "Application.hpp"
 
 #include "../Graphics/Rendering/Renderer.hpp"
-#include "../Graphics/View/ViewManager.hpp"
 #include "../Graphics/PositionManager.hpp"
 #include "../Graphics/Core/Window/Window.hpp"
 #include "../Graphics/Core/Core.hpp"
@@ -51,7 +50,6 @@ Application::~Application() {
         texture.second.destroy();
     }
 
-    ViewManager::destroy();
     Shape::destroyManager();
 
     Sampler::destroyDefault();
@@ -70,8 +68,6 @@ void Application::create() {
     // create default view
     View view;
     view.create();
-    ViewManager::add(view, hash("default"));
-    ViewManager::select(hash("default"));
 
     Shape::createManager();
 
@@ -109,10 +105,10 @@ void Application::run() {
             m_activeScene->handleEvent(event);
         }
         EventManager::clearEvents();
-        ViewManager::updateViews(elapsedTime, std::chrono::duration<float, std::chrono::seconds::period>(startTime - currentTime).count());
 
+        float runTime = std::chrono::duration<float, std::chrono::seconds::period>(startTime - currentTime).count();
         onUpdate(elapsedTime);
-        m_activeScene->update(elapsedTime);
+        m_activeScene->update(elapsedTime, runTime);
 
         if (m_switchScene) {
             vkDeviceWaitIdle(core::apiCore.device);
@@ -146,14 +142,13 @@ void Application::run() {
 }
 
 void Application::render() {
-    auto& viewIds = m_activeScene->getViewIds();
-
     std::vector<age::Drawable> targets;
     targets.reserve(256);
 
-    for (auto vId : viewIds) {
-        auto& view = age::ViewManager::getView(vId);
+    const View* views[] = { &m_activeScene->getStaticView(), &m_activeScene->getDynamicView() };
+    for (int i = 0; i < 2; ++i) {
         auto pm = m_activeScene->getPositionManager();
+        auto& view = *views[i];
 
         age::Positionable p;
         p.pos = view.getPosition() - view.getOrigin();

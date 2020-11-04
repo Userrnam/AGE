@@ -16,6 +16,7 @@ extern Core apiCore;
 
 namespace age::EventManager {
 
+age::Vector2i previousWindowSize;
 std::vector<Event> m_events;
 bool pressedKeys[GLFW_KEY_LAST + 1] = {};
 
@@ -37,8 +38,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
     event::Scroll eStruct;
-    eStruct.xOffset = xOffset;
-    eStruct.yOffset = yOffset;
+    eStruct.offset.x = xOffset;
+    eStruct.offset.y = yOffset;
 
     Event e;
     e.setId(hash("glfw_scroll"));
@@ -48,8 +49,8 @@ void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
 
 void cursorPosCallback(GLFWwindow* window, double xPos, double yPos) {
     event::CursorPos eStruct;
-    eStruct.x = xPos;
-    eStruct.y = core::apiCore.window.height - yPos;
+    eStruct.pos.x = xPos;
+    eStruct.pos.y = core::apiCore.window.height - yPos;
 
     Event e;
     e.setId(hash("glfw_cursor_pos"));
@@ -62,9 +63,9 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     eStruct.button = button;
     eStruct.action = action;
     eStruct.mods = mods;
-    glfwGetCursorPos(core::apiCore.window.handle, &eStruct.xPos, &eStruct.yPos);
+    glfwGetCursorPos(core::apiCore.window.handle, &eStruct.pos.x, &eStruct.pos.y);
 
-    eStruct.yPos = core::apiCore.window.height - eStruct.yPos;
+    eStruct.pos.y = core::apiCore.window.height - eStruct.pos.y;
 
     Event e;
     e.setId(hash("glfw_mouse_button"));
@@ -76,8 +77,9 @@ void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
     core::apiCore.framebufferResized = true;
 
     event::Resize eStruct;
-    eStruct.width = width;
-    eStruct.height = height;
+    eStruct.oldSize = previousWindowSize;
+    eStruct.newSize.x = width;
+    eStruct.newSize.y = height;
 
     Event e;
     e.setId(hash("glfw_resize"));
@@ -93,6 +95,9 @@ void init() {
     glfwSetCursorPosCallback(core::apiCore.window.handle, cursorPosCallback);
     glfwSetMouseButtonCallback(core::apiCore.window.handle, mouseButtonCallback);
     glfwSetFramebufferSizeCallback(core::apiCore.window.handle, framebufferResizeCallback);
+
+    previousWindowSize.x = core::apiCore.window.width;
+    previousWindowSize.y = core::apiCore.window.height;
 }
 
 void destroy() {
