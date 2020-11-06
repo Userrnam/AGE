@@ -20,15 +20,20 @@ def build(target):
         ])
 
     os.chdir(".build")
-    if not os.system("cmake .."):
+    if os.system("cmake ..") != 0:
+        with open("CMakeLists.txt", "w") as f:
+            f.writelines(previous_lines)
         return -1
-    if not os.system("cmake --build ."):
+    if os.system("cmake --build .") != 0:
+        with open("CMakeLists.txt", "w") as f:
+            f.writelines(previous_lines)
         return -1
 
     os.chdir("..")
 
     with open("CMakeLists.txt", "w") as f:
         f.writelines(previous_lines)
+    return 0
 
 def remove_prefix(s, prefix):
     if s.startswith(prefix):
@@ -68,6 +73,7 @@ def copy_module_headers(path, module_name, files):
             module_header.write('#include <AGE/' + relative_path + '>\n')
 
 def install(include_path, lib_path):
+    print("installing")
     # check directories exist
     if not os.access(include_path, os.O_RDWR):
         print("cannot access " + include_path)
@@ -177,9 +183,12 @@ def install(include_path, lib_path):
     copy_module_headers(include_path, 'Utils', [
         'utils.hpp'
     ])
+    
+    return 0
 
 if __name__ == '__main__':
     if build("AGE") != 0:
+        print("failed to build AGE")
         exit(-1)
     if install(INCLUDE_PATH, LIBRARY_PATH) != 0:
         exit(-1)
