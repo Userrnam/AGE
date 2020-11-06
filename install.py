@@ -20,8 +20,10 @@ def build(target):
         ])
 
     os.chdir(".build")
-    os.system("cmake ..")
-    os.system("cmake --build .")
+    if not os.system("cmake .."):
+        return -1
+    if not os.system("cmake --build ."):
+        return -1
 
     os.chdir("..")
 
@@ -177,7 +179,10 @@ def install(include_path, lib_path):
     ])
 
 if __name__ == '__main__':
-    build("AGE")
-    install(INCLUDE_PATH, LIBRARY_PATH)
+    if build("AGE") != 0:
+        exit(-1)
+    if install(INCLUDE_PATH, LIBRARY_PATH) != 0:
+        exit(-1)
     print("installed")
-    build("Examples")
+    if build("Examples") != 0:
+        exit(-1)

@@ -65,10 +65,6 @@ void Application::create() {
     Renderer::create();
     core::deviceAlloc::init();
 
-    // create default view
-    View view;
-    view.create();
-
     Shape::createManager();
 
     audio::Core::init();
@@ -117,6 +113,9 @@ void Application::run() {
 
             m_activeScene = m_switchScene;
             m_switchScene = nullptr;
+
+            startTime = std::chrono::high_resolution_clock::now();
+            previousTime = std::chrono::high_resolution_clock::now();
         }
 
         render();
@@ -142,6 +141,7 @@ void Application::run() {
 }
 
 void Application::render() {
+    std::vector<entt::entity> targetIds;
     std::vector<age::Drawable> targets;
     targets.reserve(256);
 
@@ -158,7 +158,10 @@ void Application::render() {
         auto ve = pm->getVisibleEntities(p);
 
         for (auto e : ve) {
-            targets.push_back(m_activeScene->m_registry.get<age::Drawable>(e));
+            if (std::find(targetIds.begin(), targetIds.end(), e) == targetIds.end()) {
+                targetIds.push_back(e);
+                targets.push_back(m_activeScene->m_registry.get<age::Drawable>(e));
+            }
         }
     }
 

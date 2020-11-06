@@ -19,7 +19,7 @@ struct AllocBlock {
         : address(_address), isFree(_isFree), size(_size) {}
 };
 
-class MemoryBlock {
+class MemoryPage {
     std::vector<AllocBlock> m_allocs;
     VkBuffer m_buffer;
     VkDeviceMemory m_memory;
@@ -35,18 +35,22 @@ public:
     AllocAddress getAllocAddress(uint32_t size, uint32_t alignment); 
 
     void free(AllocAddress address);
+    void status();
+    bool isFree();
 };
 
 class BufferPool {
     uint32_t m_pageSize = 0;
     VkBufferUsageFlags m_usage = 0;
     VkMemoryPropertyFlags m_memoryFlags = 0;
-    std::vector<MemoryBlock> m_memoryBlocks;
+    std::vector<MemoryPage> m_memoryPages;
+    bool m_checkOnDestroy = 0;
 public:
-    inline void create(uint32_t pageSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags memoryFlags) {
+    inline void create(uint32_t pageSize, VkBufferUsageFlags usage, VkMemoryPropertyFlags memoryFlags, bool checkOnDestroy = true) {
         m_pageSize = pageSize;
         m_usage = usage;
         m_memoryFlags = memoryFlags;
+        m_checkOnDestroy = checkOnDestroy;
     }
 
     void destroy();

@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <assert.h>
+#include <iostream>
 
 #include "BufferPool.hpp"
 
@@ -8,7 +9,7 @@
 
 namespace age::core {
 
-void MemoryBlock::create(uint32_t pageSize, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryFlags) {
+void MemoryPage::create(uint32_t pageSize, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryFlags) {
     m_allocs.push_back({
         0,
         true,
@@ -40,12 +41,12 @@ void MemoryBlock::create(uint32_t pageSize, VkBufferUsageFlags usageFlags, VkMem
     vkBindBufferMemory(apiCore.device, m_buffer, m_memory, 0);
 }
 
-void MemoryBlock::destroy() {
+void MemoryPage::destroy() {
     vkDestroyBuffer(apiCore.device, m_buffer, nullptr);
     vkFreeMemory(apiCore.device, m_memory, nullptr);
 }
 
-AllocAddress MemoryBlock::getAllocAddress(uint32_t size, uint32_t alignment) {
+AllocAddress MemoryPage::getAllocAddress(uint32_t size, uint32_t alignment) {
     uint32_t alignmentExtra;
     for (size_t i = 0; i < m_allocs.size(); ++i) {
         if (m_allocs[i].isFree && m_allocs[i].size >= size + (alignmentExtra = (alignment - m_allocs[i].address % alignment) % alignment)) {
@@ -68,7 +69,7 @@ AllocAddress MemoryBlock::getAllocAddress(uint32_t size, uint32_t alignment) {
     return -1;
 }
 
-void MemoryBlock::free(AllocAddress address) {
+void MemoryPage::free(AllocAddress address) {
     for (size_t i = 0; i < m_allocs.size(); ++i) {
         if (m_allocs[i].address == address) {
             m_allocs[i].isFree = true;
@@ -88,12 +89,28 @@ void MemoryBlock::free(AllocAddress address) {
     }
 }
 
+void MemoryPage::status() {
+    if (m_allocs.size() == 1) {
+        std::cout << "MemoryPage is free" << std::endl;
+        return;
+    }
+
+    std::cout << "MemoryPage is fragmented:" << std::endl;
+    for (auto& block : m_allocs) {
+        std::cout << "addr: " << block.address << "; size: " << block.size << "; free: " << block.isFree << std::endl;
+    }
+}
+
+bool MemoryPage::isFree() {
+    return m_allocs.size() == 1;
+}
+
 MemoryId BufferPool::allocBuffer(uint32_t size, uint32_t alignment) {
     assert(size <= m_pageSize);
 
     MemoryId memoryId;
 
-    for (auto& block : m_memoryBlocks) {
+    for (auto& block : m_memoryPages) {
         memoryId.address = block.getAllocAddress(size, alignment);
         if (memoryId.address != -1) {
             memoryId.buffer = block.getBuffer();
@@ -103,20 +120,20 @@ MemoryId BufferPool::allocBuffer(uint32_t size, uint32_t alignment) {
         }
     }
 
-    m_memoryBlocks.push_back(MemoryBlock());
-    m_memoryBlocks.back().create(m_pageSize, m_usage, m_memoryFlags);
+    m_memoryPages.push_back(MemoryPage());
+    m_memoryPages.back().create(m_pageSize, m_usage, m_memoryFlags);
 
-    memoryId.address = m_memoryBlocks.back().getAllocAddress(size, alignment);
+    memoryId.address = m_memoryPages.back().getAllocAddress(size, alignment);
     assert(memoryId.address != -1);
 
-    memoryId.buffer = m_memoryBlocks.back().getBuffer();
-    memoryId.memory = m_memoryBlocks.back().getMemory();
+    memoryId.buffer = m_memoryPages.back().getBuffer();
+    memoryId.memory = m_memoryPages.back().getMemory();
 
     return memoryId;
 }
 
 void BufferPool::freeBuffer(MemoryId memory) {
-    for (auto& block : m_memoryBlocks) {
+    for (auto& block : m_memoryPages) {
         if (block.getBuffer() == memory.buffer) {
             block.free(memory.address);
         }
@@ -124,7 +141,10 @@ void BufferPool::freeBuffer(MemoryId memory) {
 }
 
 void BufferPool::destroy() {
-    for (auto block: m_memoryBlocks) {
+    for (auto block: m_memoryPages) {
+        if (m_checkOnDestroy && !block.isFree()) {
+            block.status();
+        }
         block.destroy();
     }
 }

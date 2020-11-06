@@ -98,6 +98,7 @@ public:
 
     ~ParticleSystem() {
         m_transformable.destroy();
+        m_transformBuffer.destroy();
 
         getComponent<Drawable>().destroy();
         m_particlesBuffer.destroy();
