@@ -78,8 +78,7 @@ void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
 
     event::Resize eStruct;
     eStruct.oldSize = previousWindowSize;
-    eStruct.newSize.x = width;
-    eStruct.newSize.y = height;
+    glfwGetWindowSize(window, &eStruct.newSize.x, &eStruct.newSize.y);
 
     Event e;
     e.setId(hash("glfw_resize"));

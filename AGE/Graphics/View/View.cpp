@@ -31,6 +31,7 @@ void View::updateCameraTransform() {
 void View::handleWindowResize(const Vector2i &oldSize, const Vector2i newSize) {
     auto s = m_resizeHandler(oldSize, newSize);
     m_camera.setOrthoganalProjection(s.x, s.y);
+    m_globals.cameraTransform = m_camera.getProjection() * UnmanagedTransformable::getTransform();
 }
 
 void View::update(float elapsedTime, float currentTime) {

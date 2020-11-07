@@ -14,7 +14,7 @@ struct Application : public age::Application {
     virtual void onCreate() override {
         loadFont(age::getAssetPath("Courier.dfont"), "courier");
         loadTexture(age::getAssetPath("mountains.png"), "mountains");
-        loadTexture(age::getAssetPath("yoda.jpg"), "yoda");
+        loadTexture(age::getAssetPath("bird.png"), "bird");
 
         selectScene<MainMenu>();
     }

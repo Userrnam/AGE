@@ -29,7 +29,7 @@ Application::Application(const std::string& name, int width, int height) {
     config::setWindowProperties(
         config::WindowProperties()
         .setTitle(name)
-        .setResizeEnable(false)
+        .setResizeEnable(true)
         .setSize(width, height)
     );
 
@@ -150,6 +150,7 @@ void Application::render() {
         auto pm = m_activeScene->getPositionManager();
         auto& view = *views[i];
 
+        // fixme: this will not work if view is rotated
         age::Positionable p;
         p.pos = view.getPosition() - view.getOrigin();
         p.size = { (float)age::core::apiCore.window.width, (float)age::core::apiCore.window.height };

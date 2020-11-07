@@ -7,16 +7,19 @@
 
 #include "Bird.hpp"
 #include "Column.hpp"
+#include "Score.hpp"
 
 #include "../Background.hpp"
 
 
 struct FlappyBirdScene : public age::Scene {
     std::vector<std::pair<Column*, Column*>> columns;
+    Score* scoreScript;
     float speed = -50.0f;
     float miny, maxy;
 
     FlappyBirdScene(age::Application* app) : age::Scene(app) {
+        scoreScript = std::get<1>(createStaticEntity<Score>());
         createEntity<Bird>();
         createColumns();
         createStaticEntity<Background>(age::Color(0.0f, 0.0f, 0.0f, 1.0f));
@@ -33,6 +36,8 @@ struct FlappyBirdScene : public age::Scene {
 
                 p.first->setBottom(age::Vector2f(x, y));
                 p.second->setTop(age::Vector2f(x, y - 200));
+
+                scoreScript->incrementScore();
             }
         }
     }

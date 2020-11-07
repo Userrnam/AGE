@@ -12,6 +12,7 @@ class Transformable : public UnmanagedTransformable {
     Vector2f m_size;
 public:
     void create(const Entity& e, Vector2f size = {1, 1});
+    void setSize(const Vector2f& size) { m_size = size; }
     void destroy();
 
     glm::mat4 getTransform();

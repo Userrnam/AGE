@@ -1,6 +1,7 @@
 #pragma once
 
 #include <AGE/Scene.hpp>
+#include <AGE/Graphics.hpp>
 #include <AGE/Events.hpp>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -9,7 +10,7 @@
 
 struct Bird : public age::ScriptComponent {
     age::Transformable transformable;
-    age::BundleComponent<age::Transform, age::Color> buffer;
+    age::BundleComponent<age::Transform, age::Color, age::TexCoords> buffer;
 
     const float gravity = 50.0f;
     const float spacePressVelocity = 500.0f;
@@ -24,11 +25,13 @@ struct Bird : public age::ScriptComponent {
 
         buffer.create();
         buffer.set<age::Transform>(transformable.getTransform());
-        buffer.set<age::Color>(age::Color(0, 1, 0, 1));
+        buffer.set<age::Color>(age::Color(1, 1, 1, 1));
+        buffer.set<age::TexCoords>(age::TexCoords());
         buffer.upload();
 
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
-            buffer
+            buffer,
+            age::TextureComponent(getTexture("bird"))
         );
     }
 
