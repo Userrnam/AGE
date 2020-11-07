@@ -59,8 +59,7 @@ protected:
     VkPipelineLayout m_pipelineLayout;
     VkPipeline m_pipeline;
 
-    std::vector<uint32_t> m_poolIndicies;
-    std::vector<VkDescriptorSet> m_descriptorSets;
+    DescriptorSet m_descriptorSets[2];
 
     ShapeRenderInfo m_shapeRenderInfo;
 

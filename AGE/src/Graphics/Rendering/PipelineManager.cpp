@@ -13,32 +13,11 @@ namespace core {
 
 std::unordered_map<PipelineInfo, std::pair<VkPipeline, VkPipelineLayout>> pipelinesMap;
 
-bool isSame(const std::vector<VkDescriptorSetLayout>& layouts1, const std::vector<VkDescriptorSetLayout>& layouts2) {
-    if (layouts1.size() != layouts2.size()) {
-        return false;
-    }
-
-    for (auto& layout1 : layouts1) {
-        bool found = false;
-        for (auto& layout2 : layouts2) {
-            if (layout2 == layout1) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 // TODO: There is always 2 descriptorSetLayouts. First for camera, second - user defined
 // maybe this can be simplified
 VkPipelineLayout requestPipelineLayout(const std::vector<VkDescriptorSetLayout>& layouts) {
     for (auto& pipelineLayout : core::apiCore.pipelineLayouts) {
-        if (isSame(pipelineLayout.descriptorSetLayouts, layouts)) {
+        if (layouts == pipelineLayout.descriptorSetLayouts) {
             return pipelineLayout.pipelineLayout;
         }
     }

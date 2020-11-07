@@ -69,6 +69,7 @@ void View::create() {
 
 void View::destroy() {
     m_buffer.destroy();
+    m_descriptor.destroy();
 }
 
 } // namespace age

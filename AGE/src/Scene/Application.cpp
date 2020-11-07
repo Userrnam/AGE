@@ -168,10 +168,6 @@ void Application::render() {
     Renderer::render(targets);
 }
 
-void Application::deleteActiveScene() {
-    delete m_activeScene;
-}
-
 void Application::setWindowTitle(const std::string& s) {
     glfwSetWindowTitle(core::apiCore.window.handle, s.c_str());
 }

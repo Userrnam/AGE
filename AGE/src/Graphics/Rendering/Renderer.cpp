@@ -10,6 +10,7 @@
 #include "PipelineManager.hpp"
 #include "Framebuffers.hpp"
 #include "RenderPass.hpp"
+#include "../ObjectCreation/DescriptorManager.hpp"
 
 namespace age {
 
@@ -121,6 +122,7 @@ void Renderer::create() {
 }
 
 void Renderer::destroy() {
+    DescriptorManager::destroy();
     destroyPipelineManager();
     Framebuffers::destroy();
     RenderPass::destroy();

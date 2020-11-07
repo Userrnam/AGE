@@ -64,11 +64,6 @@ struct Core {
     } commandPools;
 
     struct {
-        std::vector<Pool> pools;
-        std::vector<DescriptorLayout> layouts;
-    } descriptor;
-
-    struct {
         VkSemaphore imageAvailableSemaphore;
         VkSemaphore renderFinishedSemaphore;
         VkFence inFlightFence;

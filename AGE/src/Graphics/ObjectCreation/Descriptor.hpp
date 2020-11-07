@@ -8,12 +8,14 @@
 #include "../Objects/Texture.hpp"
 
 #include "Components/ShaderComponent.hpp"
+#include "DD.hpp"
 
 namespace age {
 
 class DescriptorBinding {
     VkShaderStageFlags m_stage = 0;
     VkDescriptorType m_descriptorType;
+    // this should be just variant, maybe use custom variant
     std::vector<std::variant<Buffer, Texture>> m_descriptors;
 public:
     inline VkShaderStageFlags getStage() const { return m_stage; }
@@ -115,27 +117,15 @@ public:
     }
 };
 
-void freeDescriptor(uint32_t poolIndex, VkDescriptorSet descriptor);
-
 class DescriptorSet {
-    uint32_t m_poolIndex = 0;
-    VkDescriptorSetLayout m_layout = VK_NULL_HANDLE; // used to create pipeline
-    VkDescriptorSet m_set = VK_NULL_HANDLE;
-
-    VkDescriptorSet requestDescriptorSet(const DescriptorSetInfo& info);
-    VkDescriptorSet createDescriptorSets(const DescriptorSetInfo& info);
-
-    friend class Drawable;
+    DD m_dd;
 public:
-
-
-    VkDescriptorSetLayout getLayout() { return m_layout; }
-    VkDescriptorSet getSet() { return m_set; }
+    VkDescriptorSetLayout getLayout() const { return m_dd.layout; }
+    VkDescriptorSet getSet() const { return m_dd.set; }
 
     DescriptorSet& get(const DescriptorSetInfo& info);
-    inline void free() {
-        freeDescriptor(m_poolIndex, m_set);
-    }
+
+    void destroy();
 };
 
 } // namespace age

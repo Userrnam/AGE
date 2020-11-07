@@ -70,21 +70,12 @@ inline VkPipelineMultisampleStateCreateInfo getMultisampleStateCreateInfo() {
 
 void Drawable::getPipelineLayout(const DrawableCreateInfo& info) {
     std::vector<VkDescriptorSetLayout> layouts;
-    layouts.reserve(info.m_descriptors.size() + 1);
-    m_poolIndicies.reserve(info.m_descriptors.size() + 1);
-    m_descriptorSets.reserve(info.m_descriptors.size() + 1);
+    layouts.resize(2);
 
-    // add camera descriptor
-    auto cameraDescriptor = selectedView.getDescriptor();
-    m_descriptorSets.push_back(cameraDescriptor.m_set);
-    m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
-    layouts.push_back(cameraDescriptor.m_layout);
-
-    for (auto& d : info.m_descriptors) {
-        m_descriptorSets.push_back(d.m_set);
-        m_poolIndicies.push_back(d.m_poolIndex);
-        layouts.push_back(d.m_layout);
-    }
+    m_descriptorSets[0] = selectedView.getDescriptor();
+    layouts[0] = m_descriptorSets[0].getLayout();
+    m_descriptorSets[1] = info.m_descriptors[0];
+    layouts[1] = m_descriptorSets[1].getLayout();
 
     m_pipelineLayout = requestPipelineLayout(layouts);
 }
@@ -123,8 +114,6 @@ void Drawable::create(const DrawableCreateInfo& info) {
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
     std::vector<VkSpecializationInfo> specializationInfos;
     getShaderStageCreateInfos(info.m_shaders, shaderStages, specializationInfos);
-
-    // auto& vertexDescription = Shape::getPipelineCreateDescription(info.m_shapeId);
 
     VkVertexInputBindingDescription bindingDescription = {};
     bindingDescription.binding = 0;
@@ -203,19 +192,17 @@ void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>&
     m_shapeRenderInfo = Shape::get(shapeId);
 
     std::vector<VkDescriptorSetLayout> layouts;
-    // add camera descriptor
-    auto cameraDescriptor = selectedView.getDescriptor();
-    m_descriptorSets.push_back(cameraDescriptor.m_set);
-    m_poolIndicies.push_back(cameraDescriptor.m_poolIndex);
-    layouts.push_back(cameraDescriptor.m_layout);
+    layouts.resize(2);
 
-    auto descriptor = DescriptorSet().get(
+    // add camera descriptor
+    m_descriptorSets[0] = selectedView.getDescriptor();
+    layouts[0] = m_descriptorSets[0].getLayout();
+
+    m_descriptorSets[1] = DescriptorSet().get(
         DescriptorSetInfo().getBasedOnComponents(compoents)
     );
 
-    m_descriptorSets.push_back(descriptor.m_set);
-    m_poolIndicies.push_back(descriptor.m_poolIndex);
-    layouts.push_back(descriptor.m_layout);
+    layouts[1] = m_descriptorSets[1].getLayout();
 
 #ifndef NO_COMPONENT_ORDER_CHECK
     std::vector<PipelineInfo> currentComponentsOrder;
@@ -263,9 +250,7 @@ void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>&
 }
 
 void Drawable::destroy() {
-    for (int i = 1; i < m_descriptorSets.size(); ++i) {
-        freeDescriptor(m_poolIndicies[i], m_descriptorSets[i]);
-    }
+    m_descriptorSets[1].destroy();
 }
 
 void Drawable::draw(int i) const {
@@ -273,12 +258,13 @@ void Drawable::draw(int i) const {
     VkBuffer indexBuffer = m_shapeRenderInfo.m_indexMemoryId.buffer;
 
     VkDeviceSize offsets[] = { m_shapeRenderInfo.m_vertexMemoryId.address };
+    VkDescriptorSet sets[] = { m_descriptorSets[0].getSet(), m_descriptorSets[1].getSet() };
 
     vkCmdBindPipeline(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
     vkCmdBindVertexBuffers(core::apiCore.commandBuffers.active[i], 0, 1, &vertexBuffer, offsets);
     vkCmdBindIndexBuffer(core::apiCore.commandBuffers.active[i], indexBuffer, m_shapeRenderInfo.m_indexMemoryId.address, VK_INDEX_TYPE_UINT16);
     vkCmdBindDescriptorSets(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, 
-    m_pipelineLayout, 0, m_descriptorSets.size(), m_descriptorSets.data(), 0, nullptr);
+    m_pipelineLayout, 0, 2, sets, 0, nullptr);
     vkCmdDrawIndexed(core::apiCore.commandBuffers.active[i], m_shapeRenderInfo.m_indexCount, m_instanceCount, 0, 0, 0);
 }
 

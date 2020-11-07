@@ -21,16 +21,17 @@ def build(target):
 
     os.chdir(".build")
     if os.system("cmake ..") != 0:
+        os.chdir("..")
         with open("CMakeLists.txt", "w") as f:
             f.writelines(previous_lines)
         return -1
     if os.system("cmake --build .") != 0:
+        os.chdir("..")
         with open("CMakeLists.txt", "w") as f:
             f.writelines(previous_lines)
         return -1
 
     os.chdir("..")
-
     with open("CMakeLists.txt", "w") as f:
         f.writelines(previous_lines)
     return 0
@@ -148,6 +149,7 @@ def install(include_path, lib_path):
         "ObjectCreation/Components/TileMapComponent.hpp",
         "ObjectCreation/Components/TransformComponent.hpp",
         "ObjectCreation/Descriptor.hpp",
+        "ObjectCreation/DD.hpp",
         "ObjectCreation/Drawable.hpp",
         "ObjectCreation/Shader.hpp",
         "ObjectCreation/ShapeManager.hpp",

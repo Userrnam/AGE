@@ -32,14 +32,6 @@ void destroyCore() {
 	vkDestroySemaphore(apiCore.device, apiCore.sync.imageAvailableSemaphore, nullptr);
 	vkDestroyFence(apiCore.device, apiCore.sync.inFlightFence, nullptr);
 
-	for (auto dl : apiCore.descriptor.layouts) {
-		vkDestroyDescriptorSetLayout(apiCore.device, dl.layout, nullptr);
-	}
-
-	for (auto dp : apiCore.descriptor.pools) {
-		vkDestroyDescriptorPool(apiCore.device, dp.pool, nullptr);
-	}
-
 	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.graphicsPool, nullptr);
 	vkDestroyCommandPool(apiCore.device, apiCore.commandPools.transferPool, nullptr);
 
