@@ -16,6 +16,15 @@ struct Rectangle {
 
         return right - left < size.x + p.size.x && top - bottom < size.y + p.size.y;
     }
+
+    // check if this contains p
+    bool contains(const Rectangle& p) {
+        return pos.x <= p.pos.x && pos.y <= p.pos.y && size.x + pos.x >= p.size.x + p.pos.x && size.y + pos.y >= p.size.y + p.pos.y;
+    }
+
+    bool contains(const Vector2f& point) {
+        return pos.x <= point.x && pos.y <= point.y && pos.x + size.x >= point.x && pos.y + size.y >= point.y;
+    }
 };
 
 } // namespace age
