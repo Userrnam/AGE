@@ -42,6 +42,9 @@ bool vectorsMatch(const std::vector<T>& l, const std::vector<T>& r) {
 
 void Renderer::render(const std::vector<Drawable>& targets) {
     m_previousTargets = targets;
+    std::sort(m_previousTargets.begin(), m_previousTargets.end(), [](const Drawable& a, const Drawable& b) {
+        return a.getZ() < b.getZ();
+    });
 
     // update active commandBuffer
     if (core::apiCore.commandBuffers.active == core::apiCore.commandBuffers.data.data()) {
@@ -83,7 +86,7 @@ void Renderer::render(const std::vector<Drawable>& targets) {
         vkCmdSetViewport(core::apiCore.commandBuffers.active[i], 0, 1, &viewport);
         vkCmdSetScissor(core::apiCore.commandBuffers.active[i], 0, 1, &scissors);
 
-        for (auto& target : targets) {
+        for (auto& target : m_previousTargets) {
             target.draw(i);
         }
 

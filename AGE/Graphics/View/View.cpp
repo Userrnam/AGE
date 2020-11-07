@@ -40,7 +40,9 @@ void View::update(float elapsedTime, float currentTime) {
     m_buffer.load(&m_globals, sizeof(View::ViewGlobals));
 }
 
-void View::create() {
+void View::create(float zPos) {
+    m_zPos = zPos;
+    
     m_buffer.create(
         UniformBufferCreateInfo()
         .setSize(sizeof(ViewGlobals))

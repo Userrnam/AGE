@@ -15,6 +15,8 @@ Vector2i preserveHeighthResizeHandler(Vector2i oldSize, Vector2i newSize);
 
 
 class View : public UnmanagedTransformable {
+    float m_zPos;
+
     struct ViewGlobals {
         glm::mat4 cameraTransform;
         Vector2f resolution;
@@ -30,8 +32,10 @@ class View : public UnmanagedTransformable {
     Camera m_camera;
     ResizeHandler m_resizeHandler = maxSizeResizeHandler;
 public:
-    void create();
+    void create(float zPos);
     void destroy();
+
+    float getZ() { return m_zPos; }
 
     inline DescriptorSet getDescriptor() const { return m_descriptor; }
 

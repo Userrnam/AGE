@@ -17,6 +17,8 @@ namespace age::core {
 
 namespace age {
 
+static float globalZPos;
+
 constexpr inline VkPipelineRasterizationStateCreateInfo getRasterizationStateCreateInfo() {
     VkPipelineRasterizationStateCreateInfo rasterizer = {};
 
@@ -106,6 +108,7 @@ void Drawable::getShaderStageCreateInfos(const std::vector<Shader>& shaders, std
 void Drawable::create(const DrawableCreateInfo& info) {
     m_shapeRenderInfo = Shape::get(info.m_shapeId);
     m_instanceCount = info.m_instanceCount;
+    m_zPos = globalZPos + selectedView.getZ();
 
     // get pipeline layouts, store descriptorSets
     getPipelineLayout(info);
@@ -189,6 +192,8 @@ std::unordered_map<PipelineInfo, std::vector<PipelineInfo>> shaderComponentsOrde
 #endif
 
 void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>& compoents) {
+    m_zPos = globalZPos + selectedView.getZ();
+
     m_shapeRenderInfo = Shape::get(shapeId);
 
     std::vector<VkDescriptorSetLayout> layouts;
@@ -270,6 +275,14 @@ void Drawable::draw(int i) const {
 
 void destroyPipeline(VkPipeline pipeline) {
     vkDestroyPipeline(core::apiCore.device, pipeline, nullptr);
+}
+
+void setZ(float z) {
+    globalZPos = z;
+}
+
+float getZ() {
+    return globalZPos;
 }
 
 } // namespace age

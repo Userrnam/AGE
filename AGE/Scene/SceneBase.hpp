@@ -24,7 +24,7 @@ protected:
 
 	friend class Entity;
 public:
-	SceneBase() { m_dynamicView.create(); m_staticView.create(); selectStaticView(); }
+	SceneBase() { m_dynamicView.create(-10000); m_staticView.create(10000); selectStaticView(); }
 	virtual ~SceneBase() { m_uiManager.destroy(); m_dynamicView.destroy(); m_staticView.destroy(); }
 
 	void selectDynamicView();

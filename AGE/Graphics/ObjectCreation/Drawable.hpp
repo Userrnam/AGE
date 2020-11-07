@@ -65,8 +65,13 @@ protected:
 
     uint32_t m_instanceCount = 1;
 
+    // position in z coord. Used to determine what will be rendered first
+    float m_zPos = 0;
+
     void __create(ShapeId, const std::vector<ShaderComponentInfo>&);
 public:
+    float getZ() const { return m_zPos; }
+
     template<typename... Args>
     void create(ShapeId shapeId, Args... components) {
         std::vector<ShaderComponentInfo> _components;
@@ -85,5 +90,8 @@ public:
 };
 
 void destroyPipeline(VkPipeline pipeline);
+
+void setZ(float z);
+float getZ();
 
 } // namespace age
