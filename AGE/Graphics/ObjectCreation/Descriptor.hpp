@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vector>
-#include <variant>
+#include "../../Containers/TaggedUnion.hpp"
 
 #include "../MemoryHolders/Buffer.hpp"
 #include "../Objects/Texture.hpp"
@@ -15,13 +15,12 @@ namespace age {
 class DescriptorBinding {
     VkShaderStageFlags m_stage = 0;
     VkDescriptorType m_descriptorType;
-    // this should be just variant, maybe use custom variant
-    std::vector<std::variant<Buffer, Texture>> m_descriptors;
+    TaggedUnion<Buffer, Texture> m_descriptor;
 public:
     inline VkShaderStageFlags getStage() const { return m_stage; }
     inline VkDescriptorType getDescriptorType() const { return m_descriptorType; }
-    inline const std::vector<std::variant<Buffer, Texture>>& getDescriptors() const {
-        return m_descriptors;
+    inline const TaggedUnion<Buffer, Texture>& getDescriptor() const {
+        return m_descriptor;
     }
 
     inline DescriptorBinding& setDescriptorType(VkDescriptorType type) {
@@ -34,18 +33,18 @@ public:
         return *this;
     }
 
-    inline DescriptorBinding& add(std::variant<Buffer, Texture> bt) {
-        m_descriptors.push_back(bt);
+    inline DescriptorBinding& setDescriptor(const TaggedUnion<Buffer, Texture>& bt) {
+        m_descriptor = bt;
         return *this;
     }
 
-    inline DescriptorBinding& add(Buffer& buffer) {
-        m_descriptors.push_back(buffer);
+    inline DescriptorBinding& setDescriptor(const Buffer& buffer) {
+        m_descriptor = buffer;
         return *this;
     }
 
-    inline DescriptorBinding& add(Texture& texture) {
-        m_descriptors.push_back(texture);
+    inline DescriptorBinding& add(const Texture& texture) {
+        m_descriptor = texture;
         return *this;
     }
 };
@@ -65,7 +64,7 @@ class DescriptorSetInfo {
 
                 auto b = std::get<ShaderComponentBuffer>(elem);
                 binding.setStage(VK_SHADER_STAGE_VERTEX_BIT);
-                binding.add(b.m_buffer);
+                binding.setDescriptor(b.m_buffer);
                 if (b.m_arrayIndex == "") {
                     binding.setDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
                 } else {

@@ -16,14 +16,13 @@ DescriptorSet& DescriptorSet::get(const DescriptorSetInfo& info) {
 	std::vector<VkWriteDescriptorSet> descriptorWrites = {};
 	descriptorWrites.resize(info.m_bindings.size());
 
-	// Fixme
 	std::vector<VkDescriptorBufferInfo> bufferInfos;
 	std::vector<VkDescriptorImageInfo> imageInfos;
-	bufferInfos.resize(128);
-	imageInfos.resize(128);
+	bufferInfos.resize(info.m_bindings.size());
+	imageInfos.resize(info.m_bindings.size());
+
 	size_t imageIndex = 0;
 	size_t bufferIndex = 0;
-
 	for (size_t i = 0; i < info.m_bindings.size(); ++i) {
 		descriptorWrites[i] = {};
 		descriptorWrites[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -31,36 +30,38 @@ DescriptorSet& DescriptorSet::get(const DescriptorSetInfo& info) {
 		descriptorWrites[i].dstBinding = i;
 		descriptorWrites[i].dstArrayElement = 0;
 		descriptorWrites[i].descriptorType = info.m_bindings[i].getDescriptorType();
-		descriptorWrites[i].descriptorCount = info.m_bindings[i].getDescriptors().size();
+		descriptorWrites[i].descriptorCount = 1;
 
-		if (std::holds_alternative<Buffer>(info.m_bindings[i].getDescriptors()[0])) {
+		if (info.m_bindings[i].getDescriptor().is<Buffer>()) {
 			auto pInfos = &bufferInfos[bufferIndex];
-			for (size_t j = 0; j < info.m_bindings[i].getDescriptors().size(); ++j) {
-				auto buffer = std::get<Buffer>(info.m_bindings[i].getDescriptors()[j]);
 
-				VkDescriptorBufferInfo bufferInfo = {};
-				bufferInfo.buffer = buffer.getBuffer();
-				bufferInfo.range = buffer.getSize();
-				bufferInfo.offset = buffer.getBufferOffset();
+			auto buffer = info.m_bindings[i].getDescriptor().get<Buffer>();
 
-				bufferInfos[bufferIndex] = bufferInfo;
-				bufferIndex++;
-			}
+			VkDescriptorBufferInfo bufferInfo = {};
+			bufferInfo.buffer = buffer.getBuffer();
+			bufferInfo.range = buffer.getSize();
+			bufferInfo.offset = buffer.getBufferOffset();
+
+			bufferInfos[bufferIndex] = bufferInfo;
+			bufferIndex++;
+
 			descriptorWrites[i].pBufferInfo = pInfos;
-		} else {
+		} else if (info.m_bindings[i].getDescriptor().is<Texture>()) {
 			auto pInfos = &imageInfos[imageIndex];
-			for (size_t j = 0; j < info.m_bindings[i].getDescriptors().size(); ++j) {
-				auto image = std::get<Texture>(info.m_bindings[i].getDescriptors()[j]);
 
-				VkDescriptorImageInfo imageInfo = {};
-				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				imageInfo.imageView = image.getImage().getView();
-				imageInfo.sampler = image.getSampler();
+			auto image = info.m_bindings[i].getDescriptor().get<Texture>();
 
-				imageInfos[imageIndex] = imageInfo;
-				imageIndex++;
-			}
+			VkDescriptorImageInfo imageInfo = {};
+			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo.imageView = image.getImage().getView();
+			imageInfo.sampler = image.getSampler();
+
+			imageInfos[imageIndex] = imageInfo;
+			imageIndex++;
+
 			descriptorWrites[i].pImageInfo = pInfos;
+		} else {
+			assert(0);
 		}
 	}
 
