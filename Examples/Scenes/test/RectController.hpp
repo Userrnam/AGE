@@ -21,8 +21,10 @@ class RectController : public age::ScriptComponent {
     virtual void onUpdate(float elapsedTime) override {
         auto dx = (age::isKeyPressed(GLFW_KEY_RIGHT) - age::isKeyPressed(GLFW_KEY_LEFT)) * speed * elapsedTime;
         auto dy = (age::isKeyPressed(GLFW_KEY_UP) - age::isKeyPressed(GLFW_KEY_DOWN)) * speed * elapsedTime;
+        auto r = (age::isKeyPressed(GLFW_KEY_Q) - age::isKeyPressed(GLFW_KEY_E)) * elapsedTime;
 
         transformable.move(dx, dy);
+        transformable.rotate(r);
 
         bundle.get<age::Transform>().set(transformable.getTransform());
         bundle.upload();

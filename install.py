@@ -66,11 +66,11 @@ def copy_module_headers(path, module_name, files):
 
     with open(path + module_name + '.hpp', 'w') as module_header:
         for _f in files:
-            f = 'AGE/src/' + module_name + '/' + _f
-            p = f.replace('AGE/src/', path)
+            f = 'AGE/' + module_name + '/' + _f
+            p = f.replace('AGE/', path)
             path_check(p)
             shutil.copy2(f, p)
-            relative_path = remove_prefix(f, 'AGE/src/')
+            relative_path = remove_prefix(f, 'AGE/')
             module_header.write('#include <AGE/' + relative_path + '>\n')
 
 def install(include_path, lib_path):
@@ -85,7 +85,7 @@ def install(include_path, lib_path):
         return -1
 
     # copy library
-    shutil.copy2('.build/AGE/src/libage.a', lib_path)
+    shutil.copy2('.build/AGE/libage.a', lib_path)
 
     if include_path[-1] != '/':
         include_path += '/'

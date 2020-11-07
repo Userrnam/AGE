@@ -2,7 +2,7 @@
 
 #include <AGE/Math.hpp>
 #include <AGE/Scene.hpp>
-#include "AGE/UI.hpp"
+#include <AGE/UI.hpp>
 #include <AGE/Utils.hpp>
 
 #include "Options.hpp"
@@ -13,11 +13,15 @@ struct Particle : public age::ParticleBase {
 
     static constexpr age::Vector4f startColor { 1.0f, 0.0f, 0.0f, 1.0f };
     static constexpr age::Vector4f endColor = { 1.0f, 1.0f, 0.0f, 0.0f };
-    static constexpr float maxlt = 3.0f;
-    static constexpr float minlt = 1.5f;
+    static constexpr float maxlt = 1.0f;
+    static constexpr float minlt = 0.5f;
 
     static float maxLifeTime() {
         return maxlt;
+    }
+
+    static age::Vector2f maxSize() {
+        return age::Vector2f(400, 500);
     }
 
     void spawn() {
@@ -41,12 +45,14 @@ struct Particle : public age::ParticleBase {
 
 class MainMenu : public age::Scene {
     uint64_t uiblockId;
+    age::ParticleSystem<Particle>* ps;
 
 public:
     MainMenu(age::Application* app) : age::Scene(app) {
         auto button1 = createEntity<TestSceneButton>();
         auto button2 = createEntity<FlappyBirdButton>();
-        createEntity<age::ParticleSystem<Particle>>(1000);
+        auto t = createEntity<age::ParticleSystem<Particle>>(1000);
+        ps = std::get<1>(t);
         createStaticEntity<Background>(age::Color(0, 0, 0, 1));
 
         uiblockId = addUIBlock(
@@ -58,5 +64,12 @@ public:
 
         auto& block = getUIBlock(uiblockId);
         block.move(100, 100);
+    }
+
+    virtual void onUpdate(float elapsedTime) override {
+        auto pos = age::getCursorPosition();
+        auto& tr = ps->getTransformable();
+        tr.setPosition(pos.x, pos.y);
+        tr.informAboutUpdate();
     }
 };

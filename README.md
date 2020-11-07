@@ -10,7 +10,7 @@
 sudo apt-get install libglm-dev
 
 * glfw
-sudo apt-get install libglfw2-dev
+sudo apt-get install libglfw3-dev
 
 * freetype
 sudo apt-get install libfreetype6 libfreetype6-dev

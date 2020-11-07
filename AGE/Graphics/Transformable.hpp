@@ -15,6 +15,7 @@ public:
     void destroy();
 
     glm::mat4 getTransform();
+    void informAboutUpdate() { getTransform(); }
 };
 
 } // namespace age

@@ -21,5 +21,6 @@ namespace age {
 typedef uint32_t KeyCode;
 
 bool isKeyPressed(KeyCode keyCode);
+Vector2<double> getCursorPosition();
 
 } // namespace age

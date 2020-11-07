@@ -49,6 +49,10 @@ ParticleSystem usage:
         }
     };
 
+    In your class will have access to all methods of unmanagedTransformable, but you should
+    avoid using set methods, because if you for example use setPosition in your particle
+    class you will not be able to change position of ParticleSystem
+
 */
 
 struct ParticleBase : public UnmanagedTransformable {
@@ -61,12 +65,12 @@ struct ParticleBase : public UnmanagedTransformable {
     // must set life time
     // void spawn() {}
     // static float maxLifeTime();
+    // static Vector2f maxSize();
 };
 
 template<typename ParticleType>
 class ParticleSystem : public ScriptComponent {
     Transformable m_transformable;
-    StorageComponent<Transform> m_transformBuffer;
 
     // particles per second
     float m_spawnRate;
@@ -84,27 +88,24 @@ public:
         m_particlesBuffer.create(m_maxParticles);
         m_particles.reserve(m_maxParticles);
 
-        // assuming all shapes have same size (1, 1)
-        // fixme: it may not be true
-        m_transformable.create(e, {1000, 1000});
-        m_transformable.setPosition({300, 200});
-        m_transformBuffer.create(m_transformable.getTransform());
+        m_transformable.create(e, ParticleType::maxSize());
+        m_transformable.setOrigin(0.5f, 0.0f);
 
         addComponent<Drawable>(shapeId,
-            m_transformBuffer,
             m_particlesBuffer
         );
     }
 
     ~ParticleSystem() {
         m_transformable.destroy();
-        m_transformBuffer.destroy();
 
         getComponent<Drawable>().destroy();
         m_particlesBuffer.destroy();
     }
 
     virtual void onUpdate(float elapsedTime) override;
+
+    Transformable& getTransformable() { return m_transformable; }
 };
 
 template<typename ParticleType>
@@ -137,6 +138,11 @@ void ParticleSystem<ParticleType>::onUpdate(float elapsedTime) {
         }
         for (int i = 0; i < spawnCount; ++i) {
             m_particles.push_back(ParticleType());
+
+            m_particles.back().setPosition(m_transformable.getPosition());
+            m_particles.back().setScale(m_transformable.getScale());
+            m_particles.back().setOrigin(m_transformable.getOrigin());
+            m_particles.back().setRotation(m_transformable.getRotation());
 
             m_particles.back().spawn();
 

@@ -125,4 +125,14 @@ bool isKeyPressed(KeyCode keyCode) {
     return age::EventManager::pressedKeys[keyCode];
 }
 
+Vector2<double> getCursorPosition() {
+    Vector2<double> pos;
+
+    glfwGetCursorPos(core::apiCore.window.handle, &pos.x, &pos.y);
+
+    pos.y = core::apiCore.window.height - pos.y;
+
+    return pos;
+}
+
 } // namespace age
