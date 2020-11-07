@@ -31,6 +31,10 @@ void UnmanagedTransformable::setRotation(float rotation) {
     m_rotation = rotation;
 }
 
+void UnmanagedTransformable::scale(const Vector2f& scale) {
+    m_scale *= scale;
+}
+
 void UnmanagedTransformable::move(const Vector2f& direction) {
     m_position += direction;
 }
@@ -52,6 +56,11 @@ void UnmanagedTransformable::setPosition(float x, float y) {
 void UnmanagedTransformable::setOrigin(float x, float y) {
     m_origin.x = x;
     m_origin.y = y;
+}
+
+void UnmanagedTransformable::scale(float xs, float ys) {
+    m_scale.x *= xs;
+    m_scale.y *= ys;
 }
 
 void UnmanagedTransformable::move(float x, float y) {

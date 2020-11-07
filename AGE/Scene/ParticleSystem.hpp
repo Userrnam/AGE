@@ -77,6 +77,7 @@ class ParticleSystem : public ScriptComponent {
     int m_maxParticles;
 
     float m_elapsedTotal = 0;
+    bool m_stopped = false;
 
     std::vector<ParticleType> m_particles;
     ArrayComponent<Bundle<Transform, Color>, PER_INSTANCE> m_particlesBuffer;
@@ -106,6 +107,13 @@ public:
     virtual void onUpdate(float elapsedTime) override;
 
     Transformable& getTransformable() { return m_transformable; }
+    void stop() {
+        m_stopped = true;
+    }
+
+    void resume() {
+        m_stopped = false;
+    }
 };
 
 template<typename ParticleType>
@@ -126,6 +134,12 @@ void ParticleSystem<ParticleType>::onUpdate(float elapsedTime) {
             m_particlesBuffer.add(b);
             ++i;
         }
+    }
+
+    if (m_stopped) {
+        m_particlesBuffer.upload();
+        getComponent<Drawable>().setInstanceCount(m_particlesBuffer.count());
+        return;
     }
 
     // spawn new particles

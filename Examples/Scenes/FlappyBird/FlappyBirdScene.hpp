@@ -15,17 +15,21 @@
 struct FlappyBirdScene : public age::Scene {
     std::vector<std::pair<Column*, Column*>> columns;
     Score* scoreScript;
+    Bird* birdScript;
     float speed = -50.0f;
     float miny, maxy;
 
     FlappyBirdScene(age::Application* app) : age::Scene(app) {
-        scoreScript = std::get<1>(createStaticEntity<Score>());
-        createEntity<Bird>();
+        scoreScript = createStaticEntity<Score>();
+        birdScript = createEntity<Bird>();
         createColumns();
         createStaticEntity<Background>(age::Color(0.0f, 0.0f, 0.0f, 1.0f));
     }
 
-    virtual void onUpdate(float elapsedTime) {
+    virtual void onUpdate(float elapsedTime) override {
+        if (birdScript->dead) {
+            return;
+        }
         for (auto& p : columns) {
             p.first->move(speed * elapsedTime);
             p.second->move(speed * elapsedTime);
@@ -51,11 +55,8 @@ struct FlappyBirdScene : public age::Scene {
         int count = windowSize.x / 300 + 2;
     
         for (int i = 1; i < count; ++i) {
-            auto _top = createStaticEntity<Column>();
-            auto _bottom = createStaticEntity<Column>();
-
-            auto top = std::get<1>(_top);
-            auto bottom = std::get<1>(_bottom);
+            auto top = createStaticEntity<Column>();
+            auto bottom = createStaticEntity<Column>();
 
             float y = age::frandom(miny, maxy);
             top->setBottom(age::Vector2f(300 * i, y));

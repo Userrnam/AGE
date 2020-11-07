@@ -124,7 +124,7 @@ void DescriptorManager::freeDescriptorSet(const DD &dd) {
 		}
 	}
 
-	assert(0);
+	std::cout << "Descriptor has been destroyed already\n";
 }
 
 void DescriptorManager::destroy() {

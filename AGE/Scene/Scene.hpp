@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <tuple>
 
 #include "../External/entt.hpp"
 #include "../Graphics/View/View.hpp"
@@ -21,34 +20,34 @@ class Scene : public SceneBase {
 	friend class Application;
 	friend class Entity;
 protected:
+	virtual void onEvent(const Event& event) {}
+	virtual void onUpdate(float elapsedTime) {}
+public:
+	Scene(class Application* app);
+	virtual ~Scene();
+
 	inline Entity createEntity() { return Entity(this); }
 
 	template<typename Script, typename... Args>
-	inline std::tuple<Entity, Script*> createEntity(Args... args) {
+	inline Script* createEntity(Args... args) {
 		Entity e = createEntity();
 		auto p = new Script(e, args...);
         e.addComponentNoCreate<ScriptComponent*>(p);
-		return { e, p };
+		return p;
 	}
 
 	template<typename Script, typename... Args>
-	inline std::tuple<Entity, Script*> createStaticEntity(Args... args) {
+	inline Script* createStaticEntity(Args... args) {
 		Entity e = createEntity();
 		auto p = new Script(e, args...);
 		e.addComponentNoCreate<StaticScriptComponent*>(p);
-		return { e, p };
+		return p;
 	}
 
     template<typename... Component, typename... Exclude>
     SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...> getView(entt::exclude_t<Exclude...> e = {}) {
         return SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...>(this, e);
     }
-
-	virtual void onEvent(Event event) {}
-	virtual void onUpdate(float elapsedTime) {}
-public:
-	Scene(class Application* app);
-	virtual ~Scene();
 };
 
 template<typename...>

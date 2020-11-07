@@ -4,6 +4,7 @@
 
 #include "PositionManager.hpp"
 #include "../Scene/Entity.hpp"
+#include "../Scene/Scene.hpp"
 
 namespace age {
 

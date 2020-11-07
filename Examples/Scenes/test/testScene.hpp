@@ -31,9 +31,9 @@ public:
 
         uiblockId = addUIBlock(
             age::UIBlock(3)
-            .addButton(std::get<1>(button3))
-            .addButton(std::get<1>(button2))
-            .addButton(std::get<1>(button1))
+            .addButton(button3)
+            .addButton(button2)
+            .addButton(button1)
             .alignVertically(10)
         );
 

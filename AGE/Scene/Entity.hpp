@@ -11,6 +11,7 @@ class SceneView;
 template<typename... Component, typename... Exclude>
 class SceneView<entt::entity, entt::exclude_t<Exclude...>, Component...>;
 
+class Scene;
 class Entity {
     entt::entity m_entityId;
     SceneBase* m_scene;
@@ -19,11 +20,10 @@ class Entity {
     friend class StaticScriptComponent;
     friend class Transformable;
 
-    Entity() {}
-
 public:
-    inline SceneBase* getScene() { return m_scene; }
+    inline Scene* getScene() { return reinterpret_cast<Scene*>(m_scene); }
 
+    Entity() {}
     Entity(SceneBase* scene) {
         m_entityId = scene->m_registry.create();
         m_scene = scene;
@@ -49,12 +49,6 @@ public:
 	inline void freeTexture(const std::string& textureName) {
 		m_scene->freeTexture(textureName);
 	}
-
-    // Warning: all entitiy's components must be destroyed before calling this
-    // ? possible memory leak
-    void destroy() {
-        m_scene->m_registry.destroy(m_entityId);
-    }
 
     template<typename T>
     inline T& addComponentNoCreate() {

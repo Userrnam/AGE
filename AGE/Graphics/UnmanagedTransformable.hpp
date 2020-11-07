@@ -29,6 +29,7 @@ public:
     void setOrigin(const Vector2f& origin);
     void setRotation(float rotation);
 
+    void scale(const Vector2f& scale);
     void move(const Vector2f& direction);
     void rotate(float angle);
 
@@ -36,6 +37,7 @@ public:
     void setPosition(float x, float y);
     void setOrigin(float x, float y);
 
+    void scale(float scaleX, float scaleY);
     void move(float x, float y);
 };
 

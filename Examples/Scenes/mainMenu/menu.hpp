@@ -51,19 +51,32 @@ public:
     MainMenu(age::Application* app) : age::Scene(app) {
         auto button1 = createEntity<TestSceneButton>();
         auto button2 = createEntity<FlappyBirdButton>();
-        auto t = createEntity<age::ParticleSystem<Particle>>(1000);
-        ps = std::get<1>(t);
+        ps = createEntity<age::ParticleSystem<Particle>>(1000);
+
+        ps->getTransformable().setOrigin(0.5f, 0.5f);
+
         createStaticEntity<Background>(age::Color(0, 0, 0, 1));
 
         uiblockId = addUIBlock(
             age::UIBlock(2)
-            .addButton(std::get<1>(button1))
-            .addButton(std::get<1>(button2))
+            .addButton(button1)
+            .addButton(button2)
             .alignVertically(10)
         );
 
         auto& block = getUIBlock(uiblockId);
         block.move(100, 100);
+    }
+
+    virtual void onEvent(const age::Event& e) override {
+        if (e == age::event::KEY) {
+            auto s = e.getStructure<age::event::Key>();
+            if (s.key == GLFW_KEY_S) {
+                ps->stop();
+            } else if (s.key == GLFW_KEY_R) {
+                ps->resume();
+            }
+        }
     }
 
     virtual void onUpdate(float elapsedTime) override {
