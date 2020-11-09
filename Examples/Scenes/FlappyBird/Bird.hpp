@@ -47,7 +47,7 @@ struct MyParticle : public age::ParticleBase {
 
 struct Bird : public age::ScriptComponent {
     age::Transformable transformable;
-    age::BundleComponent<age::Transform, age::Color, age::TexCoords> buffer;
+    age::StorageComponent<age::Transform, age::Color, age::TexCoords> buffer;
     age::ParticleSystem<MyParticle>* ps;
 
     const float gravity = 50.0f;

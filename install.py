@@ -136,7 +136,7 @@ def install(include_path, lib_path):
         'MemoryHolders/Buffer.hpp',
         'MemoryHolders/Image.hpp',
         "ObjectCreation/Components/ArrayComponent.hpp",
-        "ObjectCreation/Components/BundleComponent.hpp",
+        "ObjectCreation/Components/Bundle.hpp",
         "ObjectCreation/Components/ColorComponent.hpp",
         "ObjectCreation/Components/ComponentCollector.hpp",
         "ObjectCreation/Components/FontComponent.hpp",

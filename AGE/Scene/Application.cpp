@@ -78,8 +78,6 @@ void Application::create() {
 }
 
 void Application::run() {
-    onCreate();
-
     auto startTime = std::chrono::high_resolution_clock::now();
     auto previousTime = std::chrono::high_resolution_clock::now();
 
@@ -143,7 +141,6 @@ void Application::run() {
     }
 
     vkDeviceWaitIdle(core::apiCore.device);
-    onDestroy();
 }
 
 void Application::render() {

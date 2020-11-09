@@ -24,9 +24,9 @@ public:
         getScene()->stopAnimation(animId);
 
         animId = getScene()->addAnimation(
-            age::StateAnimation<age::Color, age::linearFunction>(&bundle.get<age::Color>(), &bundle.getBuffer())
+            age::StateAnimation<age::Color, age::linearFunction>(&buffer.get<age::Color>(), &buffer.getBuffer())
             .setLooping(false)
-            .addState(age::AnimationState(bundle.get<age::Color>(), 0.2))
+            .addState(age::AnimationState(buffer.get<age::Color>(), 0.2))
             .addState(age::AnimationState(activeColor))
         );
     }
@@ -35,9 +35,9 @@ public:
         getScene()->stopAnimation(animId);
 
         animId = getScene()->addAnimation(
-            age::StateAnimation<age::Color, age::linearFunction>(&bundle.get<age::Color>(), &bundle.getBuffer())
+            age::StateAnimation<age::Color, age::linearFunction>(&buffer.get<age::Color>(), &buffer.getBuffer())
             .setLooping(false)
-            .addState(age::AnimationState(bundle.get<age::Color>(), 0.1))
+            .addState(age::AnimationState(buffer.template get<age::Color>(), 0.1))
             .addState(age::AnimationState(color))
         );
     }

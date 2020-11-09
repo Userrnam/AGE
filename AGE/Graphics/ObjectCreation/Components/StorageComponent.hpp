@@ -2,11 +2,15 @@
 
 #include "../../MemoryHolders/Buffer.hpp"
 #include "ShaderComponent.hpp"
+#include "Bundle.hpp"
 
 namespace age {
 
+template<typename... T>
+class StorageComponent;
+
 template<typename T>
-class StorageComponent {
+class StorageComponent<T> {
     Buffer m_buffer;
     T m_data;
 
@@ -55,6 +59,36 @@ public:
 
     inline void upload() {
         m_buffer.load(&m_data, sizeof(T));
+    }
+};
+
+template<typename... Args>
+struct StorageComponent : public StorageComponent<Bundle<Args...>> {
+    Bundle<Args...>& get() {
+        return StorageComponent<Bundle<Args...>>::get();
+    }
+
+    const Bundle<Args...>& get() const {
+        return StorageComponent<Bundle<Args...>>::get();
+    }
+
+    void set(const Bundle<Args...>& b) {
+        StorageComponent<Bundle<Args...>>::set(b);
+    }
+
+    template<typename T>
+    T& get() {
+        return StorageComponent<Bundle<Args...>>::get().template get<T>();
+    }
+
+    template<typename T>
+    const T& get() const {
+        return StorageComponent<Bundle<Args...>>::get().template get<T>();
+    }
+
+    template<typename T>
+    Bundle<Args...>& set(const T& data) {
+        return StorageComponent<Bundle<Args...>>::get().set(data);
     }
 };
 

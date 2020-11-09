@@ -9,9 +9,7 @@
 
 struct Application : public age::Application {
     Application(const std::string& name, int width, int height)
-        : age::Application(name, width, height) {}
-
-    virtual void onCreate() override {
+        : age::Application(name, width, height) {
         loadFont(age::getAssetPath("Courier.dfont"), "courier");
         loadTexture(age::getAssetPath("mountains.png"), "mountains");
         loadTexture(age::getAssetPath("bird.png"), "bird");
@@ -37,10 +35,45 @@ struct Application : public age::Application {
     }
 };
 
+struct MyRectangle : public age::ScriptComponent {
+    age::Transformable transformable;
+    age::StorageComponent<age::Transform> buffer;
+
+    MyRectangle(Entity e) : age::ScriptComponent(e) {
+        transformable.create(e);
+        transformable.setScale(100, 100);
+
+        buffer.create(transformable.getTransform());
+        
+        addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
+            buffer
+        );
+    }
+    
+    ~MyRectangle() {
+        transformable.destroy();
+        buffer.destroy();
+        getComponent<age::Drawable>().destroy();
+    }
+};
+
+struct MyScene : public age::Scene {
+    MyScene(age::Application* app) : age::Scene(app) {
+        createEntity<MyRectangle>();
+    }
+};
+
+struct MyApp : public age::Application {
+    MyApp(const std::string& s, int width, int height) : age::Application(s, width, height) {
+        selectScene<MyScene>();
+    }
+};
+
 int main(int argc, char* argv[]) {
     age::setAssetsPath(RESOURCE_PATH);
 
     auto app = new Application("app", 800, 600);
+    // auto app = new MyApp("app", 800, 600);
 
     app->run();
 

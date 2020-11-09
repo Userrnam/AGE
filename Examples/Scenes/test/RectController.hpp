@@ -10,7 +10,7 @@
 
 class RectController : public age::ScriptComponent {
     age::Transformable transformable;
-    age::BundleComponent<age::Transform, age::TexCoords> bundle;
+    age::StorageComponent<age::Transform, age::TexCoords> buffer;
     age::ArrayComponent<age::Color, age::PER_VERTEX> colors;
 
     age::Sound sound;
@@ -26,8 +26,8 @@ class RectController : public age::ScriptComponent {
         transformable.move(dx, dy);
         transformable.rotate(r);
 
-        bundle.get<age::Transform>().set(transformable.getTransform());
-        bundle.upload();
+        buffer.get<age::Transform>().set(transformable.getTransform());
+        buffer.upload();
 
         auto pos = transformable.getPosition();
 
@@ -40,10 +40,10 @@ public:
         transformable.create(e);
         transformable.setScale(200, 200);
 
-        bundle.create();
-        bundle.set<age::Transform>(transformable.getTransform());
-        bundle.set(age::TexCoords());
-        bundle.upload();
+        buffer.create();
+        buffer.set<age::Transform>(transformable.getTransform());
+        buffer.set(age::TexCoords());
+        buffer.upload();
 
         colors.create(4);
         colors.add({{1, 0, 0, 1}});
@@ -54,7 +54,7 @@ public:
 
         addComponent<age::Drawable>(
             age::RECTANGLE_SHAPE,
-            bundle,
+            buffer,
             colors,
             age::TextureComponent(getTexture("mountains"))
         );
@@ -76,7 +76,7 @@ public:
 
         transformable.destroy();
 
-        bundle.destroy();
+        buffer.destroy();
         colors.destroy();
 
         getComponent<age::Drawable>().destroy();

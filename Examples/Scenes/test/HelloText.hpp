@@ -11,7 +11,7 @@
 class HelloText : public age::ScriptComponent {
     age::TextComponent text;
     age::Transformable transformable;
-    age::BundleComponent<age::Transform> ct;
+    age::StorageComponent<age::Transform> buffer;
     age::TransformResolveStructure* pResolveStructure;
     uint64_t animId = 0;
 
@@ -25,21 +25,21 @@ public:
         transformable.setScale(2, 1);
         transformable.rotate(0.3);
 
-        ct.create();
-        ct.get().get<age::Transform>().set(transformable.getTransform());
-        ct.upload();
+        buffer.create();
+        buffer.set(transformable.getTransform());
+        buffer.upload();
 
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
-            ct,
+            buffer,
             text
         );
 
         getComponent<age::Drawable>().setInstanceCount(5);
 
-        pResolveStructure = new age::TransformResolveStructure(&ct.get().get<age::Transform>(), &transformable);
+        pResolveStructure = new age::TransformResolveStructure(&buffer.get(), &transformable);
 
         animId = getScene()->addAnimation(
-            age::StateAnimation<age::Vector2f, age::linearFunction>(transformable.getPositionPointer(), &ct.getBuffer(), pResolveStructure)
+            age::StateAnimation<age::Vector2f, age::linearFunction>(transformable.getPositionPointer(), &buffer.getBuffer(), pResolveStructure)
             .setLooping(true)
             .addState(age::AnimationState(transformable.getPosition(), 1))
             .addState(age::AnimationState(age::Vector2f(100, 300), 2))
@@ -52,7 +52,7 @@ public:
 
         text.destroy();
         transformable.destroy();
-        ct.destroy();
+        buffer.destroy();
         getComponent<age::Drawable>().destroy();
         getScene()->getPositionManager()->remove(getEntityId());
     }

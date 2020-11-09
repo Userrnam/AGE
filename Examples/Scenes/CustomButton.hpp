@@ -15,7 +15,7 @@ struct CustomButton : public age::ScriptComponent, public age::IButton {
 
     std::string buttonText = "test scene";
 
-    age::BundleComponent<age::Transform, age::Color> bundle;
+    age::StorageComponent<age::Transform, age::Color> buffer;
 
     CustomButton(Entity e, const std::string& title, age::Color _color, age::Color _activeColor) : age::ScriptComponent(e) {
         buttonText = title;
@@ -27,13 +27,13 @@ struct CustomButton : public age::ScriptComponent, public age::IButton {
 
         transformable.create(e, text.getSize());
 
-        bundle.create();
-        bundle.set<age::Color>(color);
-        bundle.set<age::Transform>(transformable.getTransform());
-        bundle.upload();
+        buffer.create();
+        buffer.set<age::Color>(color);
+        buffer.set<age::Transform>(transformable.getTransform());
+        buffer.upload();
 
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
-            bundle,
+            buffer,
             text
         );
 
@@ -43,7 +43,7 @@ struct CustomButton : public age::ScriptComponent, public age::IButton {
     }
 
     ~CustomButton() {
-        bundle.destroy();
+        buffer.destroy();
         text.destroy();
         transformable.destroy();
         getComponent<age::Drawable>().destroy();
@@ -56,24 +56,24 @@ struct CustomButton : public age::ScriptComponent, public age::IButton {
     }
 
     virtual void onEnter() override {
-        bundle.set<age::Color>(activeColor);
-        bundle.upload();
+        buffer.set<age::Color>(activeColor);
+        buffer.upload();
     }
 
     virtual void onLeave() override {
-        bundle.set<age::Color>(color);
-        bundle.upload();
+        buffer.set<age::Color>(color);
+        buffer.upload();
     }
 
     virtual void setSize(const age::Vector2f& size) override {
         transformable.setScale(size);
-        bundle.set<age::Transform>(transformable.getTransform());
-        bundle.upload();
+        buffer.set<age::Transform>(transformable.getTransform());
+        buffer.upload();
     }
 
     virtual void move(const age::Vector2f& v) override {
         transformable.move(v);
-        bundle.set<age::Transform>(transformable.getTransform());
-        bundle.upload();
+        buffer.set<age::Transform>(transformable.getTransform());
+        buffer.upload();
     }
 };

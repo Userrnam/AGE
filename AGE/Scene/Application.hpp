@@ -69,9 +69,6 @@ protected:
 
     virtual void onEvent(Event event) {}
     virtual void onUpdate(float elapsedTime) {}
-    virtual void onCreate() {}
-    virtual void onDestroy() {}
-
 public: 
     template<typename S, typename... Args>
     void selectScene(Args... args) {

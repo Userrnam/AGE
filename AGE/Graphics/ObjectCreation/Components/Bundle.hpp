@@ -4,7 +4,6 @@
 #include <sstream>
 
 #include "ShaderComponent.hpp"
-#include "StorageComponent.hpp"
 #include "ComponentCollector.hpp"
 
 #include "../../../Containers/Tuple.hpp"
@@ -78,38 +77,6 @@ public:
         std::get<ShaderComponentBuffer>(shaderComponentInfo.m_data[0]).setFragMainInsert(fragMainInsert.str());
 
         return shaderComponentInfo;
-    }
-};
-
-// Warning: does not call constructor
-template<typename... Args>
-class BundleComponent : public StorageComponent<Bundle<Args...>> {
-public:
-    Bundle<Args...>& get() {
-        return StorageComponent<Bundle<Args...>>::get();
-    }
-
-    const Bundle<Args...>& get() const {
-        return StorageComponent<Bundle<Args...>>::get();
-    }
-
-    void set(const Bundle<Args...>& b) {
-        StorageComponent<Bundle<Args...>>::set(b);
-    }
-
-    template<typename T>
-    T& get() {
-        return StorageComponent<Bundle<Args...>>::get().template get<T>();
-    }
-
-    template<typename T>
-    const T& get() const {
-        return StorageComponent<Bundle<Args...>>::get().template get<T>();
-    }
-
-    template<typename T>
-    Bundle<Args...>& set(const T& data) {
-        return StorageComponent<Bundle<Args...>>::get().set(data);
     }
 };
 

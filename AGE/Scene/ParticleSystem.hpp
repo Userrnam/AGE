@@ -8,7 +8,6 @@
 #include "../Graphics/ObjectCreation/Components/TransformComponent.hpp"
 #include "../Graphics/ObjectCreation/Components/ColorComponent.hpp"
 #include "../Graphics/ObjectCreation/Components/ArrayComponent.hpp"
-#include "../Graphics/ObjectCreation/Components/BundleComponent.hpp"
 #include "../Graphics/ObjectCreation/Drawable.hpp"
 #include "../Graphics/ObjectCreation/ShapeManager.hpp"
 #include "../Graphics/Transformable.hpp"
