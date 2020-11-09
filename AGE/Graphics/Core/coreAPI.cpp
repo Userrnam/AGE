@@ -1,6 +1,5 @@
 #include <vector>
 #include <string.h>
-#include <iostream>
 #include <set>
 
 #include <GLFW/glfw3.h>
@@ -14,6 +13,7 @@
 #include "Utils/utils.hpp"
 #include "Window/QueueFamilyIndicies.hpp"
 #include "Window/SwapchainSupportDetails.hpp"
+#include "../../Utils/Logger.hpp"
 
 namespace age::core {
 
@@ -109,7 +109,7 @@ void pickPhysicalDevice() {
 
 	// only cpu available
 	if (apiCore.physicalDevice == VK_NULL_HANDLE) {
-		std::cerr << "warning: only cpu available\n";
+		Logger::warn("only cpu available");
 		apiCore.physicalDevice = cpu;
 	}
 
@@ -120,7 +120,7 @@ void pickPhysicalDevice() {
 	// update features
 	vkGetPhysicalDeviceFeatures(apiCore.physicalDevice, &apiCore.deviceFeatures);
 	if (coreConfig.multisampling.sampleRateShading && !apiCore.deviceFeatures.sampleRateShading) {
-		std::cerr << "warning: sample rate shading unavailable\n";
+		Logger::warn("sample rate shading unavailable");
 		coreConfig.multisampling.sampleRateShading = false;
 	}
 	if (apiCore.physicalDevice == VK_NULL_HANDLE) {
@@ -133,7 +133,7 @@ void pickPhysicalDevice() {
 	// set multisampling
 	VkSampleCountFlagBits maxSamples = getMaxSampleCount();
 	if (coreConfig.multisampling.sampleCount > maxSamples) {
-		std::cout << "warning: sample count reduced to " << maxSamples << std::endl;
+		Logger::warn("sample count reduced to %u", maxSamples);
 		coreConfig.multisampling.sampleCount = maxSamples;
 	}
 	apiCore.multisampling.sampleCount = coreConfig.multisampling.sampleCount;
@@ -200,7 +200,7 @@ void createLogicalDevice() {
 				apiCore.queues.present.index = index;
 			}
 		}
-		std::cout << "Warning: Using different queues for graphics and present\n";
+		Logger::warn("using different queues for graphics and present");
 	}
 	
 	std::set<uint32_t> queueFamilies = {

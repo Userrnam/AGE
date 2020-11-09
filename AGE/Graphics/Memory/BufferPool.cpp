@@ -1,11 +1,11 @@
 #include <stdexcept>
 #include <assert.h>
-#include <iostream>
 
 #include "BufferPool.hpp"
 
 #include "../Core/Core.hpp"
 #include "../Core/Utils/utils.hpp"
+#include "../../Utils/Logger.hpp"
 
 namespace age::core {
 
@@ -90,14 +90,9 @@ void MemoryPage::free(AllocAddress address) {
 }
 
 void MemoryPage::status() {
-    if (m_allocs.size() == 1) {
-        std::cout << "MemoryPage is free" << std::endl;
-        return;
-    }
-
-    std::cout << "MemoryPage is fragmented:" << std::endl;
+    Logger::error("Memory page is fragmented");
     for (auto& block : m_allocs) {
-        std::cout << "addr: " << block.address << "; size: " << block.size << "; free: " << block.isFree << std::endl;
+        Logger::print("addr: %x; size: %u; free: %d", block.address, block.size, block.isFree);
     }
 }
 

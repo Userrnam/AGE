@@ -17,6 +17,7 @@
 #include "../Utils/utils.hpp"
 #include "../Animation/Animator.hpp"
 #include "../UI/UIManager.hpp"
+#include "../Utils/Logger.hpp"
 
 namespace age {
 
@@ -84,6 +85,11 @@ void Application::run() {
 
     int count = 0;
     float timeAvg = 0;
+
+    if (!m_activeScene) {
+        Logger::error("no scene selected");
+        return;
+    }
 
     while (m_isRunning) {
         m_isRunning = !core::window::closed();

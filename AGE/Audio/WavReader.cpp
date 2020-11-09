@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "WavReader.hpp"
+#include "../Utils/Logger.hpp"
 
 namespace age {
 
@@ -41,7 +42,7 @@ void WavReader::read(const std::string& path) {
     m_freq = fmtChunk.sampleRate;
 
     if (fmtChunk.numChannels != 1) {
-        std::cout << "Warning: file is not mono. Some features will not work\n";
+        Logger::warn("[WavReader] file is not mone. Some features will not work");
     }
 
     // this will get unique id for each possible combination

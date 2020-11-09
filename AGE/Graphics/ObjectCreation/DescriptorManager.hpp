@@ -5,9 +5,6 @@
 #include <vulkan/vulkan.h>
 #include <stdexcept>
 
-// Fixme
-#include <iostream>
-
 #include "DD.hpp"
 
 namespace age {
@@ -129,14 +126,7 @@ struct DescriptorPool {
         return occupiedSets.size() == 0;
     }
 
-    void status() {
-        std::cout << "Occupied Sets:" << std::endl;
-        std::cout << std::hex;
-        for (auto& set : occupiedSets) {
-            std::cout << "0x" << (uint64_t) set << std::endl;
-        }
-        std::cout << std::dec;
-    }
+    void status();
 };
 
 class DescriptorManager {

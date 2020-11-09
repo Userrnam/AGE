@@ -40,7 +40,7 @@ struct Application : public age::Application {
 int main(int argc, char* argv[]) {
     age::setAssetsPath(RESOURCE_PATH);
 
-    Application* app = new Application("app", 800, 600);
+    auto app = new Application("app", 800, 600);
 
     app->run();
 

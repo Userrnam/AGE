@@ -2,9 +2,17 @@
 #include "DescriptorManager.hpp"
 
 #include "../Core/Core.hpp"
+#include "../../Utils/Logger.hpp"
 
 
 namespace age {
+
+void DescriptorPool::status() {
+	Logger::print("Occupied Sets:");
+	for (auto& set : occupiedSets) {
+		Logger::print("%x", set);
+	}
+}
 
 std::unordered_map<DescriptorInfo, VkDescriptorSetLayout> DescriptorManager::m_layouts;
 std::unordered_map<DescriptorInfo, std::vector<DescriptorPool>> DescriptorManager::m_pools;
@@ -124,7 +132,7 @@ void DescriptorManager::freeDescriptorSet(const DD &dd) {
 		}
 	}
 
-	std::cout << "Descriptor has been destroyed already\n";
+	Logger::error("Descriptor has been destroyed already");
 }
 
 void DescriptorManager::destroy() {
@@ -135,7 +143,7 @@ void DescriptorManager::destroy() {
 	for (auto& ppool : m_pools) {
 		for (auto& pool : ppool.second) {
 			if (!pool.isFree()) {
-				std::cout << "DescriptorPool is not free!\n";
+				Logger::error("DescriptorPool is not free");
 				pool.status();
 			}
 			vkDestroyDescriptorPool(core::apiCore.device, pool.pool, nullptr);

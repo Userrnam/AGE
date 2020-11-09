@@ -47,7 +47,6 @@ struct CustomButton : public age::ScriptComponent, public age::IButton {
         text.destroy();
         transformable.destroy();
         getComponent<age::Drawable>().destroy();
-        getScene()->getPositionManager()->remove(getEntityId());
     }
 
     void setText(const std::string& s) {
