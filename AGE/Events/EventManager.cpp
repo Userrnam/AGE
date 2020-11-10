@@ -1,14 +1,10 @@
 #include <GLFW/glfw3.h>
-#include <iostream>
+#include <unordered_map>
 
 #include "../Graphics/Core/Core.hpp"
 
 #include "EventManager.hpp"
 #include "../Containers/Arena.hpp"
-
-namespace age {
-extern Arena eventArena;
-}
 
 namespace age::core {
 extern Core apiCore;
@@ -87,8 +83,6 @@ void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
 }
 
 void init() {
-    eventArena.init(16 * 1024);
-
     glfwSetKeyCallback(core::apiCore.window.handle, keyCallback);
     glfwSetScrollCallback(core::apiCore.window.handle, scrollCallback);
     glfwSetCursorPosCallback(core::apiCore.window.handle, cursorPosCallback);
@@ -97,10 +91,6 @@ void init() {
 
     previousWindowSize.x = core::apiCore.window.width;
     previousWindowSize.y = core::apiCore.window.height;
-}
-
-void destroy() {
-    eventArena.destroy();
 }
 
 void sendEvent(Event& event) {
@@ -113,7 +103,6 @@ const std::vector<Event>& getEvents() {
 
 void clearEvents() {
     m_events.clear();
-    eventArena.flush();
 }
 
 } // namespace age::EventManager

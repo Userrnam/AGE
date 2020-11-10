@@ -18,6 +18,7 @@
 #include "../Animation/Animator.hpp"
 #include "../UI/UIManager.hpp"
 #include "../Utils/Logger.hpp"
+#include "../Containers/Arena.hpp"
 
 namespace age {
 
@@ -57,12 +58,13 @@ Application::~Application() {
 
     audio::Core::destroy();
 
-    EventManager::destroy();
     Renderer::destroy();
+    Arena::destroy();
 }
 
 // maybe pass coreConfig here
 void Application::create() {
+    Arena::init(8 * 1024);
     Renderer::create();
     core::deviceAlloc::init();
 
@@ -104,7 +106,6 @@ void Application::run() {
             this->onEvent(event);
             m_activeScene->handleEvent(event);
         }
-        EventManager::clearEvents();
 
         float runTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
         onUpdate(elapsedTime);
@@ -121,6 +122,9 @@ void Application::run() {
             startTime = std::chrono::high_resolution_clock::now();
             previousTime = std::chrono::high_resolution_clock::now();
         }
+
+        EventManager::clearEvents();
+        Arena::flush();
 
         render();
 

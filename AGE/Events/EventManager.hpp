@@ -8,7 +8,6 @@
 namespace age::EventManager {
 
 void init();
-void destroy();
 
 void sendEvent(Event& event);
 const std::vector<Event>& getEvents();

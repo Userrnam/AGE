@@ -5,6 +5,11 @@
 
 namespace age {
 
+std::vector<uint8_t*> Arena::m_data;
+size_t Arena::m_blockIndex = 0;
+size_t Arena::m_position = 0;
+size_t Arena::m_blockSize = 0;
+
 void Arena::init(size_t blockSize) {
     m_blockSize = blockSize;
     uint8_t* mem = (uint8_t*)malloc(m_blockSize);

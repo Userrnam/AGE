@@ -6,10 +6,8 @@
 
 namespace age {
 
-Arena eventArena;
-
 void Event::setStructure(void* p, size_t size) {
-    m_structure = eventArena.allocate(size);
+    m_structure = Arena::allocate(size);
     memcpy(m_structure, p, size);
 }
 

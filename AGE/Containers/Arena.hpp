@@ -6,16 +6,17 @@
 namespace age {
 
 class Arena {
-    size_t m_blockSize;
+    static size_t m_blockSize;
 
-    std::vector<uint8_t*> m_data;
-    size_t m_blockIndex = 0;
-    size_t m_position = 0;
+    static std::vector<uint8_t*> m_data;
+    static size_t m_blockIndex;
+    static size_t m_position;
 public:
-    void init(size_t blockSize = 1024 * 1024);
-    void destroy();
-    void* allocate(size_t size);
-    void flush();
+    static void init(size_t blockSize);
+    static void destroy();
+
+    static void* allocate(size_t size);
+    static void flush();
 };
 
 } // namespace age
