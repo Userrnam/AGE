@@ -1,10 +1,13 @@
 #include <GLFW/glfw3.h>
 #include <unordered_map>
+#include <vector>
+#include <string.h>
 
 #include "../Graphics/Core/Core.hpp"
 
 #include "EventManager.hpp"
 #include "../Containers/Arena.hpp"
+#include "../Utils/Logger.hpp"
 
 namespace age::core {
 extern Core apiCore;
@@ -12,9 +15,31 @@ extern Core apiCore;
 
 namespace age::EventManager {
 
-age::Vector2i previousWindowSize;
-std::vector<Event> m_events;
+namespace detail {
+
+void Event::setStructure(void* p, size_t size) {
+    m_structure = Arena::allocate(size);
+    memcpy(m_structure, p, size);
+}
+
+}
+
+// stores methods and pointers to thier's classes
+struct CallbackStructure {
+	detail::EventHandler eventHandler;
+	void* caller;
+};
+
+std::unordered_map<size_t, std::vector<CallbackStructure>> callbacks;
+
+// Events buffer
+std::vector<detail::Event> m_events;
+
+// input data
 bool pressedKeys[GLFW_KEY_LAST + 1] = {};
+age::Vector2i previousWindowSize;
+
+// callbacks
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     event::Key eStruct;
@@ -23,13 +48,9 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     eStruct.action = action;
     eStruct.mods = mods;
 
-    // glfw release is 0, glfw press is 1
     pressedKeys[key] = action;
 
-    Event e;
-    e.setId(hash("glfw_key"));
-    e.setStructure(eStruct);
-    sendEvent(e);
+    EventManager::sendEvent(eStruct);
 }
 
 void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
@@ -37,10 +58,7 @@ void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
     eStruct.offset.x = xOffset;
     eStruct.offset.y = yOffset;
 
-    Event e;
-    e.setId(hash("glfw_scroll"));
-    e.setStructure(eStruct);
-    sendEvent(e);
+    EventManager::sendEvent(eStruct);
 }
 
 void cursorPosCallback(GLFWwindow* window, double xPos, double yPos) {
@@ -48,25 +66,21 @@ void cursorPosCallback(GLFWwindow* window, double xPos, double yPos) {
     eStruct.pos.x = xPos;
     eStruct.pos.y = core::apiCore.window.height - yPos;
 
-    Event e;
-    e.setId(hash("glfw_cursor_pos"));
-    e.setStructure(eStruct);
-    sendEvent(e);
+    EventManager::sendEvent(eStruct);
 }
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    double x, y;
+    glfwGetCursorPos(core::apiCore.window.handle, &x, &y);
+
     event::MouseButton eStruct;
     eStruct.button = button;
     eStruct.action = action;
     eStruct.mods = mods;
-    glfwGetCursorPos(core::apiCore.window.handle, &eStruct.pos.x, &eStruct.pos.y);
+    eStruct.pos.x = x;
+    eStruct.pos.y = core::apiCore.window.height - y;
 
-    eStruct.pos.y = core::apiCore.window.height - eStruct.pos.y;
-
-    Event e;
-    e.setId(hash("glfw_mouse_button"));
-    e.setStructure(eStruct);
-    sendEvent(e);
+    EventManager::sendEvent(eStruct);
 }
 
 void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
@@ -76,13 +90,12 @@ void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
     eStruct.oldSize = previousWindowSize;
     glfwGetWindowSize(window, &eStruct.newSize.x, &eStruct.newSize.y);
 
-    Event e;
-    e.setId(hash("glfw_resize"));
-    e.setStructure(eStruct);
-    sendEvent(e);
+    EventManager::sendEvent(eStruct);
 }
 
-void init() {
+// end callbacks
+
+void __init() {
     glfwSetKeyCallback(core::apiCore.window.handle, keyCallback);
     glfwSetScrollCallback(core::apiCore.window.handle, scrollCallback);
     glfwSetCursorPosCallback(core::apiCore.window.handle, cursorPosCallback);
@@ -93,16 +106,45 @@ void init() {
     previousWindowSize.y = core::apiCore.window.height;
 }
 
-void sendEvent(Event& event) {
+void __destroy() {
+    for (auto& fs : callbacks) {
+        for (auto& cbs : fs.second) {
+            Logger::error("callback with handler %x for caller %x has not been freed", cbs.eventHandler, cbs.caller);
+        }
+    }
+}
+
+void __processEvents() {
+    for (auto& event : m_events) {
+        auto& fs = callbacks[event];
+        for (auto& cbs : fs) {
+            cbs.eventHandler(cbs.caller, event.getStructurePointer());
+        }
+    }
+    m_events.clear();
+}
+
+void __sendEvent(const detail::Event& event) {
     m_events.push_back(event);
 }
 
-const std::vector<Event>& getEvents() {
-    return m_events;
+void __registerCallback(size_t eid, void *caller, detail::EventHandler handler) {
+    CallbackStructure cbs;
+    cbs.caller = caller;
+    cbs.eventHandler = handler;
+    callbacks[eid].push_back(cbs);
 }
 
-void clearEvents() {
-    m_events.clear();
+void __forgetCallback(void *caller, size_t eid) {
+    auto& fs = callbacks[eid];
+    for (size_t i = 0; i < fs.size(); ++i) {
+        if (fs[i].caller == caller) {
+            fs.erase(fs.begin()+i);
+            return;
+        }
+    }
+
+    Logger::error("attempt to free unknown callback. caller: %x, eid: %x", caller, eid);
 }
 
 } // namespace age::EventManager
@@ -113,12 +155,13 @@ bool isKeyPressed(KeyCode keyCode) {
     return age::EventManager::pressedKeys[keyCode];
 }
 
-Vector2<double> getCursorPosition() {
-    Vector2<double> pos;
+Vector2f getCursorPosition() {
+    double x, y;
+    glfwGetCursorPos(core::apiCore.window.handle, &x, &y);
 
-    glfwGetCursorPos(core::apiCore.window.handle, &pos.x, &pos.y);
-
-    pos.y = core::apiCore.window.height - pos.y;
+    Vector2f pos;
+    pos.x = x;
+    pos.y = core::apiCore.window.height - y;
 
     return pos;
 }

@@ -4,10 +4,14 @@
 #include <unordered_set>
 
 #include "Animation.hpp"
+#include "../Events/Event.hpp"
+#include "../Events/EventManager.hpp"
 
 namespace age {
 
 class Animator {
+    EVENT_CALLBACK(Animator, update);
+
     uint64_t m_id = 0;
     std::unordered_map<uint64_t, AnimationBase*> m_runningAnimations;
     std::unordered_map<uint64_t, AnimationBase*> m_pausedAnimations;
@@ -17,7 +21,7 @@ public:
 
     Animator(const Animator&) = delete;
 
-    void update(float elapsedTime);
+    void update(const event::Update& e);
 
     void pauseAnimation(uint64_t id);
     void continueAnimation(uint64_t id);

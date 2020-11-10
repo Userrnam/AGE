@@ -13,6 +13,8 @@
 
 
 struct FlappyBirdScene : public age::Scene {
+    EVENT_CALLBACK(FlappyBirdScene, update);
+
     std::vector<std::pair<Column*, Column*>> columns;
     Score* scoreScript;
     Bird* birdScript;
@@ -20,19 +22,19 @@ struct FlappyBirdScene : public age::Scene {
     float miny, maxy;
 
     FlappyBirdScene(age::Application* app) : age::Scene(app) {
-        scoreScript = createStaticEntity<Score>();
+        scoreScript = createEntity<Score>();
         birdScript = createEntity<Bird>();
         createColumns();
-        createStaticEntity<Background>(age::Color(0.0f, 0.0f, 0.0f, 1.0f));
+        createEntity<Background>(age::Color(0.0f, 0.0f, 0.0f, 1.0f));
     }
 
-    virtual void onUpdate(float elapsedTime) override {
+    void update(const age::event::Update& e) {
         if (birdScript->dead) {
             return;
         }
         for (auto& p : columns) {
-            p.first->move(speed * elapsedTime);
-            p.second->move(speed * elapsedTime);
+            p.first->move(speed * e.elapsedTime);
+            p.second->move(speed * e.elapsedTime);
 
             if (!p.first->isVisible()) {
                 float x = columns.size() * 300 + p.first->transformable.getPosition().x;
@@ -55,8 +57,8 @@ struct FlappyBirdScene : public age::Scene {
         int count = windowSize.x / 300 + 2;
     
         for (int i = 1; i < count; ++i) {
-            auto top = createStaticEntity<Column>();
-            auto bottom = createStaticEntity<Column>();
+            auto top = createEntity<Column>();
+            auto bottom = createEntity<Column>();
 
             float y = age::frandom(miny, maxy);
             top->setBottom(age::Vector2f(300 * i, y));

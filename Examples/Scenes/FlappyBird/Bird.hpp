@@ -46,6 +46,8 @@ struct MyParticle : public age::ParticleBase {
 };
 
 struct Bird : public age::ScriptComponent {
+    EVENT_CALLBACK(Bird, update);
+    
     age::Transformable transformable;
     age::StorageComponent<age::Transform, age::Color, age::TexCoords> buffer;
     age::ParticleSystem<MyParticle>* ps;
@@ -85,10 +87,10 @@ struct Bird : public age::ScriptComponent {
         getComponent<age::Drawable>().destroy();
     }
 
-    virtual void onUpdate(float elapsedTime) override {
+    void update(const age::event::Update& e) {
         if (dead) {
             velocity -= gravity;
-            transformable.move(0, velocity * elapsedTime);
+            transformable.move(0, velocity * e.elapsedTime);
             buffer.set<age::Transform>(transformable.getTransform());
             buffer.upload();
             
@@ -104,7 +106,7 @@ struct Bird : public age::ScriptComponent {
         }
 
         velocity -= gravity;
-        transformable.move(0, velocity * elapsedTime);
+        transformable.move(0, velocity * e.elapsedTime);
         buffer.set<age::Transform>(transformable.getTransform());
         buffer.upload();
 
@@ -116,7 +118,7 @@ struct Bird : public age::ScriptComponent {
         birdHitBox.size = transformable.getScale();
 
         for (auto column : view) {
-            auto script = reinterpret_cast<Column*>(column.getComponent<StaticScriptComponent*>());
+            auto script = reinterpret_cast<Column*>(column.getComponent<ScriptComponent*>());
 
             if (birdHitBox.intersect(script->getHitBox())) {
                 std::cout << "Bird died :(\n";

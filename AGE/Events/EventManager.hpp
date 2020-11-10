@@ -5,21 +5,115 @@
 
 #include "Event.hpp"
 
+#define EVENT_CALLBACK(class, method) \
+	age::EventManager::detail::Handler<class> __ ## class ## method{ \
+    typeid(age::EventManager::detail::GetHandler<decltype(&class::method)>::eventType).hash_code(), \
+    this, \
+    age::EventManager::detail::forceCast<age::EventManager::detail::EventHandler>(&class::method), \
+    age::EventManager::detail::GetHandler<decltype(&class::method)>::success}
+
 namespace age::EventManager {
 
-void init();
+namespace detail {
 
-void sendEvent(Event& event);
-const std::vector<Event>& getEvents();
-void clearEvents();
+typedef void(*EventHandler)(void*, void*);
 
-} // namespace age
+class Event {
+    size_t m_eventId;
+    void *m_structure;
+
+    void setStructure(void* p, size_t size);
+public:
+    void* getStructurePointer() {
+        return m_structure;
+    }
+
+    template<typename T>
+    void setStructure(T& s) {
+        setStructure((void*)&s, sizeof(T));
+        m_eventId = typeid(T).hash_code();
+    }
+
+    template<typename T>
+    const T& getStructure() const {
+        return *((T*)m_structure);
+    }
+
+    operator size_t() const {
+        return m_eventId;
+    }
+};
+
+} // namespace detail
+
+// called by age::Application
+void __init();
+void __destroy();
+void __processEvents();
+
+void __sendEvent(const detail::Event& e);
+
+template<typename T>
+void sendEvent(const T& val) {
+    detail::Event e;
+    e.setStructure(val);
+    __sendEvent(e);
+}
+
+// called by Handler
+void __registerCallback(size_t eid, void* caller, detail::EventHandler);
+void __forgetCallback(void* caller, size_t eid);
+
+namespace detail {
+
+template<typename T>
+class Handler {
+	size_t m_eid;
+	void* m_p;
+
+public:
+	Handler(uint64_t eid, T* p, EventHandler e, std::true_type) {
+		m_eid = eid;
+		m_p = p;
+		EventManager::__registerCallback(eid, p, e);
+	}
+
+	~Handler() {
+		EventManager::__forgetCallback(m_p, m_eid);
+	}
+
+	Handler(const Handler&) = delete;
+};
+
+template<typename Target, typename Current>
+inline Target forceCast(Current c) {
+	union Hack { Target t; Current c; };
+	Hack hack;
+	hack.c = c;
+	return hack.t;
+}
+
+template<typename T>
+struct GetHandler {
+	static constexpr std::false_type success;
+	static constexpr std::false_type eventType;
+};
+
+template<typename T, typename U>
+struct GetHandler<void(T::*)(const U&)> {
+	static constexpr std::true_type success;
+	static constexpr U eventType;
+};
+
+} // namespace detail
+
+} // namespace age::EventManager
 
 namespace age {
 
 typedef uint32_t KeyCode;
 
 bool isKeyPressed(KeyCode keyCode);
-Vector2<double> getCursorPosition();
+Vector2f getCursorPosition();
 
 } // namespace age

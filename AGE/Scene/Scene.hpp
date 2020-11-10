@@ -14,14 +14,9 @@
 namespace age {
 
 class Scene : public SceneBase {
-    void update(float elapsedTime, float runTime);
-	void handleEvent(Event event);
-
 	friend class Application;
 	friend class Entity;
 protected:
-	virtual void onEvent(const Event& event) {}
-	virtual void onUpdate(float elapsedTime) {}
 public:
 	Scene(class Application* app);
 	virtual ~Scene();
@@ -33,14 +28,6 @@ public:
 		Entity e = createEntity();
 		auto p = new Script(e, args...);
         e.addComponentNoCreate<ScriptComponent*>(p);
-		return p;
-	}
-
-	template<typename Script, typename... Args>
-	inline Script* createStaticEntity(Args... args) {
-		Entity e = createEntity();
-		auto p = new Script(e, args...);
-		e.addComponentNoCreate<StaticScriptComponent*>(p);
 		return p;
 	}
 

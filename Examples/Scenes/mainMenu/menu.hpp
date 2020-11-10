@@ -44,6 +44,9 @@ struct Particle : public age::ParticleBase {
 };
 
 class MainMenu : public age::Scene {
+    EVENT_CALLBACK(MainMenu, keyPressed);
+    EVENT_CALLBACK(MainMenu, update);
+
     uint64_t uiblockId;
     age::ParticleSystem<Particle>* ps;
 
@@ -55,7 +58,7 @@ public:
 
         ps->getTransformable().setOrigin(0.5f, 0.5f);
 
-        createStaticEntity<Background>(age::Color(0, 0, 0, 1));
+        createEntity<Background>(age::Color(0, 0, 0, 1));
 
         uiblockId = addUIBlock(
             age::UIBlock(2)
@@ -68,18 +71,15 @@ public:
         block.move(100, 100);
     }
 
-    virtual void onEvent(const age::Event& e) override {
-        if (e == age::event::KEY) {
-            auto s = e.getStructure<age::event::Key>();
-            if (s.key == GLFW_KEY_S) {
-                ps->stop();
-            } else if (s.key == GLFW_KEY_R) {
-                ps->resume();
-            }
+    void keyPressed(const age::event::Key& s) {
+        if (s.key == GLFW_KEY_S) {
+            ps->stop();
+        } else if (s.key == GLFW_KEY_R) {
+            ps->resume();
         }
     }
 
-    virtual void onUpdate(float elapsedTime) override {
+    void update(const age::event::Update& e) {
         auto pos = age::getCursorPosition();
         auto& tr = ps->getTransformable();
         tr.setPosition(pos.x, pos.y);

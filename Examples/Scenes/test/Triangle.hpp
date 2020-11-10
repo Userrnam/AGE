@@ -36,12 +36,12 @@ std::vector<age::Index16> indicies = {
     0, 1, 2
 };
 
-struct Triangle : public age::StaticScriptComponent {
+struct Triangle : public age::ScriptComponent {
     age::Transformable transformable;
     age::StorageComponent<age::Transform> transform;
     age::ShapeId shapeId;
 
-    Triangle(Entity e) : age::StaticScriptComponent(e) {
+    Triangle(Entity e) : age::ScriptComponent(e) {
         transformable.create(e, age::Vector2f(800, 600));
 
         transform.create(transformable.getTransform());

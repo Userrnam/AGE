@@ -11,6 +11,9 @@
 namespace age {
 
 class SceneBase {
+	EVENT_CALLBACK(SceneBase, handleResize);
+	EVENT_CALLBACK(SceneBase, update);
+
 protected:
 	View m_dynamicView;
 	View m_staticView;
@@ -35,19 +38,15 @@ public:
 
 	PositionManager* getPositionManager() { return &m_positionManager; }
 
-	void handleEvent(const Event& e) {
-		if (e == age::event::RESIZE) {
-			auto s = e.getStructure<age::event::Resize>();
-			m_dynamicView.handleWindowResize(s.oldSize, s.newSize);
-			m_staticView.handleWindowResize(s.oldSize, s.newSize);
-		}
-		m_uiManager.update(e);
+	void handleResize(const event::Resize& e) {
+		m_dynamicView.handleWindowResize(e.oldSize, e.newSize);
+		m_staticView.handleWindowResize(e.oldSize, e.newSize);
 	}
 
-	void update(float elapsedTime, float runTime) {
-		m_runTime = runTime;
-		m_staticView.update(elapsedTime, runTime);
-		m_dynamicView.update(elapsedTime, runTime);
+	void update(const event::Update& e) {
+		m_runTime = e.runTime;
+		m_staticView.update(e.elapsedTime, e.runTime);
+		m_dynamicView.update(e.elapsedTime, e.runTime);
 	}
 
 	float getRunTime() const { return m_runTime; }

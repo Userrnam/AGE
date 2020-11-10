@@ -9,6 +9,8 @@
 #include <AGE/Scene.hpp>
 
 class HelloText : public age::ScriptComponent {
+    EVENT_CALLBACK(HelloText, keyPressed);
+
     age::TextComponent text;
     age::Transformable transformable;
     age::StorageComponent<age::Transform> buffer;
@@ -57,15 +59,12 @@ public:
         getScene()->getPositionManager()->remove(getEntityId());
     }
 
-    virtual void onEvent(age::Event e) override {
-        if (e == age::event::KEY) {
-            auto s = e.getStructure<age::event::Key>();
-            if (s.action == GLFW_PRESS) {
-                if (s.key == GLFW_KEY_T) {
-                    getScene()->pauseAnimation(animId);
-                } else if (s.key == GLFW_KEY_C) {
-                    getScene()->continueAnimation(animId);
-                }
+    void keyPressed(const age::event::Key& e) {
+        if (e.action == GLFW_PRESS) {
+            if (e.key == GLFW_KEY_T) {
+                getScene()->pauseAnimation(animId);
+            } else if (e.key == GLFW_KEY_C) {
+                getScene()->continueAnimation(animId);
             }
         }
     }

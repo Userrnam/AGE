@@ -20,24 +20,20 @@ void UIManager::eraseBlock(uint64_t id) {
     }
 }
 
-bool UIManager::update(Event e) {
-    if (e == event::MOUSE_BUTTON) {
-        auto s = e.getStructure<event::MouseButton>();
-        for (auto& block : m_blocks) {
-            if (block.second.update(s)) {
-                return true;
-            }
-        }
-        return true;
-    } else if (e == event::CURSOR_POS) {
-        auto s = e.getStructure<event::CursorPos>();
-        for (auto& block : m_blocks) {
-            if (block.second.update(s)) {
-                return true;
-            }
+void UIManager::cursorMoved(const event::CursorPos &e) {
+    for (auto& block : m_blocks) {
+        if (block.second.update(e)) {
+            return;
         }
     }
-    return false;
+}
+
+void UIManager::mouseButtonPressed(const event::MouseButton &e) {
+    for (auto& block : m_blocks) {
+        if (block.second.update(e)) {
+            return;
+        }
+    }
 }
 
 void UIManager::destroy() {

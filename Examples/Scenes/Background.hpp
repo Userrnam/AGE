@@ -5,12 +5,12 @@
 #include <AGE/Scene.hpp>
 
 
-class Background : public age::StaticScriptComponent {
+class Background : public age::ScriptComponent {
     age::Transformable transformable;
     age::StorageComponent<age::Transform, age::Color> buffer;
 
 public:
-    Background(Entity e, const age::Color& color) : age::StaticScriptComponent(e) {
+    Background(Entity e, const age::Color& color) : age::ScriptComponent(e) {
         transformable.create(e);
         transformable.setScale(1600, 1200);
 

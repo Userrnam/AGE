@@ -9,13 +9,13 @@ struct ColumnTag {
     void create() {}
 };
 
-struct Column : public age::StaticScriptComponent {
+struct Column : public age::ScriptComponent {
     age::Transformable transformable;
     age::StorageComponent<age::Transform> transformBuffer;
 
     const float columnHeight = 500.0f;
 
-    Column(age::Entity e) : age::StaticScriptComponent(e) {
+    Column(age::Entity e) : age::ScriptComponent(e) {
         transformable.create(e);
         transformable.setScale(50, columnHeight);
 

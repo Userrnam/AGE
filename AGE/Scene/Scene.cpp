@@ -2,31 +2,6 @@
 
 namespace age {
 
-void Scene::update(float elapsedTime, float runTime) {
-    m_animator.update(elapsedTime);
-    SceneBase::update(elapsedTime, runTime);
-
-    onUpdate(elapsedTime);
-
-    auto entities = m_registry.view<ScriptComponent*>();
-    for (auto entity : entities) {
-        auto script = entities.get(entity);
-        script->onUpdate(elapsedTime);
-    }
-}
-
-void Scene::handleEvent(Event event) {
-    onEvent(event);
-
-    SceneBase::handleEvent(event);
-
-    auto entities = m_registry.view<ScriptComponent*>();
-    for (auto entity : entities) {
-        auto script = entities.get(entity);
-        script->onEvent(event);
-    }
-}
-
 Scene::Scene(class Application* app) {
     parent = app;
 }
@@ -34,14 +9,6 @@ Scene::Scene(class Application* app) {
 Scene::~Scene() {
     {
         auto entities = m_registry.view<ScriptComponent*>();
-        for (auto entity : entities) {
-            auto script = entities.get(entity);
-            delete script;
-        }
-    }
-
-    {
-        auto entities = m_registry.view<StaticScriptComponent*>();
         for (auto entity : entities) {
             auto script = entities.get(entity);
             delete script;

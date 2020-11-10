@@ -67,8 +67,6 @@ protected:
         m_fonts.erase(it);
     }
 
-    virtual void onEvent(Event event) {}
-    virtual void onUpdate(float elapsedTime) {}
 public: 
     template<typename S, typename... Args>
     void selectScene(Args... args) {

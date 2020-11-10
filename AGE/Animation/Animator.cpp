@@ -12,7 +12,7 @@ Animator::~Animator() {
     }
 }
 
-void Animator::update(float elapsedTime) {
+void Animator::update(const event::Update& e) {
     std::unordered_set<Buffer*> animationUploadBuffers;
     std::unordered_set<IResolveStructure*> resolveStructures;
     std::vector<uint64_t> animationsToRemove;
@@ -24,7 +24,7 @@ void Animator::update(float elapsedTime) {
         if (anim.second->m_resolveStructure) {
             resolveStructures.emplace(anim.second->m_resolveStructure);
         }
-        if (anim.second->update(elapsedTime)) {
+        if (anim.second->update(e.elapsedTime)) {
             animationsToRemove.push_back(anim.first);
         }
     }

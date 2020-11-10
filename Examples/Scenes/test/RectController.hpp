@@ -9,6 +9,8 @@
 
 
 class RectController : public age::ScriptComponent {
+    EVENT_CALLBACK(RectController, update);
+
     age::Transformable transformable;
     age::StorageComponent<age::Transform, age::TexCoords> buffer;
     age::ArrayComponent<age::Color, age::PER_VERTEX> colors;
@@ -18,7 +20,9 @@ class RectController : public age::ScriptComponent {
 
     const float speed = 250.0f;
 
-    virtual void onUpdate(float elapsedTime) override {
+    void update(const age::event::Update& e) {
+        float elapsedTime = e.elapsedTime;
+
         auto dx = (age::isKeyPressed(GLFW_KEY_RIGHT) - age::isKeyPressed(GLFW_KEY_LEFT)) * speed * elapsedTime;
         auto dy = (age::isKeyPressed(GLFW_KEY_UP) - age::isKeyPressed(GLFW_KEY_DOWN)) * speed * elapsedTime;
         auto r = (age::isKeyPressed(GLFW_KEY_Q) - age::isKeyPressed(GLFW_KEY_E)) * elapsedTime;

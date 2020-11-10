@@ -20,8 +20,8 @@ public:
         createUIBlock();
         createEntity<HelloText>();
         createEntity<RectController>();
-        createStaticEntity<Triangle>();
-        createStaticEntity<Background>(age::Color(1, 0, 0, 1));
+        createEntity<Triangle>();
+        createEntity<Background>(age::Color(1, 0, 0, 1));
     }
 
     void createUIBlock() {

@@ -59,13 +59,18 @@ Application::~Application() {
     audio::Core::destroy();
 
     Renderer::destroy();
+
+    EventManager::__destroy();
+
     Arena::destroy();
 }
 
 // maybe pass coreConfig here
 void Application::create() {
     Arena::init(8 * 1024);
+
     Renderer::create();
+
     core::deviceAlloc::init();
 
     Shape::createManager();
@@ -76,7 +81,7 @@ void Application::create() {
 
     Sampler::createDefault();
     
-    EventManager::init();
+    EventManager::__init();
 }
 
 void Application::run() {
@@ -95,21 +100,19 @@ void Application::run() {
         m_isRunning = !core::window::closed();
         core::window::pollEvents();
 
+        event::Update updateEvent;
+
         // calculate elapsed time
         currentTime = std::chrono::high_resolution_clock::now();
-        float elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - previousTime).count();
+
+        updateEvent.elapsedTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - previousTime).count();
+        updateEvent.runTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
         previousTime = currentTime;
 
-        // handle events
-        auto events = EventManager::getEvents();
-        for (auto event : events) {
-            this->onEvent(event);
-            m_activeScene->handleEvent(event);
-        }
+        EventManager::sendEvent(updateEvent);
 
-        float runTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-        onUpdate(elapsedTime);
-        m_activeScene->update(elapsedTime, runTime);
+        EventManager::__processEvents();
 
         if (m_switchScene) {
             vkDeviceWaitIdle(core::apiCore.device);
@@ -123,7 +126,6 @@ void Application::run() {
             previousTime = std::chrono::high_resolution_clock::now();
         }
 
-        EventManager::clearEvents();
         Arena::flush();
 
         render();
@@ -133,7 +135,7 @@ void Application::run() {
             Renderer::rerender();
         }
 
-        timeAvg += elapsedTime;
+        timeAvg += updateEvent.elapsedTime;
 
         if (count % 20 == 0) {
             m_fps = 20.0f / timeAvg;

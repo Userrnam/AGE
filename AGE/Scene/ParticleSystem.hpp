@@ -69,6 +69,8 @@ struct ParticleBase : public UnmanagedTransformable {
 
 template<typename ParticleType>
 class ParticleSystem : public ScriptComponent {
+    EVENT_CALLBACK(ParticleSystem, update);
+    
     Transformable m_transformable;
 
     // particles per second
@@ -103,7 +105,7 @@ public:
         m_particlesBuffer.destroy();
     }
 
-    virtual void onUpdate(float elapsedTime) override;
+    void update(const event::Update& e);
 
     Transformable& getTransformable() { return m_transformable; }
     void stop() {
@@ -116,7 +118,9 @@ public:
 };
 
 template<typename ParticleType>
-void ParticleSystem<ParticleType>::onUpdate(float elapsedTime) {
+void ParticleSystem<ParticleType>::update(const event::Update& e) {
+    float elapsedTime = e.elapsedTime;
+
     // remove dead particles
     m_particlesBuffer.clear();
     for (int i = 0; i < m_particles.size(); ) {

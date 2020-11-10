@@ -16,10 +16,6 @@ class Entity {
     entt::entity m_entityId;
     SceneBase* m_scene;
 
-    friend class Scene;
-    friend class StaticScriptComponent;
-    friend class Transformable;
-
 public:
     inline Scene* getScene() { return reinterpret_cast<Scene*>(m_scene); }
 

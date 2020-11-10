@@ -8,6 +8,9 @@
 #endif
 
 struct Application : public age::Application {
+    EVENT_CALLBACK(Application, update);
+    EVENT_CALLBACK(Application, keyPressed);
+
     Application(const std::string& name, int width, int height)
         : age::Application(name, width, height) {
         loadFont(age::getAssetPath("Courier.dfont"), "courier");
@@ -17,20 +20,17 @@ struct Application : public age::Application {
         selectScene<MainMenu>();
     }
 
-    virtual void onUpdate(float elapsedTime) override {
+    void update(const age::event::Update& e) {
         std::string s = "fps: " + std::to_string(getFps());
         setWindowTitle(s);
     }
 
-    virtual void onEvent(age::Event e) override {
-        if (e == age::event::KEY) {
-            auto s = e.getStructure<age::event::Key>();
-            if (s.action == GLFW_PRESS && s.key == GLFW_KEY_P) {
-                stop();
-            }
-            if (s.action == GLFW_PRESS && s.key == GLFW_KEY_R && (age::isKeyPressed(GLFW_KEY_RIGHT_CONTROL) || age::isKeyPressed(GLFW_KEY_LEFT_CONTROL) )) {
-                selectScene<MainMenu>();
-            }
+    void keyPressed(const age::event::Key& s) {
+        if (s.action == GLFW_PRESS && s.key == GLFW_KEY_P) {
+            stop();
+        }
+        if (s.action == GLFW_PRESS && s.key == GLFW_KEY_R && (age::isKeyPressed(GLFW_KEY_RIGHT_CONTROL) || age::isKeyPressed(GLFW_KEY_LEFT_CONTROL) )) {
+            selectScene<MainMenu>();
         }
     }
 };
