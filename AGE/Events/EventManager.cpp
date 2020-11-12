@@ -13,7 +13,7 @@ namespace age::core {
 extern Core apiCore;
 }
 
-namespace age::EventManager {
+namespace age {
 
 namespace detail {
 
@@ -24,20 +24,14 @@ void Event::setStructure(void* p, size_t size) {
 
 }
 
-// stores methods and pointers to thier's classes
-struct CallbackStructure {
-	detail::EventHandler eventHandler;
-	void* caller;
-};
-
-std::unordered_map<size_t, std::vector<CallbackStructure>> callbacks;
+std::unordered_map<size_t, std::vector<detail::CallbackStructure>> EventManager::m_callbacks;
 
 // Events buffer
-std::vector<detail::Event> m_events;
+std::vector<detail::Event> EventManager::m_events;
 
 // input data
-bool pressedKeys[GLFW_KEY_LAST + 1] = {};
-age::Vector2i previousWindowSize;
+age::Vector2i m_previousWindowSize;
+bool m_pressedKeys[GLFW_KEY_LAST+1] = {};
 
 // callbacks
 
@@ -48,7 +42,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     eStruct.action = action;
     eStruct.mods = mods;
 
-    pressedKeys[key] = action;
+    m_pressedKeys[key] = action;
 
     EventManager::sendEvent(eStruct);
 }
@@ -87,7 +81,7 @@ void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
     core::apiCore.framebufferResized = true;
 
     event::Resize eStruct;
-    eStruct.oldSize = previousWindowSize;
+    eStruct.oldSize = m_previousWindowSize;
     glfwGetWindowSize(window, &eStruct.newSize.x, &eStruct.newSize.y);
 
     EventManager::sendEvent(eStruct);
@@ -95,28 +89,28 @@ void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
 
 // end callbacks
 
-void __init() {
+void EventManager::__init() {
     glfwSetKeyCallback(core::apiCore.window.handle, keyCallback);
     glfwSetScrollCallback(core::apiCore.window.handle, scrollCallback);
     glfwSetCursorPosCallback(core::apiCore.window.handle, cursorPosCallback);
     glfwSetMouseButtonCallback(core::apiCore.window.handle, mouseButtonCallback);
     glfwSetFramebufferSizeCallback(core::apiCore.window.handle, framebufferResizeCallback);
 
-    previousWindowSize.x = core::apiCore.window.width;
-    previousWindowSize.y = core::apiCore.window.height;
+    m_previousWindowSize.x = core::apiCore.window.width;
+    m_previousWindowSize.y = core::apiCore.window.height;
 }
 
-void __destroy() {
-    for (auto& fs : callbacks) {
+void EventManager::__destroy() {
+    for (auto& fs : m_callbacks) {
         for (auto& cbs : fs.second) {
             Logger::error("callback with handler %x for caller %x has not been freed", cbs.eventHandler, cbs.caller);
         }
     }
 }
 
-void __processEvents() {
+void EventManager::__processEvents() {
     for (auto& event : m_events) {
-        auto& fs = callbacks[event];
+        auto& fs = m_callbacks[event];
         for (auto& cbs : fs) {
             cbs.eventHandler(cbs.caller, event.getStructurePointer());
         }
@@ -124,19 +118,19 @@ void __processEvents() {
     m_events.clear();
 }
 
-void __sendEvent(const detail::Event& event) {
+void EventManager::__sendEvent(const detail::Event& event) {
     m_events.push_back(event);
 }
 
-void __registerCallback(size_t eid, void *caller, detail::EventHandler handler) {
-    CallbackStructure cbs;
+void EventManager::__registerCallback(size_t eid, void *caller, detail::EventHandler handler) {
+    detail::CallbackStructure cbs;
     cbs.caller = caller;
     cbs.eventHandler = handler;
-    callbacks[eid].push_back(cbs);
+    m_callbacks[eid].push_back(cbs);
 }
 
-void __forgetCallback(void *caller, size_t eid) {
-    auto& fs = callbacks[eid];
+void EventManager::__forgetCallback(void *caller, size_t eid) {
+    auto& fs = m_callbacks[eid];
     for (size_t i = 0; i < fs.size(); ++i) {
         if (fs[i].caller == caller) {
             fs.erase(fs.begin()+i);
@@ -147,12 +141,12 @@ void __forgetCallback(void *caller, size_t eid) {
     Logger::error("attempt to free unknown callback. caller: %x, eid: %x", caller, eid);
 }
 
-} // namespace age::EventManager
+} // namespace age
 
 namespace age {
 
 bool isKeyPressed(KeyCode keyCode) {
-    return age::EventManager::pressedKeys[keyCode];
+    return age::m_pressedKeys[keyCode];
 }
 
 Vector2f getCursorPosition() {

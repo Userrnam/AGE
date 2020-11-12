@@ -6,13 +6,13 @@
 #include "Event.hpp"
 
 #define EVENT_CALLBACK(class, method) \
-	age::EventManager::detail::Handler<class> __ ## class ## method{ \
-    typeid(age::EventManager::detail::GetHandler<decltype(&class::method)>::eventType).hash_code(), \
+	age::detail::Handler<class> __ ## class ## method{ \
+    typeid(age::detail::GetHandler<decltype(&class::method)>::eventType).hash_code(), \
     this, \
-    age::EventManager::detail::forceCast<age::EventManager::detail::EventHandler>(&class::method), \
-    age::EventManager::detail::GetHandler<decltype(&class::method)>::success}
+    age::detail::forceCast<age::detail::EventHandler>(&class::method), \
+    age::detail::GetHandler<decltype(&class::method)>::success}
 
-namespace age::EventManager {
+namespace age {
 
 namespace detail {
 
@@ -44,25 +44,36 @@ public:
     }
 };
 
+// stores methods and pointers to thier's classes
+struct CallbackStructure {
+	detail::EventHandler eventHandler;
+	void* caller;
+};
+
 } // namespace detail
 
-// called by age::Application
-void __init();
-void __destroy();
-void __processEvents();
+class EventManager {
+    static std::unordered_map<size_t, std::vector<detail::CallbackStructure>> m_callbacks;
+    static std::vector<detail::Event> m_events;
+public:
+    // called by age::Application
+    static void __init();
+    static void __destroy();
+    static void __processEvents();
 
-void __sendEvent(const detail::Event& e);
+    static void __sendEvent(const detail::Event& e);
 
-template<typename T>
-void sendEvent(const T& val) {
-    detail::Event e;
-    e.setStructure(val);
-    __sendEvent(e);
-}
+    template<typename T>
+    static void sendEvent(const T& val) {
+        detail::Event e;
+        e.setStructure(val);
+        __sendEvent(e);
+    }
 
-// called by Handler
-void __registerCallback(size_t eid, void* caller, detail::EventHandler);
-void __forgetCallback(void* caller, size_t eid);
+    // called by Handler
+    static void __registerCallback(size_t eid, void* caller, detail::EventHandler);
+    static void __forgetCallback(void* caller, size_t eid);
+};
 
 namespace detail {
 
@@ -107,7 +118,7 @@ struct GetHandler<void(T::*)(const U&)> {
 
 } // namespace detail
 
-} // namespace age::EventManager
+} // namespace age
 
 namespace age {
 
