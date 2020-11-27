@@ -32,6 +32,7 @@ public:
         buffer.upload();
 
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
+            staticView(),
             buffer,
             text
         );

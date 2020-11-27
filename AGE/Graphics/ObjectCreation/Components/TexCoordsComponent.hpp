@@ -1,8 +1,9 @@
 #pragma once
 
 #include <vector>
-#include <glm/glm.hpp>
 #include <sstream>
+
+#include "../../../Math/Vector.hpp"
 
 #include "ShaderComponent.hpp"
 

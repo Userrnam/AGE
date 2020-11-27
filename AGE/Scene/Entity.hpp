@@ -30,6 +30,9 @@ public:
         m_entityId = id;
     }
 
+    inline View& staticView() { return m_scene->staticView(); }
+    inline View& dynamicView() { return m_scene->dynamicView(); }
+
     inline FontComponent* getFont(const std::string& font) {
 		return m_scene->getFont(font);
 	}

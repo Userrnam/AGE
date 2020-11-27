@@ -1,8 +1,5 @@
-#include <assert.h>
-
 #include "View.hpp"
 #include "../Core/Core.hpp"
-#include "../Core/Command.hpp"
 
 namespace age {
 
@@ -48,15 +45,6 @@ void View::create(float zPos) {
         .setSize(sizeof(ViewGlobals))
     );
 
-    m_descriptor.get(
-        DescriptorSetInfo().addBinding(
-            DescriptorBinding()
-            .setDescriptor(m_buffer)
-            .setStage(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
-            .setDescriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
-        )
-    );
-
     auto width  = static_cast<float>(core::apiCore.window.width);
     auto height = static_cast<float>(core::apiCore.window.height);
 
@@ -72,7 +60,6 @@ void View::create(float zPos) {
 
 void View::destroy() {
     m_buffer.destroy();
-    m_descriptor.destroy();
 }
 
 } // namespace age

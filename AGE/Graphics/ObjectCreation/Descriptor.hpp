@@ -43,7 +43,7 @@ public:
         return *this;
     }
 
-    inline DescriptorBinding& add(const Texture& texture) {
+    inline DescriptorBinding& setDescriptor(const Texture& texture) {
         m_descriptor = texture;
         return *this;
     }
@@ -77,7 +77,7 @@ class DescriptorSetInfo {
                     DescriptorBinding()
                     .setStage(VK_SHADER_STAGE_FRAGMENT_BIT)
                     .setDescriptorType(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
-                    .add(std::get<ShaderComponentTexture>(elem).m_texture)
+                    .setDescriptor(std::get<ShaderComponentTexture>(elem).m_texture)
                 );
             }
         }

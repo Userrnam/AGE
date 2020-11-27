@@ -6,6 +6,9 @@
 #include "../Events/EventManager.hpp"
 #include "../Events/Event.hpp"
 #include "../Graphics/ObjectCreation/Components/FontComponent.hpp"
+#include "../Graphics/ObjectCreation/Components/ColorComponent.hpp"
+#include "../Graphics/ObjectCreation/Components/StorageComponent.hpp"
+#include "../Graphics/ObjectCreation/Drawable.hpp"
 
 namespace age {
 
@@ -15,6 +18,9 @@ class Application {
     float m_fps = 0;
     Scene* m_activeScene = nullptr;
     Scene* m_switchScene = nullptr;
+
+    Drawable m_background;
+    age::StorageComponent<age::Color> m_backgroundColor;
 
     std::unordered_map<uint64_t, FontComponent*> m_fonts;
     std::unordered_map<uint64_t, Texture> m_textures;
@@ -26,6 +32,8 @@ class Application {
     void create();
 
     void deleteActiveScene();
+    void createBackground();
+    void destroyBackground();
 
 protected:
     inline FontComponent* getFont(const std::string& fontName) {
@@ -79,6 +87,10 @@ public:
 
     Application(const std::string& name, int width, int height);
     virtual ~Application();
+
+    void setBackgroundColor(float r, float g, float b) {
+        m_backgroundColor.set(Color(r, g, b));
+    }
 
     float getFps() {
         return m_fps;

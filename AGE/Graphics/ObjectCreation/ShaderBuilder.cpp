@@ -51,15 +51,6 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<ShaderComponent
     m_stream << "layout(location=0) in vec2 inPosition;\n";
     m_stream << m_vertexAttribs.str() << "\n";
 
-    // insert _globals
-    m_stream << "layout(set = 0, binding = 0) uniform CameraObject {\n";
-    m_stream << "\tmat4 cameraTransform;\n";
-    // maybe pass it to fragment shader via location layout?
-    m_stream << "\tvec2 resolution;\n";
-    m_stream << "\tfloat time;\n";
-    m_stream << "\tfloat deltaTime;\n";
-    m_stream << "} _globals;\n\n";
-
     // insert in global scope
     int binding = 0;
     // block names that will be used in main
@@ -97,10 +88,10 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<ShaderComponent
 
                 // insert buffer block
                 if (bufferInfo.m_arrayIndex.size()) {
-                    m_stream << "layout(set=1, binding=" << binding << ") readonly buffer XX" << name << " {\n";
+                    m_stream << "layout(set=0, binding=" << binding << ") readonly buffer XX" << name << " {\n";
                     m_stream << "\tYY" << name << " " << name << "[];\n";
                 } else {
-                    m_stream << "layout(set=1, binding=" << binding << ") uniform XX" << name << " {\n";
+                    m_stream << "layout(set=0, binding=" << binding << ") uniform XX" << name << " {\n";
                     m_stream << "\tYY" << name << " " << name << ";\n";
                 }
                 m_stream << "} " << name << ";\n\n";
@@ -121,41 +112,36 @@ void ShaderBuilder::generateVertexShaderSource(const std::vector<ShaderComponent
         }
     }
 
-    // insert globals struct
-    m_stream << "struct Globals {\n";
-    m_stream << "\tvec2 resolution;\n";
-    m_stream << "\tfloat time;\n";
-    m_stream << "\tfloat deltaTime;\n";
+    if (forwardVariables.size() + globalNames.size() > 0) {
+        // insert globals struct
+        m_stream << "struct Globals {\n";
 
-    // append forwarded globals
-    for (auto& v : forwardVariables) {
-        m_stream << "\t" << v.first << ";\n";
+        // append forwarded globals
+        for (auto& v : forwardVariables) {
+            m_stream << "\t" << v.first << ";\n";
+        }
+
+        // append globals
+        for (auto& g : globalNames) {
+            m_stream << "\t" << g << ";\n";
+        }
+
+        m_stream << "};\n\n";
+
+        // insert globals location layout
+        m_stream << "layout(location=0) out Globals globals;\n\n";
     }
-
-    // append globals
-    for (auto& g : globalNames) {
-        m_stream << "\t" << g << ";\n";
-    }
-
-    m_stream << "};\n\n";
-
-    // insert globals location layout
-    m_stream << "layout(location=0) out Globals globals;\n\n";
 
     m_stream << "void main() {\n";
 
     // forward globals
-    m_stream << "\tglobals.resolution = _globals.resolution;\n";
-    m_stream << "\tglobals.time = _globals.time;\n";
-    m_stream << "\tglobals.deltaTime = _globals.deltaTime;\n";
     for (auto& v : forwardVariables) {
         auto name = getVariableName(v.first);
         m_stream << "\tglobals." << name << " = " << names[v.second] << "." << name << ";\n";
     }
     m_stream << "\n";
 
-    // apply camera transform
-    m_stream << "\tmat4 transform = _globals.cameraTransform;\n";
+    m_stream << "\tmat4 transform = mat4(1.0);\n";
 
     // insert in main
     binding = 0;
@@ -211,7 +197,7 @@ void ShaderBuilder::generateFragmentShaderSource(const std::vector<ShaderCompone
 
             else if (std::holds_alternative<ShaderComponentTexture>(sc)) {
                 auto texInfo = std::get<ShaderComponentTexture>(sc);
-                m_stream << "layout(set=1, binding=" << binding << ") uniform sampler2D " << texInfo.m_name << ";\n";
+                m_stream << "layout(set=0, binding=" << binding << ") uniform sampler2D " << texInfo.m_name << ";\n";
                 binding++;
             }
 
@@ -224,30 +210,29 @@ void ShaderBuilder::generateFragmentShaderSource(const std::vector<ShaderCompone
         }
     }
 
-    // insert globals struct
-    m_stream << "struct Globals {\n";
-    m_stream << "\tvec2 resolution;\n";
-    m_stream << "\tfloat time;\n";
-    m_stream << "\tfloat deltaTime;\n";
+    if (forwardVariables.size() + globalNames.size() > 0) {
+        // insert globals struct
+        m_stream << "struct Globals {\n";
 
-    // append forwarded globals
-    for (auto& v : forwardVariables) {
-        m_stream << "\t" << v.first << ";\n";
+        // append forwarded globals
+        for (auto& v : forwardVariables) {
+            m_stream << "\t" << v.first << ";\n";
+        }
+
+        // append globals
+        for (auto& g : globalNames) {
+            m_stream << "\t" << g << ";\n";
+        }
+
+        m_stream << "};\n\n";
+
+        // insert globals location layout
+        m_stream << "layout(location=0) in Globals globals;\n\n";
     }
-
-    // append globals
-    for (auto& g : globalNames) {
-        m_stream << "\t" << g << ";\n";
-    }
-
-    m_stream << "};\n\n";
-
-    // insert globals location layout
-    m_stream << "layout(location=0) in Globals globals;\n\n";
 
     m_stream << "void main() {\n";
 
-    m_stream << "\tvec4 fragColor = vec4(1.0, 1.0, 1.0, 1.0);\n";
+    m_stream << "\tvec4 fragColor = vec4(1.0);\n";
 
     // insert in main
     binding = 0;

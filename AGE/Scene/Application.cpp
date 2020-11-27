@@ -39,6 +39,8 @@ Application::Application(const std::string& name, int width, int height) {
 }
 
 Application::~Application() {
+    destroyBackground();
+
     if (m_activeScene) {
         delete m_activeScene;
     }
@@ -65,6 +67,43 @@ Application::~Application() {
     Arena::destroy();
 }
 
+struct FullScreenTransform {
+    ShaderComponentInfo getInfo() {
+        ShaderComponentInfo info;
+        info.add(
+            ShaderComponentRaw()
+            .setVertMainInsert(
+                "\ttransform = mat4("
+                "\tvec4(2.0, 0.0, 0.0, 0.0),"
+                "\tvec4(0.0, -2.0, 0.0, 0.0),"
+                "\tvec4(0.0, 0.0, -2.0, 0.0),"
+                "\tvec4(-1.0, 1.0, -1.0, 1.0)"
+                "\t);"
+            )
+        );
+
+        info.setId<FullScreenTransform>();
+
+        return info;
+    }
+};
+
+void Application::createBackground() {
+    setZ(-1e10);
+    m_backgroundColor.create();
+    m_backgroundColor.set(age::Color(0.0f, 0.0f, 0.0f, 1.0f));
+    m_background.create(age::RECTANGLE_SHAPE,
+        m_backgroundColor,
+        FullScreenTransform()
+    );
+    setZ(0);
+}
+
+void Application::destroyBackground() {
+    m_backgroundColor.destroy();
+    m_background.destroy();
+}
+
 // maybe pass coreConfig here
 void Application::create() {
     Arena::init(8 * 1024);
@@ -82,6 +121,8 @@ void Application::create() {
     Sampler::createDefault();
     
     EventManager::__init();
+
+    createBackground();
 }
 
 void Application::run() {
@@ -153,6 +194,9 @@ void Application::render() {
     std::vector<entt::entity> targetIds;
     std::vector<age::Drawable> targets;
     targets.reserve(256);
+
+    // add background
+    targets.push_back(m_background);
 
     const View* views[] = { &m_activeScene->getStaticView(), &m_activeScene->getDynamicView() };
     for (int i = 0; i < 2; ++i) {

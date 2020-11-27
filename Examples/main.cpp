@@ -36,6 +36,8 @@ struct Application : public age::Application {
 };
 
 struct MyRectangle : public age::ScriptComponent {
+    EVENT_CALLBACK(MyRectangle, update);
+
     age::Transformable transformable;
     age::StorageComponent<age::Transform> buffer;
 
@@ -46,6 +48,7 @@ struct MyRectangle : public age::ScriptComponent {
         buffer.create(transformable.getTransform());
         
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
+            staticView(),
             buffer
         );
     }
@@ -54,6 +57,15 @@ struct MyRectangle : public age::ScriptComponent {
         transformable.destroy();
         buffer.destroy();
         getComponent<age::Drawable>().destroy();
+    }
+
+    void update(const age::event::Update& e) {
+        float speed = 250.0f;
+        auto dx = (age::isKeyPressed(GLFW_KEY_RIGHT) - age::isKeyPressed(GLFW_KEY_LEFT)) * speed * e.elapsedTime;
+        auto dy = (age::isKeyPressed(GLFW_KEY_UP) - age::isKeyPressed(GLFW_KEY_DOWN)) * speed * e.elapsedTime;
+
+        transformable.move(dx, dy);
+        buffer.set(transformable.getTransform());
     }
 };
 

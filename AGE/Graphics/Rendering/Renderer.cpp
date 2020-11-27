@@ -4,7 +4,6 @@
 #include <iostream>
 
 #include "Renderer.hpp"
-#include "../Core/Command.hpp"
 #include "../Core/CoreCreator.hpp"
 #include "../Core/Core.hpp"
 #include "PipelineManager.hpp"
@@ -24,21 +23,6 @@ inline void initFreetype() {
 }
 
 std::vector<Drawable> Renderer::m_previousTargets;
-
-template<typename T>
-bool vectorsMatch(const std::vector<T>& l, const std::vector<T>& r) {
-    if (l.size() != r.size()) {
-        return false;
-    }
-
-    for (size_t i = 0; i < l.size(); ++i) {
-        if (l[i] != r[i]) {
-            return false;
-        }
-    }
-
-    return true;
-}
 
 void Renderer::render(const std::vector<Drawable>& targets) {
     m_previousTargets = targets;
@@ -103,25 +87,6 @@ void Renderer::create() {
     core::initCore();
     RenderPass::create();
     Framebuffers::create(RenderPass::get());
-
-    // clear screen
-    VkCommandBufferBeginInfo beginInfo = {};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = 0;
-	beginInfo.pInheritanceInfo = nullptr;
-
-	for (size_t i = 0; i < core::apiCore.commandBuffers.size; ++i) {
-        vkResetCommandBuffer(core::apiCore.commandBuffers.active[i], 0);
-		if (vkBeginCommandBuffer(core::apiCore.commandBuffers.active[i], &beginInfo) != VK_SUCCESS) {
-			throw std::runtime_error("failed to begin recording command buffer");
-		}
-
-        core::cmd::clear(i, {1,0,0,1});
-
-		if (vkEndCommandBuffer(core::apiCore.commandBuffers.active[i]) != VK_SUCCESS) {
-			throw std::runtime_error("failed to record command buffer");
-		}
-	}
 }
 
 void Renderer::destroy() {

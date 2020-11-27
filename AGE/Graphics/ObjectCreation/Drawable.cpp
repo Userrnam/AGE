@@ -72,12 +72,10 @@ inline VkPipelineMultisampleStateCreateInfo getMultisampleStateCreateInfo() {
 
 void Drawable::getPipelineLayout(const DrawableCreateInfo& info) {
     std::vector<VkDescriptorSetLayout> layouts;
-    layouts.resize(2);
+    layouts.resize(1);
 
-    m_descriptorSets[0] = selectedView.getDescriptor();
-    layouts[0] = m_descriptorSets[0].getLayout();
-    m_descriptorSets[1] = info.m_descriptors[0];
-    layouts[1] = m_descriptorSets[1].getLayout();
+    m_descriptorSet = info.m_descriptor;
+    layouts[0] = m_descriptorSet.getLayout();
 
     m_pipelineLayout = requestPipelineLayout(layouts);
 }
@@ -197,17 +195,13 @@ void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>&
     m_shapeRenderInfo = Shape::get(shapeId);
 
     std::vector<VkDescriptorSetLayout> layouts;
-    layouts.resize(2);
+    layouts.resize(1);
 
-    // add camera descriptor
-    m_descriptorSets[0] = selectedView.getDescriptor();
-    layouts[0] = m_descriptorSets[0].getLayout();
-
-    m_descriptorSets[1] = DescriptorSet().get(
+    m_descriptorSet = DescriptorSet().get(
         DescriptorSetInfo().getBasedOnComponents(compoents)
     );
 
-    layouts[1] = m_descriptorSets[1].getLayout();
+    layouts[0] = m_descriptorSet.getLayout();
 
 #ifndef NO_COMPONENT_ORDER_CHECK
     std::vector<PipelineInfo> currentComponentsOrder;
@@ -255,7 +249,7 @@ void Drawable::__create(ShapeId shapeId, const std::vector<ShaderComponentInfo>&
 }
 
 void Drawable::destroy() {
-    m_descriptorSets[1].destroy();
+    m_descriptorSet.destroy();
 }
 
 void Drawable::draw(int i) const {
@@ -263,13 +257,13 @@ void Drawable::draw(int i) const {
     VkBuffer indexBuffer = m_shapeRenderInfo.m_indexMemoryId.buffer;
 
     VkDeviceSize offsets[] = { m_shapeRenderInfo.m_vertexMemoryId.address };
-    VkDescriptorSet sets[] = { m_descriptorSets[0].getSet(), m_descriptorSets[1].getSet() };
+    VkDescriptorSet sets[] = { m_descriptorSet.getSet() };
 
     vkCmdBindPipeline(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
     vkCmdBindVertexBuffers(core::apiCore.commandBuffers.active[i], 0, 1, &vertexBuffer, offsets);
     vkCmdBindIndexBuffer(core::apiCore.commandBuffers.active[i], indexBuffer, m_shapeRenderInfo.m_indexMemoryId.address, VK_INDEX_TYPE_UINT16);
     vkCmdBindDescriptorSets(core::apiCore.commandBuffers.active[i], VK_PIPELINE_BIND_POINT_GRAPHICS, 
-    m_pipelineLayout, 0, 2, sets, 0, nullptr);
+    m_pipelineLayout, 0, 1, sets, 0, nullptr);
     vkCmdDrawIndexed(core::apiCore.commandBuffers.active[i], m_shapeRenderInfo.m_indexCount, m_instanceCount, 0, 0, 0);
 }
 

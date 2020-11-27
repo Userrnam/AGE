@@ -88,5 +88,4 @@ void RenderPass::destroy() {
 	vkDestroyRenderPass(core::apiCore.device, m_renderPass, nullptr);
 }
 
-
 } // namespace age

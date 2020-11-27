@@ -54,7 +54,7 @@ public:
     MainMenu(age::Application* app) : age::Scene(app) {
         auto button1 = createEntity<TestSceneButton>();
         auto button2 = createEntity<FlappyBirdButton>();
-        ps = createEntity<age::ParticleSystem<Particle>>(1000);
+        ps = createEntity<age::ParticleSystem<Particle>>(staticView(), 1000);
 
         ps->getTransformable().setOrigin(0.5f, 0.5f);
 

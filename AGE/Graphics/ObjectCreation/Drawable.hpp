@@ -20,7 +20,7 @@ class DrawableCreateInfo {
     uint32_t m_instanceCount = 1;
 
     std::vector<Shader> m_shaders;
-    std::vector<DescriptorSet> m_descriptors;
+    DescriptorSet m_descriptor;
 
     ShapeId m_shapeId;
 
@@ -46,8 +46,8 @@ public:
         return *this;
     }
 
-    inline DrawableCreateInfo& addDescriptorSet(const DescriptorSet& descriptor) {
-        m_descriptors.push_back(descriptor);
+    inline DrawableCreateInfo& setDescriptorSet(const DescriptorSet& descriptor) {
+        m_descriptor = descriptor;
         return *this;
     }
 };
@@ -59,7 +59,7 @@ protected:
     VkPipelineLayout m_pipelineLayout;
     VkPipeline m_pipeline;
 
-    DescriptorSet m_descriptorSets[2];
+    DescriptorSet m_descriptorSet;
 
     ShapeRenderInfo m_shapeRenderInfo;
 

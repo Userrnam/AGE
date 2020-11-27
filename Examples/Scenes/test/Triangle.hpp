@@ -8,7 +8,7 @@ struct ShaderEffect {
     static age::ShaderComponentInfo getInfo() {
         age::ShaderComponentInfo info;
         info.add(
-            age::ShaderComponentForward("")
+            age::ShaderComponentRaw()
             .setFragMainInsert(
             "\tvec2 resolution = globals.resolution;\n"
             "\tvec2 coord = 20.0 * (gl_FragCoord.xy - resolution) / min(resolution.x, resolution.y);\n"
@@ -51,6 +51,7 @@ struct Triangle : public age::ScriptComponent {
         );
 
         addComponent<age::Drawable>(shapeId,
+            staticView(),
             transform,
             ShaderEffect()
         );

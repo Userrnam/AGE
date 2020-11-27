@@ -25,13 +25,16 @@ protected:
 	Animator m_animator;
 	PositionManager m_positionManager;
 
+	void selectDynamicView();
+	void selectStaticView();
+
 	friend class Entity;
 public:
 	SceneBase() { m_dynamicView.create(-10000); m_staticView.create(10000); selectStaticView(); }
 	virtual ~SceneBase() { m_uiManager.destroy(); m_dynamicView.destroy(); m_staticView.destroy(); }
 
-	void selectDynamicView();
-	void selectStaticView();
+	View& dynamicView() { selectDynamicView(); return m_dynamicView; }
+	View& staticView() { selectStaticView(); return m_staticView; }
 
 	View& getDynamicView() { return m_dynamicView; }
 	View& getStaticView() { return m_staticView; }

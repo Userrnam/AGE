@@ -22,6 +22,7 @@ struct Column : public age::ScriptComponent {
         transformBuffer.create(transformable.getTransform());
 
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
+            staticView(),
             transformBuffer
         );
 

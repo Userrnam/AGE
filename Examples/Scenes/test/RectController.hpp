@@ -56,8 +56,8 @@ public:
         colors.add({{0, 0, 1, 1}});
         colors.upload();
 
-        addComponent<age::Drawable>(
-            age::RECTANGLE_SHAPE,
+        addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
+            staticView(),
             buffer,
             colors,
             age::TextureComponent(getTexture("mountains"))

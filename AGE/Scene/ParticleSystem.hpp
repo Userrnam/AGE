@@ -83,7 +83,7 @@ class ParticleSystem : public ScriptComponent {
     std::vector<ParticleType> m_particles;
     ArrayComponent<Bundle<Transform, Color>, PER_INSTANCE> m_particlesBuffer;
 public:
-    ParticleSystem(Entity e, float spawnRate, ShapeId shapeId = RECTANGLE_SHAPE) : ScriptComponent(e) {
+    ParticleSystem(Entity e, View& view, float spawnRate, ShapeId shapeId = RECTANGLE_SHAPE) : ScriptComponent(e) {
         m_spawnRate = spawnRate;
 
         m_maxParticles = ParticleType::maxLifeTime() * spawnRate + 1;
@@ -94,6 +94,7 @@ public:
         m_transformable.setOrigin(0.5f, 0.0f);
 
         addComponent<Drawable>(shapeId,
+            view,
             m_particlesBuffer
         );
     }

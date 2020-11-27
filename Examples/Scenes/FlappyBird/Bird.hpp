@@ -59,7 +59,7 @@ struct Bird : public age::ScriptComponent {
     bool dead = false;
 
     Bird(age::Entity e) : age::ScriptComponent(e) {
-        ps = getScene()->createEntity<age::ParticleSystem<MyParticle>>(1000);
+        ps = getScene()->createEntity<age::ParticleSystem<MyParticle>>(staticView(), 1000);
         ps->stop();
 
         transformable.create(e);
@@ -74,6 +74,7 @@ struct Bird : public age::ScriptComponent {
 
         age::setZ(100);
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
+            staticView(),
             buffer,
             age::TextureComponent(getTexture("bird"))
         );

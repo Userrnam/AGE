@@ -19,7 +19,8 @@ public:
         buffer.get<age::Color>().set(color);
         buffer.upload();
 
-        addComponent<age::Drawable>(age::RECTANGLE_SHAPE, 
+        addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
+            staticView(),
             buffer
         );
     }

@@ -92,6 +92,10 @@ struct ShaderComponentForward : public Inserts {
     inline ShaderComponentForward& setFragRawInsert(const std::string& s) { m_fragRawInsert = s; return *this; }
 };
 
+struct ShaderComponentRaw : public ShaderComponentForward {
+    ShaderComponentRaw() : ShaderComponentForward("") {}
+};
+
 struct ShaderComponentInfo {
     std::vector<std::variant<ShaderComponentBuffer, ShaderComponentTexture, ShaderComponentForward>> m_data;
     ShaderComponentId m_id = 0;

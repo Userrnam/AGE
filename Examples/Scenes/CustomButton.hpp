@@ -33,6 +33,7 @@ struct CustomButton : public age::ScriptComponent, public age::IButton {
         buffer.upload();
 
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
+            staticView(),
             buffer,
             text
         );
