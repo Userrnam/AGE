@@ -1,8 +1,6 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <iostream>
-
 #include "Renderer.hpp"
 #include "../Core/CoreCreator.hpp"
 #include "../Core/Core.hpp"

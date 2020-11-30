@@ -77,7 +77,7 @@ protected:
 
 public: 
     template<typename S, typename... Args>
-    void selectScene(Args... args) {
+    void selectScene(const Args&... args) {
         if (!m_activeScene) {
             m_activeScene = new S(this, args...);
         } else {

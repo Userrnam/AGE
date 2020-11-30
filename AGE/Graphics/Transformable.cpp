@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "Transformable.hpp"
 
 #include "PositionManager.hpp"

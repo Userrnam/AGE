@@ -21,14 +21,14 @@ public:
     }
 
     template<typename... Args>
-    void generateVertexShaderSource(Args... components) {
+    void generateVertexShaderSource(const Args&... components) {
         collectComponents(m_components, components...);
         generateVertexShaderSource(m_components);
         m_components.clear();
     }
 
     template<typename... Args>
-    Shader compileVertexShader(Args... components) {
+    Shader compileVertexShader(const Args&... components) {
         collectComponents(m_components, components...);
         auto shader = compileVertexShader(m_components);
         m_components.clear();
@@ -36,14 +36,14 @@ public:
     }
 
     template<typename... Args>
-    void generateFragmentShaderSource(Args... components) {
+    void generateFragmentShaderSource(const Args&... components) {
         collectComponents(m_components, components...);
         generateFragmentShaderSource(m_components);
         m_components.clear();
     }
 
     template<typename... Args>
-    Shader compileFragmentShader(Args... components) {
+    Shader compileFragmentShader(const Args&... components) {
         collectComponents(m_components, components...);
         auto shader = compileFragmentShader(m_components);
         m_components.clear();

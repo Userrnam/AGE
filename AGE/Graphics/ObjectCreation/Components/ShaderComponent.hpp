@@ -71,7 +71,7 @@ struct ShaderComponentTexture : public Inserts {
         return *this;
     }
 
-    inline ShaderComponentTexture& setTexture(Texture& texture) {
+    inline ShaderComponentTexture& setTexture(const Texture& texture) {
         m_texture = texture;
         return *this;
     }
@@ -106,7 +106,7 @@ struct ShaderComponentInfo {
         return *this;
     }
 
-    inline ShaderComponentInfo& setBuffer(Buffer& b) {
+    inline ShaderComponentInfo& setBuffer(const Buffer& b) {
         assert(std::holds_alternative<ShaderComponentBuffer>(m_data[0]));
         std::get<ShaderComponentBuffer>(m_data[0]).m_buffer = b;
         return *this;

@@ -30,8 +30,8 @@ public:
         m_entityId = id;
     }
 
-    inline View& staticView() { return m_scene->staticView(); }
-    inline View& dynamicView() { return m_scene->dynamicView(); }
+    inline View& staticView(float z = 0.0f) { return m_scene->staticView(z); }
+    inline View& dynamicView(float z = 0.0f) { return m_scene->dynamicView(z); }
 
     inline FontComponent* getFont(const std::string& font) {
 		return m_scene->getFont(font);
@@ -57,10 +57,10 @@ public:
     }
 
     template<typename T, typename... Args>
-    inline T& addComponent(Args... args) {
+    inline T& addComponent(const Args&... args) {
         m_scene->m_registry.emplace<T>(m_entityId, T());
         auto& component = m_scene->m_registry.get<T>(m_entityId);
-        component.create(std::forward<Args>(args)...);
+        component.create(args...);
         return component;
     }
 

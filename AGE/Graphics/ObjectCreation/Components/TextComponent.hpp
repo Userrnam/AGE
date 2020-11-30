@@ -10,7 +10,7 @@ class TextComponent : public ArrayComponent<TileIndexer, PER_INSTANCE> {
     Vector2f m_size = {};
 
 public:
-    ShaderComponentInfo getInfo() {
+    ShaderComponentInfo getInfo() const {
         auto info = ArrayComponent<TileIndexer, PER_INSTANCE>::getInfo();
         auto fontInfo = m_font->getInfo();
         for (const auto& comp : fontInfo.m_data) {

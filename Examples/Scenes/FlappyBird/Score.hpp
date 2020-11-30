@@ -3,6 +3,8 @@
 #include <AGE/Graphics.hpp>
 #include <AGE/Scene.hpp>
 
+#include <iostream>
+
 
 struct Score : public age::ScriptComponent {
     age::Transformable transformable;
@@ -23,6 +25,7 @@ struct Score : public age::ScriptComponent {
         buffer.create();
 
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
+            staticView(),
             buffer,
             text
         );

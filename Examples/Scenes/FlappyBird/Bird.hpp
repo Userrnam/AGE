@@ -72,13 +72,11 @@ struct Bird : public age::ScriptComponent {
         buffer.set<age::TexCoords>(age::TexCoords());
         buffer.upload();
 
-        age::setZ(100);
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
-            staticView(),
+            staticView(100),
             buffer,
             age::TextureComponent(getTexture("bird"))
         );
-        age::setZ(0);
     }
 
     ~Bird() {

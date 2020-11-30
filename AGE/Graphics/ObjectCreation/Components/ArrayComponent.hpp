@@ -14,7 +14,7 @@ class ArrayComponent {
     Buffer m_buffer;
 
 protected:
-    inline Buffer getBuffer() { return m_buffer; }
+    inline Buffer getBuffer() const { return m_buffer; }
 
 public:
     const T& operator[](size_t i) const {
@@ -63,14 +63,14 @@ public:
         );
     }
 
-    ShaderComponentInfo __getInfo() {
+    ShaderComponentInfo __getInfo() const {
         auto info = T::__getInfo();
         assert(std::holds_alternative<ShaderComponentBuffer>(info.m_data[0]));
         std::get<ShaderComponentBuffer>(info.m_data[0]).m_arrayIndex = arrayIndex;
         return info;
     }
 
-    ShaderComponentInfo getInfo() {
+    ShaderComponentInfo getInfo() const {
         auto info = __getInfo();
         info.template setId<ArrayComponent<T, arrayIndex>>();
         info.setBuffer(m_buffer);

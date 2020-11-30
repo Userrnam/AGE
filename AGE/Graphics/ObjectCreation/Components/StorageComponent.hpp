@@ -15,7 +15,7 @@ class StorageComponent<T> {
     T m_data;
 
 public:
-    inline ShaderComponentInfo getInfo() {
+    inline ShaderComponentInfo getInfo() const {
         auto info = T::__getInfo();
         info.setBuffer(m_buffer);
         info. template setId<StorageComponent<T>>();

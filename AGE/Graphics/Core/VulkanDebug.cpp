@@ -1,8 +1,8 @@
 #include <stdint.h>
-#include <iostream>
 #include <string.h>
 
 #include "VulkanDebug.hpp"
+#include "../../Utils/Logger.hpp"
 
 namespace age::core {
 
@@ -34,7 +34,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 	void *pUserData) {
 	
-	std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+	Logger::error("[vulkan validation layer] %s\n", pCallbackData->pMessage);
 
 	return VK_FALSE;
 }

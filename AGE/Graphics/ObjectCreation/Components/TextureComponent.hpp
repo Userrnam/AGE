@@ -14,7 +14,7 @@ class TextureComponent {
     Texture m_texture;
 
 protected:
-    inline Texture getTexture() { return m_texture; }
+    inline Texture getTexture() const { return m_texture; }
 
 public:
     inline void setTexture(const Texture& texture) {
@@ -24,7 +24,7 @@ public:
     TextureComponent() {}
     inline TextureComponent(const Texture& texture) { m_texture = texture; }
 
-    ShaderComponentInfo __getInfo() {
+    static ShaderComponentInfo __getInfo() {
         ShaderComponentInfo info;
 
         info.add(
@@ -36,7 +36,7 @@ public:
         return info;
     }
 
-    ShaderComponentInfo getInfo() {
+    ShaderComponentInfo getInfo() const {
         ShaderComponentInfo info;
 
         info.add(

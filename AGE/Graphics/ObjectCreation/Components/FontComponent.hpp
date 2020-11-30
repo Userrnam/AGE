@@ -31,14 +31,14 @@ class FontComponent : public TileMapComponent, public TextureComponent {
 
     friend class TextComponent;
 public:
-    ShaderComponentInfo __getInfo() {
+    ShaderComponentInfo __getInfo() const {
         auto info = TileMapComponent::__getInfo();
         auto textureInfo = TextureComponent::__getInfo();
         info.m_data.push_back(textureInfo.m_data[0]);
         return info;
     }
 
-    ShaderComponentInfo getInfo() {
+    ShaderComponentInfo getInfo() const {
         auto info = __getInfo();
         // fixme
         std::get<ShaderComponentBuffer>(info.m_data[0]).m_buffer = getBuffer();

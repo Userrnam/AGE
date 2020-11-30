@@ -73,7 +73,7 @@ public:
     float getZ() const { return m_zPos; }
 
     template<typename... Args>
-    void create(ShapeId shapeId, Args... components) {
+    void create(ShapeId shapeId, const Args&... components) {
         std::vector<ShaderComponentInfo> _components;
         collectComponents(_components, components...);
         __create(shapeId, _components);

@@ -3,8 +3,6 @@
 
 #include "FontComponent.hpp"
 
-#include <iostream>
-
 namespace age {
 
 FT_Library ftLibrary;

@@ -33,8 +33,8 @@ public:
 	SceneBase() { m_dynamicView.create(-10000); m_staticView.create(10000); selectStaticView(); }
 	virtual ~SceneBase() { m_uiManager.destroy(); m_dynamicView.destroy(); m_staticView.destroy(); }
 
-	View& dynamicView() { selectDynamicView(); return m_dynamicView; }
-	View& staticView() { selectStaticView(); return m_staticView; }
+	View& dynamicView(float z = 0.0f) { selectDynamicView(); setZ(z); return m_dynamicView; }
+	View& staticView(float z = 0.0f) { selectStaticView(); setZ(z); return m_staticView; }
 
 	View& getDynamicView() { return m_dynamicView; }
 	View& getStaticView() { return m_staticView; }

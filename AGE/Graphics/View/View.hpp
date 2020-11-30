@@ -47,7 +47,7 @@ public:
     void handleWindowResize(const Vector2i& oldSize, const Vector2i newSize);
     void update(float elapsedTime, float currentTime);
 
-    ShaderComponentInfo getInfo() {
+    ShaderComponentInfo getInfo() const {
         ShaderComponentInfo info;
 
         info.add(

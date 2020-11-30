@@ -68,7 +68,7 @@ Application::~Application() {
 }
 
 struct FullScreenTransform {
-    ShaderComponentInfo getInfo() {
+    ShaderComponentInfo getInfo() const {
         ShaderComponentInfo info;
         info.add(
             ShaderComponentRaw()

@@ -2,8 +2,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include <iostream>
-
 #include <AGE/Graphics.hpp>
 #include <AGE/Animation.hpp>
 #include <AGE/Scene.hpp>

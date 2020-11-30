@@ -7,16 +7,16 @@
 namespace age {
 
 template<typename... Args>
-void collectComponents(std::vector<ShaderComponentInfo>& components, Args... args);
+void collectComponents(std::vector<ShaderComponentInfo>& components, const Args&... args);
 
 template<typename Head, typename...Tail>
-void collectComponents(std::vector<ShaderComponentInfo>& components, Head head, Tail... tail) {
+void collectComponents(std::vector<ShaderComponentInfo>& components, const Head& head, const Tail&... tail) {
     components.push_back(head.getInfo());
     collectComponents(components, tail...);
 }
 
 template<typename Head>
-void collectComponents(std::vector<ShaderComponentInfo>& components, Head head) {
+void collectComponents(std::vector<ShaderComponentInfo>& components, const Head& head) {
     components.push_back(head.getInfo());
 }
 

@@ -39,13 +39,16 @@ struct MyRectangle : public age::ScriptComponent {
     EVENT_CALLBACK(MyRectangle, update);
 
     age::Transformable transformable;
-    age::StorageComponent<age::Transform> buffer;
+    age::StorageComponent<age::Transform, age::Color> buffer;
 
     MyRectangle(Entity e) : age::ScriptComponent(e) {
         transformable.create(e);
         transformable.setScale(100, 100);
 
-        buffer.create(transformable.getTransform());
+        buffer.create();
+        buffer.set<age::Transform>(transformable.getTransform());
+        buffer.set<age::Color>(age::Color(1.0f, 0.0f, 0.0f, 1.0f));
+        buffer.upload();
         
         addComponent<age::Drawable>(age::RECTANGLE_SHAPE,
             staticView(),
@@ -65,7 +68,8 @@ struct MyRectangle : public age::ScriptComponent {
         auto dy = (age::isKeyPressed(GLFW_KEY_UP) - age::isKeyPressed(GLFW_KEY_DOWN)) * speed * e.elapsedTime;
 
         transformable.move(dx, dy);
-        buffer.set(transformable.getTransform());
+        buffer.set<age::Transform>(transformable.getTransform());
+        buffer.upload();
     }
 };
 
@@ -84,8 +88,8 @@ struct MyApp : public age::Application {
 int main(int argc, char* argv[]) {
     age::setAssetsPath(RESOURCE_PATH);
 
-    auto app = new Application("app", 800, 600);
-    // auto app = new MyApp("app", 800, 600);
+    // auto app = new Application("app", 800, 600);
+    auto app = new MyApp("app", 800, 600);
 
     app->run();
 
