@@ -1,6 +1,10 @@
 # AGE (A Game Engine)
 
-![1](screen_shots/1.png) | ![2](screen_shots/2.png) | ![3](screen_shots/3.png)
+<p float="left">
+  <img src="screen_shots/1.png" width="100" />
+  <img src="screen_shots/2.png" width="100" /> 
+  <img src="screen_shots/3.png" width="100" />
+</p>
 
 ## Installation
 
