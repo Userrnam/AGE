@@ -116,6 +116,11 @@ struct Bird : public age::ScriptComponent {
         birdHitBox.pos = transformable.getPosition();
         birdHitBox.size = transformable.getScale();
 
+        if (birdHitBox.pos.y < -birdHitBox.size - 10) {
+            dead = true;
+            return;
+        }
+
         for (auto column : view) {
             auto script = reinterpret_cast<Column*>(column.getComponent<ScriptComponent*>());
 
